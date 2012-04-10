@@ -1,0 +1,5 @@
+<% 'a'.upto('g') do |col| %>
+  <% 1.upto(7) do |row| %>
+    <div id='<%= col + row.to_s %>'><%= col + row.to_s %></div>
+  <% end %>
+<% end %>
