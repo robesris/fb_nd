@@ -1,5 +1,6 @@
 Given /^an empty board$/ do
-  @game = Game.new
+  @game = Game.new(:player1 => Player.create, :player2 => Player.create)
+  @game.save
   @player = [nil, { :pieces => {} }, { :pieces => {} }]
 end
 
@@ -8,18 +9,19 @@ Given /^player (\d+) has a '(.*)' at '([a-g])(\d+)'$/ do |pnum, piece_name, row,
   piece.row = row
   piece.col = col
   piece.save
-  @game.player(pnum).pieces << piece
-  @player[pnum][:pieces][piece_name] = piece
+  puts @game.inspect
+  @game.playernum(pnum).pieces << piece
+  @player[pnum.to_i][:pieces][piece_name] = piece
 end
 
 Given /^player (\d+)s '(.*)' is flipped$/ do |pnum, piece_name|
-  piece = @player[pnum][:pieces][piece_name]
+  piece = @player[pnum.to_i][:pieces][piece_name]
   piece.flipped = true
   piece.save
 end
 
 Given /^player (\d+) has (\d+) crystals$/ do |pnum, num|
-  player = @game.player(pnum)
+  player = @game.player(pnum.to_i)
   player.crystals = num
   player.save
 end

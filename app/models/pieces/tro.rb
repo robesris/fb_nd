@@ -1,0 +1,3 @@
+class Tro < Piece
+
+end

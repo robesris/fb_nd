@@ -6,6 +6,7 @@ gem 'rails', '3.2.3'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 group :test, :development do
+  gem 'ruby-debug'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'cucumber'
@@ -45,4 +46,4 @@ gem 'jquery-rails'
 # gem 'capistrano'
 
 # To use debugger
-# gem 'ruby-debug'
+

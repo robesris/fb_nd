@@ -4,7 +4,8 @@ Feature: Gameplay
   I want to make moves
 
   Scenario: Capture a flipped Tro with a Black Stone
-    Given player 1 has a 'Tro' at 'c3'
+    Given an empty board
+    And player 1 has a 'Tro' at 'c3'
     And player 1s 'Tro' is flipped
     And player 2 has a 'Black Stone' at 'c4'
     And player 1 has 0 crystals
