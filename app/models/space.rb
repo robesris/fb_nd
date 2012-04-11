@@ -4,6 +4,8 @@ class Space < ActiveRecord::Base
   belongs_to :board
   belongs_to :piece
 
+  GRAVEYARD = -4
+
   def occupied?
     self.piece.present?
   end

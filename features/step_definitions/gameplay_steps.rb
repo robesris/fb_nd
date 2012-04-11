@@ -52,9 +52,9 @@ end
 Then /^player (\d+)s '(.*)' should be in the graveyard$/ do |pnum, piece_name|
   piece = @game.playernum(pnum).pieces.where(:name => piece_name).first
   piece.space.should be_nil
-  @player[pnum][pieces][piece_name].row.should == GRAVEYARD
-  @player[pnum][pieces][piece_name].col.should == GRAVEYARD
-  @player[pnum][pieces][piece_name].in_graveyard?.should be_true
+  piece.row.should == nil
+  piece.col.should == nil
+  piece.in_graveyard?.should be_true
 end
 
 Then /^players (\d+)s 'Black Stone' should be at 'c(\d+)'$/ do |arg1, arg2|

@@ -10,6 +10,14 @@ class Piece < ActiveRecord::Base
     self.name = self.class.to_s
   end
 
+  def row
+    self.space && self.space.row
+  end
+
+  def col
+    self.space && self.space.col
+  end
+
   def move(row, col)
     puts "ROW: #{row} COLUMN: #{col}"
     target_space = self.board.space(row, col)
