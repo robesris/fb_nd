@@ -77,14 +77,7 @@ Then /^players (\d+)s '(.*)' should be at '([a-g])(\d+)'$/ do |pnum, piece_name,
   puts Player.all.inspect
 end
 
-Then /^player (\d+) should have (\d+) crystals$/ do |pnum, num|
-  puts Player.all.inspect
-  puts @game.playernum(pnum.to_i).inspect
-  puts @game.player1.inspect
+Then /^player (\d+) should have (\d+) crystals?$/ do |pnum, num|
   @game.playernum(pnum).crystals.should == num.to_i
-end
-
-Then /^player (\d+) should have (\d+) crystal$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
 end
 
