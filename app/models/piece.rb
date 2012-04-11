@@ -18,9 +18,8 @@ class Piece < ActiveRecord::Base
     self.space && self.space.col
   end
 
-  def move(row, col)
-    puts "ROW: #{row} COLUMN: #{col}"
-    target_space = self.board.space(row, col)
+  def move(col, row)
+    target_space = self.board.space(col, row)
     
     # capture the occupying piece, if present
     if target_space.occupied?
@@ -28,10 +27,10 @@ class Piece < ActiveRecord::Base
     end
     self.space = target_space
     self.save
+    puts "END OF MOVE: #{Player.all.inspect}"
   end
 
   def die
-    puts "SPACE: " + self.space.inspect
     self.in_graveyard = true
     self.space = nil
     self.save

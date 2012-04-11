@@ -13,7 +13,7 @@ class Board < ActiveRecord::Base
     end
   end
 
-  def space(row, col)
+  def space(col, row)
     self.spaces.where(:row => row, :col => col).first
   end
 

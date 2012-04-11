@@ -14,6 +14,6 @@ Feature: Gameplay
     And it is player 2s turn
     When player 2 moves from 'c4' to 'c3'
     Then player 1s 'Tro' should be in the graveyard
-    And players 2s 'Black Stone' should be at 'c4'
+    And players 2s 'BlackStone' should be at 'c3'
     And player 1 should have 10 crystals
     And player 2 should have 1 crystal

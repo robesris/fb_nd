@@ -1,14 +1,23 @@
 class Game < ActiveRecord::Base
-  attr_accessible :player1, :player2
+  attr_accessible :board
 
-  belongs_to :player1, :class_name => Player
-  belongs_to :player2, :class_name => Player
+  has_many :players
   has_one :board
 
   def initialize(params = nil, options = {})
     super(params)
-    puts "PARAMS: " + params.inspect
+    self.players << Player.create(:num => 1, :crystals => 0)
+    self.players << Player.create(:num => 2, :crystals => 0)
+
     self.board = Board.create(nil)
+  end
+
+  def player1
+    self.players.where(:num => 1).first
+  end
+
+  def player2
+    self.players.where(:num => 2).first
   end
 
   def playernum(num)
@@ -22,8 +31,8 @@ class Game < ActiveRecord::Base
     end
   end
 
-  def move(row1, col1, row2, col2)
-    self.board.space(row1, col1).piece.move(row2, col2)
+  def move(col1, row1, col2, row2)
+    self.board.space(col1, row1).piece.move(col2, row2)
   end
 
   def graveyard

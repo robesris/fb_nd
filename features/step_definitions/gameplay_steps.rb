@@ -1,6 +1,16 @@
+def irow(row)
+  if row.is_a?(String)
+    row[0] - 96
+  else
+    row
+  end
+end
+
 Given /^an empty board$/ do
-  @game = Game.new({ :player1 => Player.create, :player2 => Player.create })
+  @game = Game.new
   @game.save
+  @game.player1.update_attributes(:game => @game)
+  @game.player2.update_attributes(:game => @game)
   @player = [nil, { :pieces => {} }, { :pieces => {} }]
 end
 
@@ -47,6 +57,7 @@ When /^player (\d+) moves from '([a-g])(\d+)' to '([a-g])(\d+)'$/ do |pnum, row1
     row2 = row2[0] - 96
   end
   @game.move(row1, col1, row2, col2)
+  puts "AFTERMOVE: #{@game.player1.inspect}"
 end
 
 Then /^player (\d+)s '(.*)' should be in the graveyard$/ do |pnum, piece_name|
@@ -55,14 +66,22 @@ Then /^player (\d+)s '(.*)' should be in the graveyard$/ do |pnum, piece_name|
   piece.row.should == nil
   piece.col.should == nil
   piece.in_graveyard?.should be_true
+  puts Player.all.inspect
 end
 
-Then /^players (\d+)s 'Black Stone' should be at 'c(\d+)'$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
+Then /^players (\d+)s '(.*)' should be at '([a-g])(\d+)'$/ do |pnum, piece_name, row, col|
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
+  piece.row.should == irow(row)
+  piece.col.should == col.to_i
+  puts Player.all.inspect
 end
 
-Then /^player (\d+) should have (\d+) crystals$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
+Then /^player (\d+) should have (\d+) crystals$/ do |pnum, num|
+  puts Player.all.inspect
+  puts @game.playernum(pnum.to_i).inspect
+  puts @game.player1.inspect
+  @game.playernum(pnum).crystals.should == num.to_i
 end
 
 Then /^player (\d+) should have (\d+) crystal$/ do |arg1, arg2|
