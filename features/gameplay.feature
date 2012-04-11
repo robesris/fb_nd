@@ -7,7 +7,7 @@ Feature: Gameplay
     Given an empty board
     And player 1 has a 'Tro' at 'c3'
     And player 1s 'Tro' is flipped
-    And player 2 has a 'Black Stone' at 'c4'
+    And player 2 has a 'BlackStone' at 'c4'
     And player 1 has 0 crystals
     And player 2 has 0 crystals
     And the graveyard is empty

@@ -1,0 +1,3 @@
+class BlackStone < Piece
+
+end

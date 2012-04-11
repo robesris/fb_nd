@@ -10,18 +10,21 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120410065741) do
+ActiveRecord::Schema.define(:version => 20120411041201) do
 
   create_table "boards", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.integer  "game_id"
+    t.integer  "piece_id"
   end
 
   create_table "games", :force => true do |t|
     t.integer  "player1_id"
     t.integer  "player2_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.integer  "active_player"
   end
 
   create_table "pieces", :force => true do |t|
@@ -31,13 +34,24 @@ ActiveRecord::Schema.define(:version => 20120410065741) do
     t.integer  "col"
     t.boolean  "flipped"
     t.string   "type"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+    t.integer  "board_id"
+    t.boolean  "in_graveyard"
   end
 
   create_table "players", :force => true do |t|
     t.integer  "num"
     t.integer  "crystals"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "spaces", :force => true do |t|
+    t.integer  "row"
+    t.integer  "col"
+    t.integer  "piece_id"
+    t.integer  "board_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
