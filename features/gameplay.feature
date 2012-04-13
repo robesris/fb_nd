@@ -30,3 +30,13 @@ Feature: Gameplay
     And player 2s 'RedStone' should be at 'b5'
     And player 1 should have 0 crystals
     And player 2 should have 50 crystals
+
+  Scenario: Ham tries to move too far
+    Given an empty board
+    And player 1 has a 'Ham' at 'd4'
+    And player 2 has a 'Tro' at 'f2'
+    And player 1 moves from 'd4' to 'g1'
+    Then player 1s 'Ham' should be at 'd4'
+    And player 1s 'Ham' should not be at 'g1'
+    And player 2s 'Tro' should be at 'f2'
+
