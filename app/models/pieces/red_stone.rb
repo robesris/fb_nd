@@ -1,0 +1,3 @@
+class RedStone < Piece
+
+end

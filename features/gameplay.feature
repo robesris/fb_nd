@@ -14,6 +14,19 @@ Feature: Gameplay
     And it is player 2s turn
     When player 2 moves from 'c4' to 'c3'
     Then player 1s 'Tro' should be in the graveyard
-    And players 2s 'BlackStone' should be at 'c3'
+    And player 2s 'BlackStone' should be at 'c3'
     And player 1 should have 10 crystals
     And player 2 should have 1 crystal
+
+  Scenario: Jump a Ham over a Red Stone
+    Given an empty board
+    And player 1 has a 'Ham' at 'a4'
+    And player 2 has a 'RedStone' at 'b5'
+    And player 1 has 0 crystals
+    And player 2 has 50 crystals
+    And it is player 1s turn
+    And player 1 moves from 'a4' to 'c6'
+    Then player 1s 'Ham' should be at 'c6'
+    And player 2s 'RedStone' should be at 'b5'
+    And player 1 should have 0 crystals
+    And player 2 should have 50 crystals
