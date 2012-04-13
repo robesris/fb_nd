@@ -1,4 +1,8 @@
 class Tro < Piece
+  def val
+    4
+  end
+
   def die
     super
     p = self.player

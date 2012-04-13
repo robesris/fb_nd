@@ -3,6 +3,7 @@ class Piece < ActiveRecord::Base
   
   belongs_to :player
   has_one :board, :through => :space
+  has_one :game, :through => :player
   has_one :space
 
   MOVEMENT_GRID_WIDTH = 5
@@ -22,6 +23,12 @@ class Piece < ActiveRecord::Base
 												0, 0, 0, 0, 0,
 												0, 0, 0, 0, 0,
 												0, 0, 0, 0, 0 ]
+
+  ROOKLIKE					= [ 0, 0, 1, 0, 0,
+												0, 0, 1, 0, 0,
+												1, 1, 0, 1, 1,
+												0, 0, 1, 0, 0,
+												0, 0, 1, 0, 0 ]
 
 	BISHOPLIKE				= [ 1, 0, 0, 0, 1,
 												0, 1, 0, 1, 0,
@@ -59,20 +66,29 @@ class Piece < ActiveRecord::Base
 			#HANDLE ADVANCED MOVEMENT
 			
 			# The piece's grid doesn't allow it to move there
-			false
+			return false
 		end
 	end
 
   def move(col, row)
+    puts self.game.inspect
     target_space = self.board.space(col, row)
     
     if self.can_reach?(target_space)
       # capture the occupying piece, if present
       if target_space.occupied?
+        self.player.add_crystals(target_space.piece.val)
         target_space.piece.die
       end
       self.space = target_space
-      self.save
+      if self.save
+
+        # pass turn after a successful move
+        game = self.game
+        game.update_attribute(:active_player, game.active_player == 1 ? 2 : 1)
+      else
+        return false
+      end
     else
       return false
     end

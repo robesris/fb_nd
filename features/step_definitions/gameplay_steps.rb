@@ -43,6 +43,7 @@ end
 
 Given /^it is player (\d+)s turn$/ do |pnum|
   @game.active_player = pnum
+  @game.save
 end
 
 When /^player (\d+) moves from '([a-g])(\d+)' to '([a-g])(\d+)'$/ do |pnum, col1, row1, col2, row2|
@@ -50,6 +51,12 @@ When /^player (\d+) moves from '([a-g])(\d+)' to '([a-g])(\d+)'$/ do |pnum, col1
   col2 = icol(col2)
   puts "COLS: #{col1} #{col2}"
   @game.move(col1, row1, col2, row2)
+end
+
+When /^player (\d+) tries to move from '([a-g])(\d+)' to '([a-g])(\d+)'$/ do |pnum, col1, row1, col2, row2|
+  steps %Q{
+    When player #{pnum} moves from '#{col1}#{row1}' to '#{col2}#{row2}'
+  }
 end
 
 Then /^player (\d+)s '(.*)' should be in the graveyard$/ do |pnum, piece_name|
@@ -76,3 +83,9 @@ Then /^player (\d+)s '(.*)' should not be at '([a-g])(\d+)'$/ do |pnum, piece_na
   piece = player.pieces.where(:name => piece_name).first
   (piece.col == icol(col) || piece.row == row).should be_false
 end
+
+Then /^it should be player (\d+)s turn$/ do |pnum|
+  @game = Game.find(@game.id)
+  @game.active_player.should == pnum.to_i
+end
+

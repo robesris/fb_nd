@@ -3,7 +3,7 @@ class Game < ActiveRecord::Base
 
   has_many :players
   has_one :board
-
+  
   def initialize(params = nil, options = {})
     super(params)
     self.players << Player.create(:num => 1, :crystals => 0)
