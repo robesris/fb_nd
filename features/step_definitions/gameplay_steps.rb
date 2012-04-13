@@ -71,3 +71,8 @@ Then /^player (\d+) should have (\d+) crystals?$/ do |pnum, num|
   @game.playernum(pnum).crystals.should == num.to_i
 end
 
+Then /^player (\d+)s '(.*)' should not be at '([a-g])(\d+)'$/ do |pnum, piece_name, col, row|
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
+  (piece.col == icol(col) || piece.row == row).should be_false
+end
