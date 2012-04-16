@@ -81,6 +81,11 @@ class Piece < ActiveRecord::Base
 	end
 
   def move(args = {})
+    game = self.game
+    debugger
+    puts "MOVING."
+    return false if game.active_player != self.player
+
     col = args[:col]
     row = args[:row]
     pass = args[:pass]
@@ -97,7 +102,6 @@ class Piece < ActiveRecord::Base
       if self.save
 
         # pass turn after a successful move
-        game = self.game
         game.update_attribute(:active_player, game.active_player == 1 ? 2 : 1) if pass
       else
         return false
