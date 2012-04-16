@@ -95,7 +95,9 @@ Then /^it should be player (\d+)s turn$/ do |pnum|
   @game.active_player.num.should == pnum.to_i
 end
 
-When /^player (\d+) flips 'Agu'$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+When /^player (\d+) flips '(.*)'$/ do |pnum, piece_name|
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
+  piece.flip
 end
 

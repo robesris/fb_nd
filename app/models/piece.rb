@@ -109,6 +109,13 @@ class Piece < ActiveRecord::Base
     end
   end
 
+  def flip
+    return false if self.flipped? || self.player.crystals < self.val
+
+    self.player.update_attribute(:crystals, self.player.crystals - self.val)
+    self.update_attribute(:flipped, true)
+  end
+
   def die
     self.in_graveyard = true
     self.space = nil
