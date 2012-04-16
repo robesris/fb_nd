@@ -42,7 +42,8 @@ Given /^the graveyard is empty$/ do
 end
 
 Given /^it is player (\d+)s turn$/ do |pnum|
-  @game.active_player = pnum
+  pnum = pnum.to_i
+  @game.active_player = @game.players.select { |p| p.num == pnum }.first
   @game.save
 end
 
@@ -91,7 +92,7 @@ end
 
 Then /^it should be player (\d+)s turn$/ do |pnum|
   @game = Game.find(@game.id)
-  @game.active_player.should == pnum.to_i
+  @game.active_player.num.should == pnum.to_i
 end
 
 When /^player (\d+) flips 'Agu'$/ do |arg1|

@@ -2,6 +2,7 @@ class Game < ActiveRecord::Base
   attr_accessible :board
 
   has_many :players
+  belongs_to :active_player, :class_name => Player
   has_one :board
   
   def initialize(params = nil, options = {})
