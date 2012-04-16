@@ -1,6 +1,6 @@
 def icol(col)
   if col.is_a?(String)
-    col[0] - 96
+    col.ord - 96
   else
     col
   end

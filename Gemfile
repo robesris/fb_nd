@@ -6,7 +6,7 @@ gem 'rails', '3.2.3'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 group :test, :development do
-  gem 'ruby-debug'
+  gem 'ruby-debug19'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'cucumber'
