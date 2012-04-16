@@ -71,5 +71,42 @@ Feature: Gameplay
     And player 1s 'Mses' should be in the graveyard
     And it should be player 1s turn
 
-
+  Scenario: Flip Agu and move with advanced movement, and capture
+    Given an empty board
+    And player 1 has an 'Agu' at 'a1'
+    And player 1 has a 'BlackStone' at 'f2'
+    And player 2 has a 'BlackStone' at 'g6'
+    And player 1 has 15 crystals
+    And player 2 has 0 crystals
+    And it is player 1s turn
+    When player 1 tries to move from 'a1' to 'a3'
+    Then player 1 should have an 'Agu' at 'a1'
+    When player 1 moves from 'f2' to 'f3'
+    Then player 1 should have 16 crystals
+    And it should be player 2s turn
+    When player 2 moves from 'g6' to 'g5'
+    Then player 2 should have 1 crystal
+    And it should be player 1s turn
+    When player 1 tries to move from 'a1' to 'c3'
+    Then player 1 should have an 'Agu' at 'a1'
+    When player 1 moves from 'a1' to 'b2' and does not pass the turn
+    And player 1 tries to move from 'b2' to 'b3'
+    Then player 1s 'Agu' should be at 'b2'
+    When player 1 flips 'Agu'
+    Then player 1 should have 0 crystals
+    And player 1s 'Agu' should be at 'b2'
+    And it should be player 2s turn
+    When player 2 moves from 'g5' to 'g4'
+    Then player 2 should have 2 crystals
+    When player 1 moves from 'b2' to 'g2'
+    Then player 1s 'Agu' should be at 'g2'
+    When player 2 moves from 'g4' to 'g3'
+    Then player 2 should have 3 crystals
+    When player 1 tries to move from 'g2' to 'g4'
+    Then player 1s 'Agu' should be at 'g2'
+    When player 1 moves from 'g2' to 'g3'
+    Then player 1 should have 1 crystal
+    And player 2s 'BlackStone' should not be at 'g3'
+    And player 2s 'BlackStone' should be in the graveyard
+    And it should be player 2s turn
 

@@ -14,7 +14,7 @@ Given /^an empty board$/ do
   @player = [nil, { :pieces => {} }, { :pieces => {} }]
 end
 
-Given /^player (\d+) has a '(.*)' at '([a-g])(\d+)'$/ do |pnum, piece_name, col, row|
+Given /^player (\d+) has an? '(.*)' at '([a-g])(\d+)'$/ do |pnum, piece_name, col, row|
   piece = Kernel.const_get(piece_name).new
   piece.player = @game.playernum(pnum)
   col = icol(col)
@@ -46,11 +46,10 @@ Given /^it is player (\d+)s turn$/ do |pnum|
   @game.save
 end
 
-When /^player (\d+) moves from '([a-g])(\d+)' to '([a-g])(\d+)'$/ do |pnum, col1, row1, col2, row2|
+When /^player (\d+) moves from '([a-g])(\d+)' to '([a-g])(\d+)'(| and does not pass the turn)$/ do |pnum, col1, row1, col2, row2, pass|
   col1 = icol(col1)
   col2 = icol(col2)
-  puts "COLS: #{col1} #{col2}"
-  @game.move(col1, row1, col2, row2)
+  @game.move(col1, row1, col2, row2, true)
 end
 
 When /^player (\d+) tries to move from '([a-g])(\d+)' to '([a-g])(\d+)'$/ do |pnum, col1, row1, col2, row2|
@@ -74,6 +73,12 @@ Then /^player (\d+)s '(.*)' should be at '([a-g])(\d+)'$/ do |pnum, piece_name, 
   piece.row.should == row.to_i
 end
 
+Then /^player (\d+) should have an? '(.*)' at '([a-g])(\d+)'$/ do |pnum, piece_name, col, row|
+  steps %Q{
+    Then player #{pnum}s '#{piece_name}' should be at '#{col}#{row}'
+  }
+end
+
 Then /^player (\d+) should have (\d+) crystals?$/ do |pnum, num|
   @game.playernum(pnum).crystals.should == num.to_i
 end
@@ -87,5 +92,9 @@ end
 Then /^it should be player (\d+)s turn$/ do |pnum|
   @game = Game.find(@game.id)
   @game.active_player.should == pnum.to_i
+end
+
+When /^player (\d+) flips 'Agu'$/ do |arg1|
+  pending # express the regexp above with the code you wish you had
 end
 

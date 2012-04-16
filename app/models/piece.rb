@@ -24,6 +24,12 @@ class Piece < ActiveRecord::Base
 												0, 0, 0, 0, 0,
 												0, 0, 0, 0, 0 ]
 
+  KING							= [ 0, 0, 0, 0, 0,
+												0, 1, 1, 1, 0,
+												0, 1, 0, 1, 0,
+												0, 1, 1, 1, 0,
+												0, 0, 0, 0, 0 ]
+
   ROOKLIKE					= [ 0, 0, 1, 0, 0,
 												0, 0, 1, 0, 0,
 												1, 1, 0, 1, 1,
@@ -39,6 +45,10 @@ class Piece < ActiveRecord::Base
   def initialize(params = nil, options = {})
     super(params)
     self.name = self.class.to_s
+  end
+
+  def grid
+    self.flipped? ? self.side2 : self.side1
   end
 
   def row
@@ -70,7 +80,7 @@ class Piece < ActiveRecord::Base
 		end
 	end
 
-  def move(col, row)
+  def move(col, row, pass = true)
     puts self.game.inspect
     target_space = self.board.space(col, row)
     
@@ -85,7 +95,7 @@ class Piece < ActiveRecord::Base
 
         # pass turn after a successful move
         game = self.game
-        game.update_attribute(:active_player, game.active_player == 1 ? 2 : 1)
+        game.update_attribute(:active_player, game.active_player == 1 ? 2 : 1) if pass
       else
         return false
       end
