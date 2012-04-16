@@ -31,8 +31,12 @@ class Game < ActiveRecord::Base
     end
   end
 
-  def move(col1, row1, col2, row2, pass = true)
-    self.board.space(col1, row1).piece.move(col2, row2, pass)
+  def move(args)
+    col1 = args[:col1]
+    row1 = args[:row1]
+    args[:col] = args[:col2]
+    args[:row] = args[:row2]
+    self.board.space(col1, row1).piece.move(args)
   end
 
   def graveyard

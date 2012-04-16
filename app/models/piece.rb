@@ -80,7 +80,10 @@ class Piece < ActiveRecord::Base
 		end
 	end
 
-  def move(col, row, pass = true)
+  def move(args = {})
+    col = args[:col]
+    row = args[:row]
+    pass = args[:pass]
     puts self.game.inspect
     target_space = self.board.space(col, row)
     

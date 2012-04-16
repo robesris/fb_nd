@@ -3,8 +3,8 @@ class BlackStone < Piece
     BLACK
   end
 
-  def move(col, row)
-    super(col, row)
+  def move(args)
+    super(args)
     self.player.update_attributes(:crystals => self.player.crystals + 1)
   end
 end

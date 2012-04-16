@@ -3,8 +3,8 @@ class RedStone < Piece
     RED
   end
 
-  def move(col, row)
-    if super(col, row)
+  def move(args)
+    if super(args)
       player = self.player
       player.crystals += 3
       player.save
