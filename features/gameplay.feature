@@ -110,3 +110,15 @@ Feature: Gameplay
     And player 2s 'BlackStone' should be in the graveyard
     And it should be player 2s turn
 
+  Scenario: A flipped Gar captures the opponent's Nav and wins the game
+    Given an empty board
+    And player 1 has an 'Est' at 'e2'
+    And player 1 has a 'Neto' at 'e4'
+    And player 2 has a 'Deb' at 'a7'
+    And player 2 has a 'Gar' at 'e6'
+    And player 2s 'Gar' is flipped
+    And it is player 2s turn
+    When player 2 moves from 'e6' to 'e2'
+    Then player 2s 'Gar' should be at 'e2'
+    And player 2 should win the game
+

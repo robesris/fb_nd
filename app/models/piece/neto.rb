@@ -1,0 +1,3 @@
+class Neto < Piece
+
+end
