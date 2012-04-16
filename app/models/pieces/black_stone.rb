@@ -1,4 +1,8 @@
 class BlackStone < Piece
+  def val
+    1
+  end
+
   def grid
     BLACK
   end

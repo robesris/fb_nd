@@ -30,6 +30,12 @@ class Piece < ActiveRecord::Base
 												0, 1, 1, 1, 0,
 												0, 0, 0, 0, 0 ]
 
+  QUEEN							= [ 0, 0, 0, 0, 0,
+												0, :ul, :up, :ur, 0,
+												0, :lt, 0, :rt, 0,
+												0, :dl, :dn, :dr, 0,
+												0, 0, 0, 0, 0 ]
+
   ROOKLIKE					= [ 0, 0, 1, 0, 0,
 												0, 0, 1, 0, 0,
 												1, 1, 0, 1, 1,
@@ -60,6 +66,9 @@ class Piece < ActiveRecord::Base
   end
 
   def can_reach?(to_space)
+    # can't move to a space we're already on
+    return false if to_space == self.space
+  
     #Flip the movement grid around for player 2 (i.e. second player)
 		grid = self.player.num == 1 ? self.grid : self.grid.reverse
 
@@ -73,10 +82,55 @@ class Piece < ActiveRecord::Base
 			 grid[MOVEMENT_GRID_CENTER - (MOVEMENT_GRID_WIDTH * row_move) + col_move] != 0
 		  return true
 		else #if the piece can't jump to the specified space, see if it can 'slide' there
-			#HANDLE ADVANCED MOVEMENT
-			
-			# The piece's grid doesn't allow it to move there
-			return false
+			# almost all pieces need a straight line to the target - it must be in same row, col, or diagonal
+
+      my_col = self.space.col
+      my_row = self.space.row
+      col_distance = to_space.col - self.space.col
+      row_distance = to_space.row - self.space.row
+      intervening_spaces = nil
+
+      # We don't have to check if both are 0 because we already reject this case at the start of the method
+      if col_distance.abs == 0    # same col: move in direction of row_distance's sign
+        if row_distance > 0  # moving up
+          return false unless self.grid.include?(:up)
+          intervening_spaces = self.board.spaces.select{ |s| s.col == my_col && s.row > my_row && s.row < to_space.row}
+        else                 # moving down
+          return false unless self.grid.include?(:dn)
+          intervening_spaces = self.board.spaces.select{ |s| s.col == my_col && s.row < my_row && s.row > to_space.row}
+        end
+      elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
+        if col_distance > 0  # moving right 
+          return false unless self.grid.include?(:rt)
+          intervening_spaces = self.board.spaces.select{ |s| s.row == my_row && s.col > my_col && s.col < to_space.col}
+        else                 # moving left
+          return false unless self.grid.include?(:lt)
+          intervening_spaces = self.board.spaces.select{ |s| s.row == my_row && s.col < my_col && s.col > to_space.col}
+        end
+      elsif col_distance.abs == row_distance.abs # diagonal line
+        col_dir = col_distance / col_distance   # +1 or -1
+        row_dir = row_distance / row_distance   # +1 or -1
+        col_dir_sym = col_dir > 0 ? 'r' : 'l'
+        row_dir_sym = row_dir > 0 ? 'u' : 'd'
+        dir_sym = "#{row_dir_sym}#{col_dir_sym}".to_sym
+        return false unless self.grid.include?(dir_sym)
+        intervening_spaces = self.game.spaces.select do |s|
+          s.col * col_dir > my_col && s.col * col_dir < to_space.col &&    # spaces in intervening cols...
+          s.row * row_dir > my_row && s.row * row_dir < to_space.row &&    # and intervening rows...
+          (s.row - my_row).abs == (s.col - my_col).abs                     # that are an equal number of row and cols away
+        end
+      else
+        # TODO: put in stuff to handle Ghora, Han, and leaping pieces
+        return false
+      end
+
+      # are all intervening spaces unoccupied?
+      intervening_spaces.each do |space|
+        return false if space.occupied?
+      end
+
+			# ok to move there!
+			return true
 		end
 	end
 

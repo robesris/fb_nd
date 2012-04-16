@@ -8,6 +8,6 @@ class Agu < Piece
   end
   
   def side2
-    ROOKLIKE
+    QUEEN 
   end
 end
