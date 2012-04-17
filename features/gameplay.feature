@@ -120,5 +120,7 @@ Feature: Gameplay
     And it is player 2s turn
     When player 2 moves from 'e6' to 'e2'
     Then player 2s 'Gar' should be at 'e2'
+    And player 1s 'Neto' should not be in the graveyard
+    And player 1s 'Neto' should be at 'e4'
     And player 2 should win the game
 

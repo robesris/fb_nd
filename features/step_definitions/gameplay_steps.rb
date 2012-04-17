@@ -67,6 +67,11 @@ Then /^player (\d+)s '(.*)' should be in the graveyard$/ do |pnum, piece_name|
   piece.in_graveyard?.should be_true
 end
 
+Then /^player (\d+)s '(.*)' should not be in the graveyard$/ do |pnum, piece_name|
+  piece = @game.playernum(pnum).pieces.where(:name => piece_name).first
+  piece.in_graveyard?.should be_false
+end
+
 Then /^player (\d+)s '(.*)' should be at '([a-g])(\d+)'$/ do |pnum, piece_name, col, row|
   player = @game.playernum(pnum)
   piece = player.pieces.where(:name => piece_name).first
@@ -100,4 +105,10 @@ When /^player (\d+) flips '(.*)'$/ do |pnum, piece_name|
   piece = player.pieces.where(:name => piece_name).first
   piece.flip
 end
+
+Then /^player (\d+) should win the game$/ do |pnum|
+  @game = Game.find(@game.id)
+  @game.winner.num.should == pnum.to_i
+end
+
 

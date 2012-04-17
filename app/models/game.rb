@@ -3,6 +3,7 @@ class Game < ActiveRecord::Base
 
   has_many :players
   belongs_to :active_player, :class_name => Player
+  belongs_to :winner, :class_name => Player
   has_one :board
   
   def initialize(params = nil, options = {})
