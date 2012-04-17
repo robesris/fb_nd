@@ -88,23 +88,32 @@ class Piece < ActiveRecord::Base
       my_row = self.space.row
       col_distance = to_space.col - self.space.col
       row_distance = to_space.row - self.space.row
+      if self.player.num == 2
+        col_distance *= -1
+        row_distance *= -1
+      end
       intervening_spaces = nil
+      dir_sym = nil
 
       # We don't have to check if both are 0 because we already reject this case at the start of the method
       if col_distance.abs == 0    # same col: move in direction of row_distance's sign
         if row_distance > 0  # moving up
-          return false unless self.grid.include?(:up)
+          return false unless self.grid.include?(:up) || self.grid.include?(:leap_up)
+          dir_sym = self.grid.include?(:leap_up) ? :leap_up : :up
           intervening_spaces = self.board.spaces.select{ |s| s.col == my_col && s.row > my_row && s.row < to_space.row}
         else                 # moving down
-          return false unless self.grid.include?(:dn)
+          return false unless self.grid.include?(:dn) || self.grid.include?(:leap_dn)
+          dir_sym = self.grid.include?(:leap_dn) ? :leap_dn : :dn
           intervening_spaces = self.board.spaces.select{ |s| s.col == my_col && s.row < my_row && s.row > to_space.row}
         end
       elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
         if col_distance > 0  # moving right 
-          return false unless self.grid.include?(:rt)
+          return false unless self.grid.include?(:rt) || self.grid.include?(:leap_rt)
+          dir_sym = self.grid.include?(:leap_rt) ? :leap_rt : :rt
           intervening_spaces = self.board.spaces.select{ |s| s.row == my_row && s.col > my_col && s.col < to_space.col}
         else                 # moving left
-          return false unless self.grid.include?(:lt)
+          return false unless self.grid.include?(:lt) || self.grid.include?(:leap_lt)
+          dir_sym = self.grid.include?(:leap_lt) ? :leap_lt : :lt
           intervening_spaces = self.board.spaces.select{ |s| s.row == my_row && s.col < my_col && s.col > to_space.col}
         end
       elsif col_distance.abs == row_distance.abs # diagonal line
@@ -113,6 +122,8 @@ class Piece < ActiveRecord::Base
         col_dir_sym = col_dir > 0 ? 'r' : 'l'
         row_dir_sym = row_dir > 0 ? 'u' : 'd'
         dir_sym = "#{row_dir_sym}#{col_dir_sym}".to_sym
+        leap_dir_sym = "leap_#{row_dir_sym}#{col_dir_sym}".to_sym
+        dir_sym = leap_dir_sym if self.grid.include?(leap_dir_sym)
         return false unless self.grid.include?(dir_sym)
         intervening_spaces = self.game.spaces.select do |s|
           s.col * col_dir > my_col && s.col * col_dir < to_space.col &&    # spaces in intervening cols...
@@ -124,9 +135,16 @@ class Piece < ActiveRecord::Base
         return false
       end
 
+      leap_over = dir_sym.to_s.include?('leap') ? 1 : 0
       # are all intervening spaces unoccupied?
       intervening_spaces.each do |space|
-        return false if space.occupied?
+        if space.occupied?
+          if leap_over <= 0
+            return false
+          else
+            leap_over -= 1
+          end
+        end
       end
 
 			# ok to move there!
