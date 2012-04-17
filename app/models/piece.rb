@@ -182,7 +182,9 @@ class Piece < ActiveRecord::Base
   end
 
   def flip
-    return false if self.flipped? || self.player.crystals < self.val
+    flip_cost = self.val
+    flip_cost = (flip_cost / 2.0).ceil if self.space.half_crystal?
+    return false if self.flipped? || self.player.crystals < flip_cost
 
     self.player.update_attribute(:crystals, self.player.crystals - self.val)
     self.update_attribute(:flipped, true)

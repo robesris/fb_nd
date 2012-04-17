@@ -14,6 +14,10 @@ class Player < ActiveRecord::Base
     self.game.players.reject{ |p| p == self }.first
   end
 
+  def choose(target)
+    self.game.choose(:player => self, :target => target)
+  end
+
   def lose_game
     self.opponent.win_game
   end

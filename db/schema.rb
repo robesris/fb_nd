@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120417213411) do
+ActiveRecord::Schema.define(:version => 20120417230639) do
 
   create_table "boards", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(:version => 20120417213411) do
     t.datetime "updated_at",       :null => false
     t.integer  "active_player_id"
     t.integer  "winner_id"
+    t.integer  "waiting_for_id"
   end
 
   create_table "pieces", :force => true do |t|
@@ -34,10 +35,12 @@ ActiveRecord::Schema.define(:version => 20120417213411) do
     t.integer  "player_id"
     t.boolean  "flipped"
     t.string   "type"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
     t.integer  "board_id"
     t.boolean  "in_graveyard"
+    t.integer  "target_piece_id"
+    t.string   "waiting_state"
   end
 
   create_table "players", :force => true do |t|
@@ -53,8 +56,10 @@ ActiveRecord::Schema.define(:version => 20120417213411) do
     t.integer  "col"
     t.integer  "piece_id"
     t.integer  "board_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+    t.boolean  "half_crystal"
+    t.integer  "summon_space"
   end
 
 end

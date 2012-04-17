@@ -22,7 +22,15 @@ Given /^player (\d+) has an? '(.*)' at '([a-g])(\d+)'$/ do |pnum, piece_name, co
   space.piece = piece
   space.save
   @game.playernum(pnum).pieces << piece
-  @player[pnum.to_i][:pieces][piece_name] = piece
+end
+
+Given /^player (\d+) has a '(.*)' in the graveyard$/ do |pnum, piece_name|
+  piece = Kernel.const_get(piece_name).new
+  piece.player = @game.playernum(pnum)
+  piece.space = nil
+  piece.in_graveyard = true
+  piece.save
+  @game.playernum(pnum).pieces << piece 
 end
 
 Given /^player (\d+)s '(.*)' is flipped$/ do |pnum, piece_name|
@@ -106,9 +114,21 @@ When /^player (\d+) flips '(.*)'$/ do |pnum, piece_name|
   piece.flip
 end
 
+Then /^player (\d+)s '(.*)' should be flipped$/ do |pnum, piece_name|
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
+  piece.flipped?.should be_true
+end
+
 Then /^player (\d+) should win the game$/ do |pnum|
   @game = Game.find(@game.id)
   @game.winner.num.should == pnum.to_i
 end
 
+When /^player (\d+) chooses player (\d+)s '(.*)'$/ do |pnum, target_pnum, piece_name|
+  @game.playernum(pnum).choose(@game.playernum(target_pnum).pieces.where(:name => piece_name).first)
+end
 
+When /^player (\d+) chooses '([a-g])(\d+)'$/ do |pnum, target_col, target_row|
+  @game.playernum(pnum).choose(@game.board.spaces.where(:col => icol(target_col), :row => target_row.to_i).first)
+end

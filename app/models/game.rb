@@ -4,6 +4,7 @@ class Game < ActiveRecord::Base
   has_many :players
   belongs_to :active_player, :class_name => Player
   belongs_to :winner, :class_name => Player
+  belongs_to :waiting_for, :class_name => Piece
   has_one :board
   
   def initialize(params = nil, options = {})
@@ -39,6 +40,12 @@ class Game < ActiveRecord::Base
     args[:col] = args[:col2]
     args[:row] = args[:row2]
     self.board.space(col1, row1).piece.move(args)
+  end
+
+  def choose(args)
+    return false unless self.waiting_for
+
+    self.waiting_for.player_input(args)
   end
 
   def graveyard

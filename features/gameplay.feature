@@ -124,3 +124,21 @@ Feature: Gameplay
     And player 1s 'Neto' should be at 'e4'
     And player 2 should win the game
 
+  Scenario: Neto uses flip ability in half-crystal zone to return Gun from graveyard (after first trying to summon to illegal square)
+    Given an empty board
+    And player 1 has a 'Neto' at 'c4'
+    And player 1 has a 'Gun' in the graveyard
+    And it is player 1s turn
+    And player 1 has 4 crystals
+    When player 1 flips 'Neto'
+    Then player 1s 'Neto' should be flipped
+    When player 1 chooses player 1s 'Gun'
+    And player 1 chooses 'a4'
+    Then player 1s 'Gun' should be in the graveyard
+    When player 1 chooses 'a2'
+    Then player 1s 'Gun' should not be in the graveyard
+    And player 1s 'Gun' should be at 'a2'
+    And player 1s 'Neto' should not be at 'c4'
+    And player 1s 'Neto' should be in the graveyard
+    And player 1 should have 1 crystal
+
