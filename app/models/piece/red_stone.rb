@@ -1,13 +1,9 @@
-class RedStone < Piece
-  def grid
-    RED
+class RedStone < Piece::Stone
+  def val
+    3
   end
 
-  def move(args)
-    if super(args)
-      player = self.player
-      player.crystals += 3
-      player.save
-    end
+  def grid
+    RED
   end
 end

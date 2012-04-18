@@ -189,7 +189,7 @@ Feature: Gameplay
     Given an empty board
     And player 1 has a 'Chakra' at 'f7'
     And player 1 has a 'RedStone' at 'b7'
-    And player 1 has a 'GillTwo' in his keep
+    And player 1 has a 'GilTwo' in his keep
     And player 1 has 58 crystals
     And player 2 has a 'Hill' at 'b1'
     And player 2 has 9 crystals
@@ -199,6 +199,7 @@ Feature: Gameplay
     And the game should be in progress
     And it should be player 1s turn
     When player 1 Lines Over with his 'RedStone'
+    And player 1 chooses 'crystals'
     Then player 1 should have 60 crystals
     And player 1s 'RedStone' should be in the graveyard
     And it should be player 2s turn

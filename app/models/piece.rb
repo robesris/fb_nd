@@ -231,4 +231,8 @@ class Piece < ActiveRecord::Base
     self.space = nil
     self.save
   end
+
+  def in_last_row?
+    self.player.num == 1 ? self.row == 7 : self.row == 1
+  end
 end

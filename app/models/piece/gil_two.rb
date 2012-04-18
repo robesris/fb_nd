@@ -1,0 +1,3 @@
+class GilTwo < Piece
+
+end

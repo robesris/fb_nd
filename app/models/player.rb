@@ -19,6 +19,14 @@ class Player < ActiveRecord::Base
     self.save
   end
 
+  def nav
+    self.pieces.select{ |p| p.kind_of?(Piece::Nav) }.first
+  end
+
+  def empty_keep?
+    self.keep.select{ |space| space.piece }.empty?
+  end
+
   def opponent
     self.game.players.reject{ |p| p == self }.first
   end

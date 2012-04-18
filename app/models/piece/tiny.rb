@@ -20,10 +20,10 @@ class Tiny < Piece
 
   def player_input(args)
     if self.waiting_state == 'piece'
-      player = args[:player]
+      choosing_player = args[:player]
       target = args[:target]
 
-      if player == self.player &&
+      if choosing_player == self.player &&
          target.kind_of?(Piece) &&
          !target.kind_of?(Piece::Nav) &&
          target.on_board?

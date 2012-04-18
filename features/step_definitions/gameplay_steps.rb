@@ -134,6 +134,12 @@ When /^player (\d+) chooses '([a-g])(\d+)'$/ do |pnum, target_col, target_row|
   @game.playernum(pnum).choose(@game.board.spaces.where(:col => icol(target_col), :row => target_row.to_i).first)
 end
 
+When /^player (\d+) chooses 'crystals'$/ do |pnum|
+  player = @game.playernum(pnum)
+  player.choose('crystals')
+end
+
+
 Given /^player (\d+) has an? '(.*)' in his keep$/ do |pnum, piece_name|
   player = @game.playernum(pnum)
   empty_keep_space = player.keep.select{ |space| !space.occupied? }.first
@@ -162,3 +168,18 @@ Then /^the game should be in progress$/ do
   @game.winner.should be_nil
 end
 
+When /^player (\d+) tries to Goal Over$/ do |pnum|
+  @game.playernum(pnum).nav.goal_over
+end
+
+When /^player (\d+) Lines Over with his '(.*)'$/ do |pnum, piece_name|
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
+  piece.line_over
+end
+
+When /^player (\d+) Goals Over$/ do |pnum|
+  steps %Q{
+    When player #{pnum} tries to Goal Over
+  }
+end
