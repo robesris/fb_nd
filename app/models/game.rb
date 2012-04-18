@@ -48,6 +48,9 @@ class Game < ActiveRecord::Base
 
   def pass_turn
     self.update_attribute(:active_player, self.players.reject{ |p| p.num == self.active_player.num }.first)
+    self.players.each do |player|
+      player.update_attribute(:active_piece, nil)
+    end
   end
 
   def choose(args)

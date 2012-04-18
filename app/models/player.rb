@@ -2,6 +2,7 @@ class Player < ActiveRecord::Base
   attr_accessible :crystals, :num, :game, :keep
 
   belongs_to :game
+  belongs_to :active_piece, :class_name => Piece
   has_many :pieces
   has_many :keep, :class_name => Space
 

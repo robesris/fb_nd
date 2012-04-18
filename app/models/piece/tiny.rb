@@ -12,7 +12,7 @@ class Tiny < Piece
   end
 
   def flip
-    super
+    super(false)
     self.game.wait_for(self)
     self.waiting_state = 'piece'
     self.save 

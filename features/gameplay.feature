@@ -184,3 +184,23 @@ Feature: Gameplay
     And player 1 should have 0 crystals
     And player 2 should have 6 crystals
     And it should be player 1s turn
+
+  Scenario: Line Over and Goal Over
+    Given an empty board
+    And player 1 has a 'Chakra' at 'f7'
+    And player 1 has a 'RedStone' at 'b7'
+    And player 1 has a 'GillTwo' in his keep
+    And player 1 has 58 crystals
+    And player 2 has a 'Hill' at 'b1'
+    And player 2 has 9 crystals
+    And it is player 1s turn
+    When player 1 tries to Goal Over
+    Then player 1s 'Chakra' should be at 'f7'
+    And the game should be in progress
+    And it should be player 1s turn
+    When player 1 Lines Over with his 'RedStone'
+    Then player 1 should have 60 crystals
+    And player 1s 'RedStone' should be in the graveyard
+    And it should be player 2s turn
+    When player 2 Goals Over
+    Then player 2 should win the game

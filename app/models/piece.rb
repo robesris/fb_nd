@@ -188,7 +188,7 @@ class Piece < ActiveRecord::Base
 
   def move(args = {})
     game = self.game
-    return false if game.active_player != self.player
+    return false if game.active_player != self.player || self.player.active_piece  # moving can never be done after another action, so you can only move when there is no active piece
 
     col = args[:col]
     row = args[:row]
@@ -203,8 +203,8 @@ class Piece < ActiveRecord::Base
         target_space.piece.die
       end
       self.space = target_space
+      self.player.update_attribute(:active_piece, self)
       if self.save
-
         # pass turn after a successful move
         self.game.pass_turn if pass
       else
@@ -215,13 +215,15 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  def flip
+  def flip(pass = true)
     flip_cost = self.val
     flip_cost = (flip_cost / 2.0).ceil if self.space.half_crystal?
     return false if self.flipped? || self.player.crystals < flip_cost
 
     self.player.update_attribute(:crystals, self.player.crystals - flip_cost)
     self.update_attribute(:flipped, true)
+    self.game.pass_turn if pass
+    true
   end
 
   def die

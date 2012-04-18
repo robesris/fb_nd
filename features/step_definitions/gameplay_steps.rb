@@ -34,7 +34,8 @@ Given /^player (\d+) has a '(.*)' in the graveyard$/ do |pnum, piece_name|
 end
 
 Given /^player (\d+)s '(.*)' is flipped$/ do |pnum, piece_name|
-  piece = @player[pnum.to_i][:pieces][piece_name]
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
   piece.flipped = true
   piece.save
 end

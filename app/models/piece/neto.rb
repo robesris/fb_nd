@@ -9,7 +9,7 @@ class Neto < Piece
   end
 
   def flip
-    if super
+    if super(false)
       self.game.update_attribute(:waiting_for, self)
       self.waiting_state = 'piece'
       self.save
