@@ -34,12 +34,20 @@ class Game < ActiveRecord::Base
     end
   end
 
+  def wait_for(piece)
+    self.update_attribute(:waiting_for, piece)
+  end
+
   def move(args)
     col1 = args[:col1]
     row1 = args[:row1]
     args[:col] = args[:col2]
     args[:row] = args[:row2]
     self.board.space(col1, row1).piece.move(args)
+  end
+
+  def pass_turn
+    self.update_attribute(:active_player, self.players.reject{ |p| p.num == self.active_player.num }.first)
   end
 
   def choose(args)

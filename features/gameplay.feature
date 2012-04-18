@@ -142,3 +142,45 @@ Feature: Gameplay
     And player 1s 'Neto' should be in the graveyard
     And player 1 should have 1 crystal
 
+  Scenario: Players summon Olp and Tiny after attempting illegal moves, then Tiny flips to destroy Olp
+    Given an empty board
+    And player 1 has an 'Aio' at 'f2'
+    And player 1 has an 'Olp' in his keep
+    And player 1 has 0 crystals
+    And player 2 has a 'Krr' at 'c7'
+    And player 2 has a 'Tiny' in his keep
+    And player 2 has 20 crystals
+    And it is player 2s turn
+    When player 2 tries to summon 'Tiny' to 'a2'
+    Then player 2s 'Tiny' should be in his keep
+    And player 2s 'Tiny' should not be at 'a2'
+    When player 2 tries to summon 'Tiny' to 'c7'
+    Then player 2s 'Tiny' should be in his keep
+    And player 2s 'Tiny' should not be at 'a2'
+    When player 2 summons 'Tiny' to 'b7'
+    Then player 2s 'Tiny' should not be in his keep
+    And player 2s 'Tiny' should be at 'b7'
+    And it should be player 1s turn
+    When player 1 tries to summon 'Olp' to 'a1'
+    Then player 1s 'Olp' should be in his keep
+    And player 1s 'Olp' should not be at 'a1'
+    When player 1 summons 'Olp' to 'f3'
+    Then player 1s 'Olp' should not be in his keep
+    And player 1s 'Olp' should be at 'f3'
+    And it should be player 2s turn
+    When player 2 moves from 'b7' to 'b6' and does not pass the turn
+    Then player 2s 'Tiny' should be at 'b6'
+    When player 2 flips 'Tiny'
+    And player 2 chooses player 1s 'Aio'
+    Then it should be player 2s turn
+    And player 1s 'Aio' should be at 'f2'
+    And player 1s 'Aio' should not be in the graveyard
+    And the game should be in progress
+    When player 2 chooses player 1s 'Olp'
+    Then player 1s 'Olp' should not be at 'f3'
+    And player 1s 'Olp' should be in the graveyard
+    And player 2s 'Tiny' should not be at 'b6'
+    And player 2s 'Tiny' should be in the graveyard
+    And player 1 should have 0 crystals
+    And player 2 should have 6 crystals
+    And it should be player 1s turn

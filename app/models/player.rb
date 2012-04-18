@@ -1,8 +1,16 @@
 class Player < ActiveRecord::Base
-  attr_accessible :crystals, :num, :game
+  attr_accessible :crystals, :num, :game, :keep
 
   belongs_to :game
   has_many :pieces
+  has_many :keep, :class_name => Space
+
+  def initialize(args = nil, options = {})
+    super(args, options)
+    1.upto(7) do |col|
+      self.keep << Space.create(:row => args[:num] == 1 ? -2 : 9, :col => col)
+    end
+  end
 
   def add_crystals(num)
     self.crystals += num

@@ -58,7 +58,7 @@ end
 When /^player (\d+) moves from '([a-g])(\d+)' to '([a-g])(\d+)'(| and does not pass the turn)$/ do |pnum, col1, row1, col2, row2, pass|
   col1 = icol(col1)
   col2 = icol(col2)
-  @game.move({ :col1 => col1, :row1 => row1, :col2 => col2, :row2 => row2, :pass => pass })
+  @game.move({ :col1 => col1, :row1 => row1, :col2 => col2, :row2 => row2, :pass => pass.blank? ? true : false })
 end
 
 When /^player (\d+) tries to move from '([a-g])(\d+)' to '([a-g])(\d+)'$/ do |pnum, col1, row1, col2, row2|
@@ -100,7 +100,7 @@ end
 Then /^player (\d+)s '(.*)' should not be at '([a-g])(\d+)'$/ do |pnum, piece_name, col, row|
   player = @game.playernum(pnum)
   piece = player.pieces.where(:name => piece_name).first
-  (piece.col == icol(col) || piece.row == row).should be_false
+  piece.space.should_not == @game.board.space(icol(col), row.to_i)
 end
 
 Then /^it should be player (\d+)s turn$/ do |pnum|
@@ -132,3 +132,32 @@ end
 When /^player (\d+) chooses '([a-g])(\d+)'$/ do |pnum, target_col, target_row|
   @game.playernum(pnum).choose(@game.board.spaces.where(:col => icol(target_col), :row => target_row.to_i).first)
 end
+
+Given /^player (\d+) has an? '(.*)' in his keep$/ do |pnum, piece_name|
+  player = @game.playernum(pnum)
+  empty_keep_space = player.keep.select{ |space| !space.occupied? }.first
+  piece = Kernel.const_get(piece_name).create(:player => @game.playernum(pnum), :space => empty_keep_space)
+end
+
+When /^player (\d+) (?:tries to summon|summons) '(.*)' to '([a-g])(\d+)'$/ do |pnum, piece_name, col, row|
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
+  piece.summon(icol(col), row.to_i)
+end
+
+Then /^player (\d+)s '(.*)' should be in his keep$/ do |pnum, piece_name|
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
+  piece.in_keep?.should be_true
+end
+
+Then /^player (\d+)s '(.*)' should not be in his keep$/ do |pnum, piece_name|
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
+  piece.in_keep?.should be_false
+end
+
+Then /^the game should be in progress$/ do
+  @game.winner.should be_nil
+end
+

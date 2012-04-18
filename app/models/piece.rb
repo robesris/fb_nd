@@ -1,5 +1,5 @@
 class Piece < ActiveRecord::Base
-  attr_accessible :col, :flipped, :name, :player_id, :row, :type
+  attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space
   
   belongs_to :player
   has_one :board, :through => :space
@@ -55,6 +55,10 @@ class Piece < ActiveRecord::Base
 
   def grid
     self.flipped? ? self.side2 : self.side1
+  end
+
+  def guard?
+    false
   end
 
   def row
@@ -152,6 +156,36 @@ class Piece < ActiveRecord::Base
 		end
 	end
 
+  def in_keep?
+    self.player.keep.include?(self.space)
+  end
+
+  def on_board?
+    self.board.spaces.include?(self.space) && !self.in_graveyard?
+  end
+
+  def summon(col, row)
+    return false if self.game.active_player != self.player
+
+    space = self.game.board.space(col, row)
+    
+    if self.guard?
+      if self.in_keep? && space.adjacent_to_nav?(self.player) && !space.occupied?
+        self.update_attribute(:space, space)
+        self.game.pass_turn
+      else
+        return false
+      end
+    else
+      if self.in_keep? && space.summon_space == self.player.num && !space.occupied?
+        self.update_attribute(:space, space)
+        self.game.pass_turn
+      else
+        return false
+      end
+    end
+  end
+
   def move(args = {})
     game = self.game
     return false if game.active_player != self.player
@@ -172,7 +206,7 @@ class Piece < ActiveRecord::Base
       if self.save
 
         # pass turn after a successful move
-        game.update_attribute(:active_player, game.players.reject{ |p| p.num == game.active_player.num }.first) if pass
+        self.game.pass_turn if pass
       else
         return false
       end
