@@ -33,7 +33,8 @@ class Neto < Piece
          args[:target].kind_of?(Space) &&
          !args[:target].occupied? &&
          args[:target].summon_space == self.player.num
-        self.target_piece.update_attribute(:space => args[:target])
+        self.target_piece.update_attribute(:in_graveyard, false)
+        self.target_piece.update_attribute(:space, args[:target])
         self.die
         self.waiting_state = nil
         self.save
