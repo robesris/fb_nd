@@ -205,3 +205,48 @@ Feature: Gameplay
     And it should be player 2s turn
     When player 2 Goals Over
     Then player 2 should win the game
+
+  Scenario: Check and Nav Flip, and try to move in the middle of a decision
+    Given an empty board
+    And player 1 has a 'Perseph' at 'a2'
+    And player 1 has a 'Turtle' at 'a3'
+    And player 1 has 60 crystals
+    And player 1 has a 'Kap' in his keep
+    And player 2 has an 'Est' at 'g7'
+    And player 2 has a 'Nebgua' at 'e5'
+    And player 2 has a 'Gar' at 'b7'
+    And player 2 has 40 crystals
+    And it is player 2s turn
+    When player 2 moves from 'b7' to 'a6'
+    And player 2 tries to flip 'Nebgua'
+    Then 'Nebgua' should not be flipped
+    And it should be player 2s turn
+    And player 2 should have 40 crystals
+    When player 2 flips 'Gar'
+    Then player 2 should have 3 crystals
+    And player 1 should be in check
+    And it should be player 1s turn
+    When player 1 tries to flip
+    Then player 1s 'Perseph' should not be flipped
+    And the game should be in progress
+    When player 1 moves from 'a2' to 'b2'
+    Then player 1 should not be in check
+    And it should be player 2s turn
+    When player 2 flips 'Nebgua'
+    Then player 2 should have 32 crystals
+    And player 1 should be in check
+    And it should be player 1s turn
+    When player 2 tries to move 'Nebgua' to 'd4'
+    Then 'Nebgua' should be at 'd4'
+    And it should be player 1s turn
+    When player 1 moves from 'b2' to 'c2'
+    Then player 1 should not be in check
+    When player 1 tries to flip 'Perseph'
+    Then player 1s 'Perseph' should not be flipped
+    And player 1 should have 60 crystals
+    And it should be player 2s turn
+    When player 2 moves from 'd4' to 'a1'
+    Then player 1 should not be in check
+    And it should be player 1s turn
+    When player 1 flips 'Perseph'
+    Then player 1 should win the game

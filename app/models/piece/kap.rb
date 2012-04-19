@@ -1,0 +1,3 @@
+class Kap < Piece
+
+end

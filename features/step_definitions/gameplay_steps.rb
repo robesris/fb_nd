@@ -109,7 +109,7 @@ Then /^it should be player (\d+)s turn$/ do |pnum|
   @game.active_player.num.should == pnum.to_i
 end
 
-When /^player (\d+) flips '(.*)'$/ do |pnum, piece_name|
+When /^player (\d+) (?:flips|tries to flip) '(.*)'$/ do |pnum, piece_name|
   player = @game.playernum(pnum)
   piece = player.pieces.where(:name => piece_name).first
   piece.flip
@@ -119,6 +119,12 @@ Then /^player (\d+)s '(.*)' should be flipped$/ do |pnum, piece_name|
   player = @game.playernum(pnum)
   piece = player.pieces.where(:name => piece_name).first
   piece.flipped?.should be_true
+end
+
+Then /^player (\d+)s '(.*)' should not be flipped$/ do |pnum, piece_name|
+  player = @game.playernum(pnum)
+  piece = player.pieces.where(:name => piece_name).first
+  piece.flipped?.should be_false
 end
 
 Then /^player (\d+) should win the game$/ do |pnum|

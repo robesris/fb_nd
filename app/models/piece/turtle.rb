@@ -1,0 +1,3 @@
+class Turtle < Piece
+
+end
