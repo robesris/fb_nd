@@ -35,6 +35,11 @@ class Player < ActiveRecord::Base
     self.game.choose(:player => self, :target => target)
   end
 
+  def in_check?
+    opponent_pieces = self.opponent.pieces
+    can_capture = opponent_pieces.select{ |p| p.can_reach?(self.nav.space) }.present?
+  end
+
   def lose_game
     self.opponent.win_game
   end

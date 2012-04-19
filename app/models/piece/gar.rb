@@ -1,4 +1,8 @@
 class Gar < Piece
+  def val
+    5
+  end
+
   def side1
     GOLD
   end

@@ -189,3 +189,13 @@ When /^player (\d+) Goals Over$/ do |pnum|
     When player #{pnum} tries to Goal Over
   }
 end
+
+Then /^player (\d+) should be in check$/ do |pnum|
+  player = @game.players.where(:num => pnum).first
+  player.in_check?.should be_true
+end
+
+Then /^player (\d+) should not be in check$/ do |pnum|
+  @game.playernum(pnum).in_check?.should be_false
+end
+

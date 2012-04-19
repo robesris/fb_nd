@@ -135,7 +135,7 @@ class Piece < ActiveRecord::Base
         leap_dir_sym = "leap_#{row_dir_sym}#{col_dir_sym}".to_sym
         dir_sym = leap_dir_sym if self.grid.include?(leap_dir_sym)
         return false unless self.grid.include?(dir_sym)
-        intervening_spaces = self.game.spaces.select do |s|
+        intervening_spaces = self.game.board.spaces.select do |s|
           s.col * col_dir > my_col && s.col * col_dir < to_space.col &&    # spaces in intervening cols...
           s.row * row_dir > my_row && s.row * row_dir < to_space.row &&    # and intervening rows...
           (s.row - my_row).abs == (s.col - my_col).abs                     # that are an equal number of row and cols away
@@ -222,6 +222,7 @@ class Piece < ActiveRecord::Base
   end
 
   def flip(pass = true)
+    return false if self.game.active_player != self.player || (self.player.active_piece && self.player.active_piece != self)
     flip_cost = self.val
     flip_cost = (flip_cost / 2.0).ceil if self.space.half_crystal?
     return false if self.flipped? || self.player.crystals < flip_cost
