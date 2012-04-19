@@ -38,6 +38,7 @@ class Player < ActiveRecord::Base
   def in_check?
     opponent_pieces = self.opponent.pieces
     can_capture = opponent_pieces.select{ |p| p.can_reach?(self.nav.space) }.present?
+    can_capture
   end
 
   def lose_game

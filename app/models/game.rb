@@ -51,6 +51,7 @@ class Game < ActiveRecord::Base
     self.players.each do |player|
       player.update_attribute(:active_piece, nil)
     end
+    self.active_player.update_attribute(:in_check_this_turn, false)
   end
 
   def choose(args)

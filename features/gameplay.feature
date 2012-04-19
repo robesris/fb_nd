@@ -239,13 +239,15 @@ Feature: Gameplay
     And it should be player 1s turn
     When player 2 tries to move from 'e5' to 'd4'
     Then player 2s 'Nebgua' should be at 'e5'
+    And player 1 should be in check
     And it should be player 1s turn
-    When player 1 moves from 'b2' to 'c2'
+    When player 1 moves from 'b2' to 'c2' and does not pass the turn
     Then player 1 should not be in check
     When player 1 tries to flip 'Perseph'
     Then player 1s 'Perseph' should not be flipped
     And player 1 should have 60 crystals
-    And it should be player 2s turn
+    When player 1 passes the turn
+    Then it should be player 2s turn
     When player 2 moves from 'e5' to 'a1'
     Then player 1 should not be in check
     And it should be player 1s turn

@@ -7,14 +7,22 @@ class Piece::Nav < Piece
     KING
   end
   
+  def move(args = {})
+    self.player.update_attribute(:in_check_this_turn, self.in_check?)
+    super(args)
+  end
+
   def in_check?
     self.player.in_check?
   end
 
   def flip
-    return false if self.in_check?
-    super
-    self.player.win_game
+    return false if self.in_check? || self.player.in_check_this_turn?
+    if super
+      self.player.win_game
+    else
+      return false
+    end
   end
 
   def goal_over
