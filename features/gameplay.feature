@@ -253,3 +253,37 @@ Feature: Gameplay
     And it should be player 1s turn
     When player 1 flips 'Perseph'
     Then player 1 should win the game
+
+  Scenario: Cancel a flip in half-crystal zone with no legal targets before it is resolved
+    Given an empty board
+    And player 1 has a 'Kom' at 'e4'
+    And player 1 has 10 crystals
+    And player 2 has an 'Aio' at 'c2'
+    And player 2 has a 'RedStone' at 'c5'
+    And it is player 1s turn
+    When player 1 flips 'Kom'
+    Then player 1 should have 6 crystals
+    And player 1s 'Kom' should be flipped
+    And player 1 chooses player 2s 'RedStone'
+    Then player 2s 'RedStone' should be at 'c5'
+    And player 1s 'Kom' should be at 'e4'
+    When player 1 chooses player 2s 'Aio'
+    Then player 2s 'Aio' should be at 'c2'
+    And player 1s 'Kom' should be at 'e4'
+    When player 1 cancels 'Kom'
+    Then player 1 should have 10 crystals
+    And player 1s 'Kom' should not be flipped
+    When player 1 moves from 'e4' to 'g5' and does not pass the turn
+    Then player 1s 'Kom' should be at 'g5'
+    When player 1 flips 'Kom'
+    Then player 1 should have 2 crystals
+    And player 1s 'Kom' should be flipped
+    And player 1 chooses player 2s 'RedStone'
+    Then player 2s 'RedStone' should be at 'c5'
+    And player 1s 'Kom' should be at 'g5'
+    When player 1 cancels 'Kom'
+    Then player 1 should have 10 crystals
+    And player 1s 'Kom' should not be flipped
+    When player 1 passes the turn
+    Then it should be player 2s turn
+    

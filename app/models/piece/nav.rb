@@ -35,4 +35,8 @@ class Piece::Nav < Piece
     super
     self.player.lose_game
   end
+
+  def is_creature?
+    false
+  end
 end

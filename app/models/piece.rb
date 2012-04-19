@@ -227,10 +227,21 @@ class Piece < ActiveRecord::Base
     flip_cost = (flip_cost / 2.0).ceil if self.space.half_crystal?
     return false if self.flipped? || self.player.crystals < flip_cost
 
-    self.player.update_attribute(:crystals, self.player.crystals - flip_cost)
+    self.player.add_crystals(-flip_cost)
     self.update_attribute(:flipped, true)
     self.game.pass_turn if pass
     true
+  end
+
+  def unflip(reimburse = true)  # used when cancelling
+    if reimburse
+      flip_cost = self.val
+      flip_cost = (flip_cost / 2.0).ceil if self.space.half_crystal?
+      self.player.add_crystals(flip_cost)
+    end
+
+    self.flipped = false
+    self.save
   end
 
   def die
@@ -241,5 +252,13 @@ class Piece < ActiveRecord::Base
 
   def in_last_row?
     self.player.num == 1 ? self.row == 7 : self.row == 1
+  end
+
+  def cancel
+    false
+  end
+
+  def is_creature?
+    true
   end
 end

@@ -202,4 +202,7 @@ When /^player (\d+) passes the turn$/ do |pnum|
   @game.pass_turn
 end
 
+When /^player (\d+) cancels '(.*)'$/ do |pnum, piece_name|
+  @game.playernum(pnum).pieces.where(:name => piece_name).first.cancel
+end
 

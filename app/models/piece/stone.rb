@@ -72,4 +72,8 @@ class Piece::Stone < Piece
       return false
     end
   end
+
+  def is_creature?
+    false
+  end
 end
