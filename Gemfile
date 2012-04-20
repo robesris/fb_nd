@@ -12,6 +12,7 @@ group :test, :development, :cucumber do
   gem 'cucumber'
   gem 'cucumber-rails'
   gem 'capybara'
+  gem 'selenium'
   gem 'database_cleaner'
 end
 
