@@ -1,5 +1,5 @@
 class Game < ActiveRecord::Base
-  attr_accessible :board
+  attr_accessible :board, :active_player, :phase
 
   has_many :players
   belongs_to :active_player, :class_name => Player
@@ -16,10 +16,22 @@ class Game < ActiveRecord::Base
     self.phase = "setup"
   end
 
+  def default_setup
+    1.upto(7) do |n|
+      BlackStone.create(:player => self.player1, :space => self.board.spaces.where(:col => n, :row => 2).first)
+      BlackStone.create(:player => self.player2, :space => self.board.spaces.where(:col => n, :row => 6).first)
+    end
+
+    RedStone.create(:player => self.player1, :space => self.board.spaces.where(:col => 2, :row => 1).first)
+    RedStone.create(:player => self.player1, :space => self.board.spaces.where(:col => 6, :row => 1).first)
+    RedStone.create(:player => self.player2, :space => self.board.spaces.where(:col => 2, :row => 7).first)
+    RedStone.create(:player => self.player2, :space => self.board.spaces.where(:col => 6, :row => 7).first)
+  end
+
   def start_game
     return false unless self.phase == 'setup' && self.player1.ready? && self.player2.ready?
 
-    self.update_attributes(:active_player => self.first_player,
+    self.update_attributes(:active_player => self.active_player || self.player1,
                            :phase => 'play')
   end
 

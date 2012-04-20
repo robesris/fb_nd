@@ -17,6 +17,10 @@ class Player < ActiveRecord::Base
     self.keep.select{ |space| !space.occupied? }.present?
   end
 
+  def empty_keep?
+    self.keep.select{ |space| space.piece }.empty?
+  end
+
   def keep_full?
     !self.room_in_keep?
   end
@@ -54,10 +58,6 @@ class Player < ActiveRecord::Base
 
   def nav
     self.pieces.select{ |p| p.kind_of?(Piece::Nav) }.first
-  end
-
-  def empty_keep?
-    self.keep.select{ |space| space.piece }.empty?
   end
 
   def opponent
