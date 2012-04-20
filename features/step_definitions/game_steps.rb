@@ -31,16 +31,16 @@ When /^player (\d+) drafts "([^"]*)"$/ do |pnum, piece_name|
   get_player(pnum).draft(piece_name)
 end
 
-When /^player (\d+) indicates he is ready$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+When /^player (\d+) indicates he is ready$/ do |pnum|
+  get_player(pnum).get_ready
 end
 
-Then /^player (\d+) should not be ready$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+Then /^player (\d+) should not be ready$/ do |pnum|
+  get_player(pnum).ready?.should be_false
 end
 
-Then /^player (\d+) should be ready$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+Then /^player (\d+) should be ready$/ do |pnum|
+  get_player(pnum).ready?.should be_true
 end
 
 When /^player (\d+) is chosen to go first$/ do |arg1|

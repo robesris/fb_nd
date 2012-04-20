@@ -33,4 +33,8 @@ class Board < ActiveRecord::Base
     self.graveyard_pieces = []
     self.save
   end
+
+  def nav_space(args)
+    self.spaces.where(:col => 4, :row => args[:player].num == 1 ? 1 : 7).first
+  end
 end

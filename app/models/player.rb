@@ -17,14 +17,29 @@ class Player < ActiveRecord::Base
     self.keep.select{ |space| !space.occupied? }.present?
   end
 
+  def keep_full?
+    !self.room_in_keep?
+  end
+
   def draft(piece_name)
-    if self.game.phase == 'setup' &&
+    piece_class = Kernel.const_get(piece_name)
+    if piece_class.superclass == Piece::Nav &&
+       self.game.phase == 'setup' &&
+       !self.nav
+      piece = piece_class.create(:space => self.game.board.nav_space(:player => self))
+      self.pieces << piece
+    elsif self.game.phase == 'setup' &&
        self.room_in_keep? &&
        self.pieces.where(:name => piece_name).size < 2
-      piece = Kernel.const_get(piece_name).create
+      piece = piece_class.create
       self.pieces << piece
       piece.move_to_keep 
     end  
+  end
+
+  def get_ready
+    self.ready = self.nav && self.keep_full?
+    self.save
   end
 
   def start_game
