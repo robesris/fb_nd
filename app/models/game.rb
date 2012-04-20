@@ -13,6 +13,14 @@ class Game < ActiveRecord::Base
     self.players << Player.create(:num => 2, :crystals => 0)
 
     self.board = Board.create(nil)
+    self.phase = "setup"
+  end
+
+  def start_game
+    return false unless self.phase == 'setup' && self.player1.ready? && self.player2.ready?
+
+    self.update_attributes(:active_player => self.first_player,
+                           :phase => 'play')
   end
 
   def player1

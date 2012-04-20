@@ -13,6 +13,24 @@ class Player < ActiveRecord::Base
     end
   end
 
+  def room_in_keep?
+    self.keep.select{ |space| !space.occupied? }.present?
+  end
+
+  def draft(piece_name)
+    if self.game.phase == 'setup' &&
+       self.room_in_keep? &&
+       self.pieces.where(:name => piece_name).size < 2
+      piece = Kernel.const_get(piece_name).create
+      self.pieces << piece
+      piece.move_to_keep 
+    end  
+  end
+
+  def start_game
+    self.game.start_game
+  end
+
   def add_crystals(num)
     self.crystals += num
     self.crystals = 60 if self.crystals > 60

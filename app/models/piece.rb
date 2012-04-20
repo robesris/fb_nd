@@ -63,6 +63,11 @@ class Piece < ActiveRecord::Base
     self.flipped? ? self.side2 : self.side1
   end
 
+  def move_to_keep
+    space = self.player.keep.select{ |space| !space.occupied? }.first
+    self.update_attribute(:space, space)
+  end
+
   def guard?
     false
   end
