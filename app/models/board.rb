@@ -21,7 +21,17 @@ class Board < ActiveRecord::Base
     end
   end
 
+  def icol(col)
+    if col.is_a?(String)
+      col.ord - 96
+    else
+      col
+    end
+  end
+
   def space(col, row)
+    col = icol(col)
+    row = row.to_i
     self.spaces.where(:row => row, :col => col).first
   end
 

@@ -1,5 +1,5 @@
 def get_player(pnum)
-  @game.playernum(pnum)
+  @game.playernum(pnum.to_i)
 end
 
 Given /^a new game$/ do

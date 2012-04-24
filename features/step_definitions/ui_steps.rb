@@ -35,17 +35,40 @@ Then /^I should see the default setup$/ do
   }
 end
 
+Then /^(I|my opponent) should have (\d+) crystals$/ do |who, num|
+  pnum = who == 'I' ? 1 : 2
+  
+  find(:xpath, "//input[@id='player#{pnum}_crystals']").value.should == num
+end
+
 Then /^I should see player (\d+)s "([^"]*)" at "([a-g])([^"]*)"$/ do |pnum, piece_name, col, row|
-  space = get_player(pnum)
-
+  page.should have_selector(:xpath, "//div[@id='space_#{col}_#{row}']/div[@name='#{piece_name}' and @class='player#{pnum}']")
 end
 
-When /^I choose default starter army (\d+)$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^my opponent chooses starter army (\d+)$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+When /^(I|my opponent) chooses? default starter army (\d+)$/ do |who, army_num|
+  if army_num.to_i == 1
+    steps %Q{
+      When #{who} drafts "Tro"
+      And #{who} drafts "Agu"
+      And #{who} drafts "Ham"
+      And #{who} drafts "Gar"
+      And #{who} drafts "Neto"
+      And #{who} drafts "Gun"
+      And #{who} drafts "Tiny"
+      And #{who} drafts "Est"
+    }
+  else
+    steps %Q{
+      When #{who} drafts "Olp"
+      And #{who} drafts "GilTwo"
+      And #{who} drafts "Mses"
+      And #{who} drafts "Nebgua"
+      And #{who} drafts "Turtle"
+      And #{who} drafts "Kap"
+      And #{who} drafts "Kom"
+      And #{who} drafts "Deb"
+    }
+  end
 end
 
 When /^I choose to go first$/ do

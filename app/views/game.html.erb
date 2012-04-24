@@ -1,6 +1,35 @@
 <%= link_to "New Game", create_game_path %>
-<% 'a'.upto('g') do |col| %>
-  <% 1.upto(7) do |row| %>
-    <div id='<%= col + row.to_s %>'><%= col + row.to_s %></div>
+
+<% if @game %>
+
+  <%= form_for @game do |f| %>
+
+    <%= fields_for :player1 do |p| %>
+      <%= p.text_field :crystals, :value => @game.player1.crystals %>
+    <% end %>
+
+    <%= fields_for :player2 do |p| %>
+      <%= p.text_field :crystals, :value => @game.player2.crystals %>
+    <% end %>
+
+    <table>
+      <% 7.downto(1) do |row| %>
+        <tr>
+          <% 'a'.upto('g') do |col| %>
+            <td>
+              <div id='space_<%= col + '_' + row.to_s %>'>
+                <%= col + '_' + row.to_s %>
+                <% if piece = @game.board.space(col, row).piece %>
+                  <div name='<%= piece.name %>' class='player<%= piece.player.num %>'>
+                    P<%= piece.player.num %>: <%= piece.name %>
+                  </div>
+                <% end %>
+              </div>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
   <% end %>
+
 <% end %>
