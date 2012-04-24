@@ -6,6 +6,20 @@ class Piece < ActiveRecord::Base
   has_one :game, :through => :player
   has_one :space
 
+  def self.all_piece_klasses
+    klasses = []
+    Dir[Rails.root.join('app/models/piece/*.rb').to_s].each do |filename|
+      klass = File.basename(filename).sub(/.rb$/, '').camelize
+      unless klass == 'Nav' || klass == 'Stone'
+        klass = klass.constantize
+        klasses << klass
+        #next unless klass.ancestors.include?(ActiveRecord::Base)
+        # do something with klass
+      end
+    end
+    klasses
+  end
+
   MOVEMENT_GRID_WIDTH = 5
 	MOVEMENT_GRID_HEIGHT = 5
 	MAX_COL_MOVE = (MOVEMENT_GRID_WIDTH - 1) / 2 # => 2

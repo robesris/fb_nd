@@ -3,6 +3,10 @@
 <% if @game %>
 
   <%= form_for @game do |f| %>
+    <%= f.radio_button :active_player, :go_first %>Go first
+
+    <%= button_tag "Ready", :type => :button %>
+    <%= button_tag "Start", :type => :button %>
 
     <%= fields_for :player1 do |p| %>
       <%= p.text_field :crystals, :value => @game.player1.crystals %>
@@ -10,6 +14,18 @@
 
     <%= fields_for :player2 do |p| %>
       <%= p.text_field :crystals, :value => @game.player2.crystals %>
+    <% end %>
+
+    <% @all_piece_klasses.each do |klass| %>
+      <div id="draft_<%= klass.to_s.downcase %>"><%= klass.to_s %></div>
+    <% end %>
+
+    <% 1.upto(2) do |pnum| %>
+      <div id="keep_<%= pnum %>">
+        <% 1.upto(7) do |n| %>
+          <div id="keep_<%= pnum %>_<%= n %>" />
+        <% end %>
+      </div>
     <% end %>
 
     <table>

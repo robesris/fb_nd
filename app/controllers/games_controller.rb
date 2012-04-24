@@ -10,6 +10,8 @@ class GamesController < ApplicationController
       @game = Game.create
       @game.default_setup
       @game.save
+
+      @all_piece_klasses = Piece.all_piece_klasses
     end
 
     render '/game' 

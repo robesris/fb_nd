@@ -1,3 +1,11 @@
+def get_empty_keep_space(pnum = 1)
+  1.upto(7) do |n|
+    keep_space = page.find_by_id("keep_#{pnum}_#{n}")
+    return keep_space if keep_space.first('piece').nil?
+  end
+  return false
+end
+
 Given /^I am on the app homepage$/ do
   visit('/')
 end
@@ -11,6 +19,10 @@ Then /^I should see a new gameboard$/ do
 end
 
 When /^I create a new game$/ do
+  @me = :player1
+  @my_num = 1
+  @opponent = :player2
+  @opponent_num = 2
   click_link "New Game"
 end
 
@@ -45,6 +57,16 @@ Then /^I should see player (\d+)s "([^"]*)" at "([a-g])([^"]*)"$/ do |pnum, piec
   page.should have_selector(:xpath, "//div[@id='space_#{col}_#{row}']/div[@name='#{piece_name}' and @class='player#{pnum}']")
 end
 
+When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
+  if who == 'I'
+    @my_piece_names ||= []
+    piece = page.find_by_id('draft_' + piece_name.downcase)
+    empty_keep_space = get_empty_keep_space
+    piece.drag_to(empty_keep_space)
+    @my_piece_names << piece_name
+  end
+end
+
 When /^(I|my opponent) chooses? default starter army (\d+)$/ do |who, army_num|
   if army_num.to_i == 1
     steps %Q{
@@ -72,26 +94,30 @@ When /^(I|my opponent) chooses? default starter army (\d+)$/ do |who, army_num|
 end
 
 When /^I choose to go first$/ do
-  pending # express the regexp above with the code you wish you had
+  choose "game_active_player_go_first"
 end
 
 When /^I indicate that I am ready$/ do
-  pending # express the regexp above with the code you wish you had
+  click_button "Ready"
 end
 
 When /^my opponent indicates that he is ready$/ do
-  pending # express the regexp above with the code you wish you had
+  # just do this directly on the backend
+  @game = Game.first
+  @game.send(@opponent).update_attribute(:ready, true)
 end
 
 When /^I start the game$/ do
-  pending # express the regexp above with the code you wish you had
+  click_button "Start"
 end
 
-Then /^I should see my pieces in their starting positions$/ do
-  pending # express the regexp above with the code you wish you had
-end
+Then /^I should see (my|my opponents) pieces in their starting positions$/ do |who|
+  pnum = who == 'my' ? @my_num : @opponent_num
+  row = pnum == 1 ? 1 : 7
+  piece_names = who == 'my' ? @my_piece_names : @opponent_piece_names
 
-Then /^I should see my opponents pieces in their starting positions$/ do
-  pending # express the regexp above with the code you wish you had
+  piece_names.each do |piece_name|
+    page.should have_selector(:xpath, "//div[@id='keep_#{pnum}']//div[@name='#{piece_name}' and @class='player#{pnum}']")
+  end
 end
 

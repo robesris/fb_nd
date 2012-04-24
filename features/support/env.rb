@@ -12,6 +12,9 @@ require 'capybara-webkit'
 # prefer to use XPath just remove this line and adjust any selectors in your
 # steps to use the XPath syntax.
 #Capybara.javascript_driver = :webkit
+Capybara.register_driver :selenium do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+end
 Capybara.default_selector = :css
 
 # By default, any exception happening in your Rails application will bubble up

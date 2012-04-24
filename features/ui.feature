@@ -9,7 +9,7 @@ Feature: User interface
     When I create a new game
     Then I should see the default setup
     When I choose default starter army 1
-    And my opponent chooses starter army 2
+    And my opponent chooses default starter army 2
     And I choose to go first
     And I indicate that I am ready
     And my opponent indicates that he is ready
