@@ -1,3 +1,21 @@
+<style>
+  .row {
+    clear: both;
+  }
+
+  .left {
+    float: left;
+  }
+
+  .draft_piece {
+    width: 100px;
+  }
+
+  .board_space {
+    width: 100px;
+  }
+</style>
+
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
@@ -17,23 +35,23 @@
     <% end %>
 
     <% @all_piece_klasses.each do |klass| %>
-      <div id="draft_<%= klass.to_s.downcase %>"><%= klass.to_s %></div>
+      <div id="draft_<%= klass.to_s.downcase %>" class="draft_piece"><%= klass.to_s %></div>
     <% end %>
 
     <% 1.upto(2) do |pnum| %>
       <div id="keep_<%= pnum %>">
         <% 1.upto(7) do |n| %>
-          <div id="keep_<%= pnum %>_<%= n %>" />
+          <div id="keep_<%= pnum %>_<%= n %>"> </div>
         <% end %>
       </div>
     <% end %>
 
-    <table>
+    <div>
       <% 7.downto(1) do |row| %>
-        <tr>
+        <div class="row">
           <% 'a'.upto('g') do |col| %>
-            <td>
-              <div id='space_<%= col + '_' + row.to_s %>'>
+            <div class="col left">
+              <div id='space_<%= col + '_' + row.to_s %>' class='board_space'>
                 <%= col + '_' + row.to_s %>
                 <% if piece = @game.board.space(col, row).piece %>
                   <div name='<%= piece.name %>' class='player<%= piece.player.num %>'>
@@ -41,11 +59,30 @@
                   </div>
                 <% end %>
               </div>
-            </td>
+            </div>
           <% end %>
-        </tr>
+        </div>
       <% end %>
-    </table>
+    </div>
   <% end %>
 
 <% end %>
+
+<script>
+  $(function() {
+    //var 
+
+    $('.draft_piece').draggable();
+    $( ".board_space" ).droppable({
+      drop: function( event, ui ) {
+        //console.log(this);
+        //console.log(ui);
+        var new_piece = $(ui.draggable).clone();
+        new_piece.css('left', 0).css('top', 0)
+        $( this )
+          .addClass( "ui-state-highlight" )
+					.append(new_piece);
+      }
+    });
+  });
+</script>
