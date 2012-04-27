@@ -29,6 +29,9 @@
 <% if @game %>
 
   <%= form_for @game do |f| %>
+    <%= hidden_field_tag :player, "player#{@me.num}" %>
+    <%= hidden_field_tag :my_secret, @me.secret %>
+
     <%= f.radio_button :active_player, :go_first %>Go first
 
     <%= button_tag "Ready", :type => :button %>
@@ -78,19 +81,30 @@
 
 <script>
   $(function() {
-    //var 
+    var me = function() {
+      return $('#player').val();
+      //return 'player1';
+    }
+
+    var draft = function(player, new_piece, keep_space) {
+      // All logic should be server side - this just does stuff.
+      new_piece.css('left', 0).css('top', 0).attr('class', player).draggable();
+      $( keep_space )
+        .addClass( "ui-state-highlight" )
+        .append(new_piece);
+    }
+
 
     $('.draft_piece, .piece').draggable();
-    $( ".board_space, .keep_space" ).droppable({
+    $( ".keep_space" ).droppable({
       drop: function( event, ui ) {
-        //console.log(this);
-        //console.log(ui);
         var new_piece = $(ui.draggable).clone();
-        new_piece.css('left', 0).css('top', 0).attr('class', 'player1').draggable();
-        $( this )
-          .addClass( "ui-state-highlight" )
-					.append(new_piece);
-      }
+        draft(me(), new_piece, this); 
+      } 
+    });
+
+    $( ".board_space" ).droppable({
+      
     });
   });
 </script>

@@ -11,6 +11,7 @@ class GamesController < ApplicationController
       @game.default_setup
       @game.save
 
+      @me = @game.player1
       @all_piece_klasses = Piece.all_piece_klasses
     end
 
