@@ -17,4 +17,11 @@ class GamesController < ApplicationController
 
     render '/game' 
   end
+
+  def join
+    @game_code = params[:game_code]
+    @player_secret = params[:player_secret]
+
+    render :template => 'game'
+  end
 end

@@ -9,11 +9,16 @@ class Game < ActiveRecord::Base
   
   def initialize(params = nil, options = {})
     super(params)
+    self.code = Game.generate_secret
     self.players << Player.create(:num => 1, :crystals => 0)
     self.players << Player.create(:num => 2, :crystals => 0)
-
+    
     self.board = Board.create(nil)
     self.phase = "setup"
+  end
+
+  def self.generate_secret
+    rand(36**20).to_s(36)
   end
 
   def default_setup

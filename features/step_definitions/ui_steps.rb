@@ -1,42 +1,13 @@
-def check_selenium_browsers
-  Capybara.instance_variable_set('@current_driver', :selenium)
-  if $browsers.nil?
-    $browsers = {}
-    current_url
-    $browsers[1] = get_selenium_browser
-    set_selenium_browser(nil)
-    current_url
-    $browsers[2] = get_selenium_browser
-    set_selenium_browser(1)
-  end
-end
-
-def get_selenium_browser
-  {
-    :session => Capybara.current_session,
-    :driver  => Capybara::Driver::Selenium.instance_variable_get('@driver')
-  }
-end
-
-def set_selenium_browser(browser_id)
-  browser = $browsers[browser_id] || {}
-  if browser[:session].nil?
-    Capybara.instance_variable_set('@session_pool', {})
-    Capybara::Driver::Selenium.instance_variable_set('@driver', nil)
-  else
-    Capybara.instance_variable_set('@session_pool', {"selenium#{Capybara.app.object_id}" => browser[:session]})
-    Capybara::Driver::Selenium.instance_variable_set('@driver', browser[:driver])
-  end
-end
-
 def my_browser
-  check_selenium_browsers
-  set_selenium_browser(@my_num)
+  Capybara.session_name = :my_browser
 end
 
 def opponent_browser
-  check_selenium_browsers
-  set_selenium_browser(@opponent_num)
+  Capybara.session_name = :opponent_browser
+end
+
+def browser(who)
+  who == 'I' ? my_browser : opponent_browser
 end
 
 def get_empty_keep_space(pnum = 1)
@@ -52,6 +23,17 @@ def current_game
 end
 
 Given /^I am on the app homepage$/ do
+  @me = :player1
+  @my_num = 1
+  @opponent = :player2
+  @opponent_num = 2
+
+  my_browser
+
+  visit('/')
+end
+
+When /^I visit the app homepage$/ do
   visit('/')
 end
 
@@ -64,15 +46,21 @@ Then /^I should see a new gameboard$/ do
 end
 
 When /^I create a new game$/ do
-  @me = :player1
-  @my_num = 1
-  @opponent = :player2
-  @opponent_num = 2
   click_link "New Game"
 end
 
+When /^I join game "([^"]*)" as a new player$/ do |game_code|
+  visit join_game_path(:game_code => game_code, :player_secret => 'new_player')
+end
+
 When /^my opponent joins the game$/ do
-  pending # express the regexp above with the code you wish you had
+  opponent_browser
+
+  @game_code ||= current_game.code
+  steps %Q{
+    When I visit the app homepage
+    And I join game "#{@game_code}" as a new player
+  }
 end
 
 Then /^I should see the default setup$/ do
@@ -123,6 +111,8 @@ When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
 end
 
 When /^(I|my opponent) chooses? default starter army (\d+)$/ do |who, army_num|
+  browser(who)
+
   if army_num.to_i == 1
     steps %Q{
       When #{who} drafts "Tro"
@@ -149,24 +139,31 @@ When /^(I|my opponent) chooses? default starter army (\d+)$/ do |who, army_num|
 end
 
 When /^I choose to go first$/ do
+  my_browser
   choose "game_active_player_go_first"
 end
 
 When /^I indicate that I am ready$/ do
+  my_browser
   click_button "Ready"
 end
 
 When /^my opponent indicates that he is ready$/ do
+  opponent_browser
   # just do this directly on the backend
   @game = Game.first
   @game.send(@opponent).update_attribute(:ready, true)
 end
 
 When /^I start the game$/ do
+  my_browser
+
   click_button "Start"
 end
 
 Then /^I should see (my|my opponents) pieces in their starting positions$/ do |who|
+  my_browser
+
   pnum = who == 'my' ? @my_num : @opponent_num
   row = pnum == 1 ? 1 : 7
   piece_names = who == 'my' ? @my_piece_names : @opponent_piece_names
