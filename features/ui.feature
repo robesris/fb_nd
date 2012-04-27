@@ -8,7 +8,8 @@ Feature: User interface
     Given I am on the app homepage
     When I create a new game
     Then I should see the default setup
-    When I choose default starter army 1
+    When my opponent joins the game
+    And I choose default starter army 1
     And my opponent chooses default starter army 2
     And I choose to go first
     And I indicate that I am ready

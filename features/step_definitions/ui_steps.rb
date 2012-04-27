@@ -1,3 +1,44 @@
+def check_selenium_browsers
+  Capybara.instance_variable_set('@current_driver', :selenium)
+  if $browsers.nil?
+    $browsers = {}
+    current_url
+    $browsers[1] = get_selenium_browser
+    set_selenium_browser(nil)
+    current_url
+    $browsers[2] = get_selenium_browser
+    set_selenium_browser(1)
+  end
+end
+
+def get_selenium_browser
+  {
+    :session => Capybara.current_session,
+    :driver  => Capybara::Driver::Selenium.instance_variable_get('@driver')
+  }
+end
+
+def set_selenium_browser(browser_id)
+  browser = $browsers[browser_id] || {}
+  if browser[:session].nil?
+    Capybara.instance_variable_set('@session_pool', {})
+    Capybara::Driver::Selenium.instance_variable_set('@driver', nil)
+  else
+    Capybara.instance_variable_set('@session_pool', {"selenium#{Capybara.app.object_id}" => browser[:session]})
+    Capybara::Driver::Selenium.instance_variable_set('@driver', browser[:driver])
+  end
+end
+
+def my_browser
+  check_selenium_browsers
+  set_selenium_browser(@my_num)
+end
+
+def opponent_browser
+  check_selenium_browsers
+  set_selenium_browser(@opponent_num)
+end
+
 def get_empty_keep_space(pnum = 1)
   1.upto(7) do |n|
     keep_space = page.find_by_id("keep_#{pnum}_#{n}")
@@ -28,6 +69,10 @@ When /^I create a new game$/ do
   @opponent = :player2
   @opponent_num = 2
   click_link "New Game"
+end
+
+When /^my opponent joins the game$/ do
+  pending # express the regexp above with the code you wish you had
 end
 
 Then /^I should see the default setup$/ do
@@ -71,7 +116,8 @@ When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
   else
     @opponent_piece_names ||= []
     # do this on the backend since it's happening from the opponent's side
-    current_game.send(@opponent).draft(piece_name)
+    #current_game.send(@opponent).draft(piece_name)
+    
     @opponent_piece_names << piece_name
   end
 end
