@@ -6,6 +6,10 @@ def get_empty_keep_space(pnum = 1)
   return false
 end
 
+def current_game
+  Game.first
+end
+
 Given /^I am on the app homepage$/ do
   visit('/')
 end
@@ -54,7 +58,7 @@ Then /^(I|my opponent) should have (\d+) crystals$/ do |who, num|
 end
 
 Then /^I should see player (\d+)s "([^"]*)" at "([a-g])([^"]*)"$/ do |pnum, piece_name, col, row|
-  page.should have_selector(:xpath, "//div[@id='space_#{col}_#{row}']/div[@name='#{piece_name}' and @class='player#{pnum}']")
+  page.find(:xpath, "//div[@id='space_#{col}_#{row}']/div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
 end
 
 When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
@@ -64,6 +68,11 @@ When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
     empty_keep_space = get_empty_keep_space
     piece.drag_to(empty_keep_space)
     @my_piece_names << piece_name
+  else
+    @opponent_piece_names ||= []
+    # do this on the backend since it's happening from the opponent's side
+    current_game.send(@opponent).draft(piece_name)
+    @opponent_piece_names << piece_name
   end
 end
 
@@ -117,7 +126,6 @@ Then /^I should see (my|my opponents) pieces in their starting positions$/ do |w
   piece_names = who == 'my' ? @my_piece_names : @opponent_piece_names
 
   piece_names.each do |piece_name|
-    page.should have_selector(:xpath, "//div[@id='keep_#{pnum}']//div[@name='#{piece_name}' and @class='player#{pnum}']")
+    page.find(:xpath, "//div[@id='keep_#{pnum}']//div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
   end
 end
-
