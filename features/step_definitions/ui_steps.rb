@@ -96,16 +96,18 @@ end
 
 When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
   if who == 'I'
+    my_browser
     @my_piece_names ||= []
     piece = page.find_by_id('draft_' + piece_name.downcase)
     empty_keep_space = get_empty_keep_space
     piece.drag_to(empty_keep_space)
     @my_piece_names << piece_name
   else
+    opponent_browser
     @opponent_piece_names ||= []
-    # do this on the backend since it's happening from the opponent's side
-    #current_game.send(@opponent).draft(piece_name)
-    
+    piece = page.find_by_id('draft_' + piece_name.downcase)
+    empty_keep_space = get_empty_keep_space
+    piece.drag_to(empty_keep_space)
     @opponent_piece_names << piece_name
   end
 end
@@ -161,12 +163,12 @@ When /^I start the game$/ do
   click_button "Start"
 end
 
-Then /^I should see (my|my opponents) pieces in their starting positions$/ do |who|
-  my_browser
+Then /^(I|my opponent) should see (my|my opponents|their) pieces in their starting positions$/ do |who, whose|
+  browser(who)
 
-  pnum = who == 'my' ? @my_num : @opponent_num
+  pnum = whose == 'my' ? @my_num : @opponent_num
   row = pnum == 1 ? 1 : 7
-  piece_names = who == 'my' ? @my_piece_names : @opponent_piece_names
+  piece_names = whose == 'my' ? @my_piece_names : @opponent_piece_names
 
   piece_names.each do |piece_name|
     page.find(:xpath, "//div[@id='keep_#{pnum}']//div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
