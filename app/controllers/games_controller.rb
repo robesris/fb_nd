@@ -12,6 +12,7 @@ class GamesController < ApplicationController
       @game.save
 
       @me = @game.player1
+      @game.player1.update_attribute(:secret, Game.generate_secret)
       @all_piece_klasses = Piece.all_piece_klasses
     end
 
@@ -20,8 +21,20 @@ class GamesController < ApplicationController
 
   def join
     @game_code = params[:game_code]
+    @game = Game.where(:code => @game_code).first
     @player_secret = params[:player_secret]
+    if @player_secret == 'new_player'
+      # new_player should only work once and will initialize the secret for the player
+      # this way, the player who creates the game can't access the other player's view
+      @me = @game.players.where(:secret => nil).first
+      @me.update_attribute(:secret, Game.generate_secret)
 
-    render :template => 'game'
+      redirect_to join_game_path(:game_code => @game_code, :player_secret => @me.secret)
+    else
+      @me = @game.players.where(:secret => @player_secret).first
+      @all_piece_klasses = Piece.all_piece_klasses
+
+      render :template => 'game'
+    end
   end
 end

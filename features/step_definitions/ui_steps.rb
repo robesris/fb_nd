@@ -106,7 +106,7 @@ When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
     opponent_browser
     @opponent_piece_names ||= []
     piece = page.find_by_id('draft_' + piece_name.downcase)
-    empty_keep_space = get_empty_keep_space
+    empty_keep_space = get_empty_keep_space(2)
     piece.drag_to(empty_keep_space)
     @opponent_piece_names << piece_name
   end
