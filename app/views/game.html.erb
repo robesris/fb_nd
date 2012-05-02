@@ -46,7 +46,7 @@
     <% end %>
 
     <% @all_piece_klasses.each do |klass| %>
-      <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="draft_piece"><%= klass.to_s %></div>
+      <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="draft_piece<%= klass < Piece::Nav ? ' nav' : '' %>"><%= klass.to_s %></div>
     <% end %>
 
     <% 1.upto(2) do |pnum| %>
@@ -87,7 +87,8 @@
 
     var draft = function(player, new_piece, keep_space) {
       // All logic should be server side - this just does stuff.
-      new_piece.css('left', 0).css('top', 0).attr('class', player).draggable();
+      new_piece.addClass(player).addClass('piece');
+      new_piece.css('left', 0).css('top', 0).draggable();
       $( keep_space )
         .addClass( "ui-state-highlight" )
         .append(new_piece);
@@ -95,7 +96,7 @@
 
 
     $('.draft_piece, .piece').draggable();
-    $( ".keep_space" ).droppable({
+    $( ".keep_space, .board_space" ).droppable({
       drop: function( event, ui ) {
         var new_piece = $(ui.draggable).clone();
         draft(me(), new_piece, this); 

@@ -10,10 +10,26 @@ def browser(who)
   who == 'I' ? my_browser : opponent_browser
 end
 
+def is_nav?(piece_name)
+  Kernel.const_get(piece_name) < Piece::Nav
+end
+
+def nav_space_id(pnum)
+  pnum == 1 ? "space_d_1" : "space_d_7"
+end
+
+def my_nav_space
+  page.find_by_id(nav_space_id(@my_num))
+end
+
+def opponent_nav_space
+  page.find_by_id(nav_space_id(@opponent_num))
+end
+
 def get_empty_keep_space(pnum = 1)
   1.upto(7) do |n|
     keep_space = page.find_by_id("keep_#{pnum}_#{n}")
-    return keep_space if keep_space.first('piece').nil?
+    return keep_space if keep_space.first('div').nil?
   end
   return false
 end
@@ -99,15 +115,23 @@ When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
     my_browser
     @my_piece_names ||= []
     piece = page.find_by_id('draft_' + piece_name.downcase)
-    empty_keep_space = get_empty_keep_space
-    piece.drag_to(empty_keep_space)
+    space = if piece[:class].include?('nav')
+      my_nav_space
+    else
+      get_empty_keep_space
+    end
+    piece.drag_to(space)
     @my_piece_names << piece_name
   else
     opponent_browser
     @opponent_piece_names ||= []
     piece = page.find_by_id('draft_' + piece_name.downcase)
-    empty_keep_space = get_empty_keep_space(2)
-    piece.drag_to(empty_keep_space)
+    space = if piece[:class].include?('nav')
+      opponent_nav_space
+    else
+      get_empty_keep_space(2)
+    end
+    piece.drag_to(space)
     @opponent_piece_names << piece_name
   end
 end
@@ -170,7 +194,19 @@ Then /^(I|my opponent) should see (my|my opponents|their) pieces in their starti
   row = pnum == 1 ? 1 : 7
   piece_names = whose == 'my' ? @my_piece_names : @opponent_piece_names
 
+  # I should see each piece
   piece_names.each do |piece_name|
-    page.find(:xpath, "//div[@id='keep_#{pnum}']//div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
+    if is_nav?(piece_name)
+      page.find(:xpath, "//div[@id='#{nav_space_id(pnum)}']/div")[:class].should have_content("player#{pnum}")
+    else
+      page.find(:xpath, "//div[@id='keep_#{pnum}']//div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
+    end
   end
+
+  # Each keep space should be filled
+  1.upto(7) do |n|
+    page.find(:xpath, "//div[@id='keep_#{pnum}']/div[@id='keep_#{pnum}_#{n}']/div")[:class].should have_content("piece")
+  end
+
+  page.find(:xpath, "//div[@id='#{nav_space_id(pnum)}']/div")[:class].should have_content("nav")
 end
