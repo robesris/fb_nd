@@ -35,7 +35,7 @@
     <%= f.radio_button :active_player, :go_first %>Go first
 
     <%= button_tag "Ready", :type => :button %>
-    <%= button_tag "Start", :type => :button %>
+    <%= link_to "Start", join_game_path(:game_code => @game_code, :player_secret => @player_secret) %>
 
     <%= fields_for :player1 do |p| %>
       <%= p.text_field :crystals, :value => @game.player1.crystals %>

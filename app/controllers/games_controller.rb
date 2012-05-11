@@ -12,8 +12,12 @@ class GamesController < ApplicationController
       @game.save
 
       @me = @game.player1
-      @game.player1.update_attribute(:secret, Game.generate_secret)
+      @me.update_attribute(:secret, Game.generate_secret)
+
       @all_piece_klasses = Piece.all_piece_klasses
+
+      @game_code = @game.code
+      @player_secret = @me.secret
     end
 
     render '/game' 

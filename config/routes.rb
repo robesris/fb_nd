@@ -6,6 +6,8 @@ FbNd::Application.routes.draw do
   #   match 'products/:id' => 'catalog#view'
   # Keep in mind you can assign values other than :controller and :action
 
+  resources :games
+
   # Sample of named route:
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
   # This route can be invoked with purchase_url(:id => product.id)
@@ -14,7 +16,6 @@ FbNd::Application.routes.draw do
 
     # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
-  resources :games
   # Sample resource route with options:
   #   resources :products do
   #     member do
