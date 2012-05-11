@@ -184,7 +184,7 @@ end
 When /^I start the game$/ do
   my_browser
 
-  click_button "Start"
+  click_link "Start"
 end
 
 Then /^(I|my opponent) should see (my|my opponents|their) pieces in their starting positions$/ do |who, whose|

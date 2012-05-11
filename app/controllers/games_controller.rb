@@ -41,4 +41,19 @@ class GamesController < ApplicationController
       render :template => 'game'
     end
   end
+
+  def draft
+    game_code = params[:game_code]
+    game = Game.where(:code => game_code).first
+    player_secret = params[:player_secret]
+    piece_name = params[:piece_name]
+    #space_string = params[:space]
+    #col = space_string[7]
+    #row = space_string[9]
+    #space = @game.board.space(col, row)
+    player = game.players.where(:secret => player_secret).first
+    player.draft(piece_name)
+
+    render :nothing => true
+  end
 end

@@ -13,6 +13,7 @@ FbNd::Application.routes.draw do
   # This route can be invoked with purchase_url(:id => product.id)
   match 'create_game' => 'games#create', :as => :create_game
   match 'game/:game_code/:player_secret' => 'games#join', :as => :join_game
+  match 'game/:game_code/:player_secret/draft/:piece_name/:space' => 'games#draft', :as => :draft
 
     # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products

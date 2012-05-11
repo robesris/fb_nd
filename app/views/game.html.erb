@@ -52,7 +52,12 @@
     <% 1.upto(2) do |pnum| %>
       <div id="keep_<%= pnum %>" class="clear">
         <% 1.upto(7) do |n| %>
-          <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">P<%= pnum %>K<%= n %></div>
+          <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
+            P<%= pnum %>K<%= n %>
+            <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
+              <div id='p1_<%= piece.name.downcase %>_1' name='<%= piece.name %>' class='piece player<%= pnum %>'><%= piece.name %></div>
+            <% end %>
+          </div>
         <% end %>
       </div>
     <% end %>
@@ -65,7 +70,8 @@
               <div id='space_<%= col + '_' + row.to_s %>' class='board_space'>
                 <%= col + '_' + row.to_s %>
                 <% if piece = @game.board.space(col, row).piece %>
-                  <div name='<%= piece.name %>' class='player<%= piece.player.num %> piece'>
+                  <% klass = piece.class %>
+                  <div name='<%= piece.name %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %>">'>
                     P<%= piece.player.num %>: <%= piece.name %>
                   </div>
                 <% end %>
@@ -98,7 +104,11 @@
     $('.draft_piece, .piece').draggable();
     $( ".keep_space, .board_space" ).droppable({
       drop: function( event, ui ) {
-        var new_piece = $(ui.draggable).clone();
+        var piece = $(ui.draggable);
+        console.log(piece.attr('name'));
+        
+        $.ajax('/game/<%= @game_code %>/<%= @player_secret %>/draft/' + piece.attr('name') + '/' + this.id);
+        var new_piece = piece.clone();
         draft(me(), new_piece, this); 
       } 
     });
