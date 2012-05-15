@@ -91,6 +91,14 @@
       return $('#player').val();
     }
 
+    var opponent = function() {
+      if ($('#player').val() == 'player1') {
+        return 'player2';
+      } else {
+        return 'player1';
+      }
+    }
+
     var draft = function(player, new_piece, keep_space) {
       // All logic should be server side - this just does stuff.
       new_piece.addClass(player).addClass('piece');
@@ -123,11 +131,27 @@
         url: '/game/<%= @game_code %>/<%= @player_secret %>/events',
         success: function(events) {
           console.log(events);
+          processEvents(events);
         },
         complete: function() {
-          setTimeout(checkForEvents, 5000);
+          setTimeout(checkForEvents, 1000);
         }
       });
+    };
+
+    var processEvents = function(events) {
+      for(i = 0; i < events.length; i++) {
+        event = events[i];
+        console.log(event.action);
+        switch(event.action)
+        {
+          case 'draft':
+            var draft_piece = $('#draft_' + event.options.piece_name.toLowerCase());
+            var new_piece = draft_piece.clone();
+            draft(opponent(), new_piece, $('#' + event.to));
+            break;
+        }
+      }
     };
 
     checkForEvents();
