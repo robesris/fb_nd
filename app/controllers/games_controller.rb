@@ -69,6 +69,14 @@ class GamesController < ApplicationController
   end
 
   def check_for_events
-    render :nothing => true
+    game_code = params[:game_code]
+    game = Game.where(:code => game_code).first
+    player_secret = params[:player_secret]
+    player = game.players.where(:secret => player_secret).first
+
+    events = game.events.where(:player_num => player.num)
+
+
+    render :json => events.to_json
   end
 end

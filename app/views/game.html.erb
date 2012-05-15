@@ -122,7 +122,7 @@
       $.ajax({
         url: '/game/<%= @game_code %>/<%= @player_secret %>/events',
         success: function(events) {
-          // process events
+          console.log(events);
         },
         complete: function() {
           setTimeout(checkForEvents, 5000);
