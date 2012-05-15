@@ -6,6 +6,7 @@ class Game < ActiveRecord::Base
   belongs_to :winner, :class_name => Player
   belongs_to :waiting_for, :class_name => Piece
   has_one :board
+  has_many :events
   
   def initialize(params = nil, options = {})
     super(params)
@@ -91,5 +92,9 @@ class Game < ActiveRecord::Base
 
   def empty_graveyard
     self.board.empty_graveyard
+  end
+
+  def add_event(params)
+    self.events << Event.create(params)
   end
 end

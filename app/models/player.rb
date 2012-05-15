@@ -32,13 +32,17 @@ class Player < ActiveRecord::Base
        !self.nav
       piece = piece_class.create(:space => self.game.board.nav_space(:player => self))
       self.pieces << piece
+      return true
     elsif self.game.phase == 'setup' &&
        self.room_in_keep? &&
        self.pieces.where(:name => piece_name).size < 2
       piece = piece_class.create
       self.pieces << piece
       piece.move_to_keep 
+      return true
     end  
+
+    false
   end
 
   def get_ready

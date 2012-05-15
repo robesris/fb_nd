@@ -116,5 +116,20 @@
     $( ".board_space" ).droppable({
       
     });
+
+    // Check for new events from the other player periodically
+    var checkForEvents = function() {
+      $.ajax({
+        url: '/game/<%= @game_code %>/<%= @player_secret %>/events',
+        success: function(events) {
+          // process events
+        },
+        complete: function() {
+          setTimeout(checkForEvents, 5000);
+        }
+      });
+    };
+
+    checkForEvents();
   });
 </script>

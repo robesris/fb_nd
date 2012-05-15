@@ -52,8 +52,23 @@ class GamesController < ApplicationController
     #row = space_string[9]
     #space = @game.board.space(col, row)
     player = game.players.where(:secret => player_secret).first
-    player.draft(piece_name)
+    text = ""
 
+    if player.draft(piece_name)
+      game.add_event(
+        :player_num => player.opponent.num, 
+        :action => 'draft',
+        :to => params[:space],
+        :options => { :piece_name => piece_name }
+      )
+    else
+      text = "Can't draft that piece there!"
+    end
+
+    render :text => text
+  end
+
+  def check_for_events
     render :nothing => true
   end
 end
