@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120515203427) do
+ActiveRecord::Schema.define(:version => 20120516211431) do
 
   create_table "boards", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -59,13 +59,14 @@ ActiveRecord::Schema.define(:version => 20120515203427) do
   create_table "players", :force => true do |t|
     t.integer  "num"
     t.integer  "crystals"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
     t.integer  "game_id"
     t.integer  "active_piece_id"
     t.boolean  "in_check_this_turn"
     t.boolean  "ready"
     t.string   "secret"
+    t.boolean  "checking_for_events"
   end
 
   create_table "spaces", :force => true do |t|

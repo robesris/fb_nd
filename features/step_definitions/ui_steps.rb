@@ -215,7 +215,9 @@ Then /^there should be exactly one piece on each keep space in both browsers$/ d
   my_browser
   1.upto(7) do |n|
     1.upto(2) do |p|
-      page.find(:xpath, "//div[@id='keep_#{p}_#{n}']").all(:xpath, "./div").size.should == 1
+      pieces = page.find(:xpath, "//div[@id='keep_#{p}_#{n}']").all(:xpath, "./div")
+      #debugger if pieces.size != 1
+      pieces.size.should == 1
     end
   end
 

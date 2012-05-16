@@ -68,14 +68,36 @@ class GamesController < ApplicationController
     render :text => text
   end
 
-  def check_for_events
+  def init
+    # get rid of all events for this player because we would have just drawn the board anyway
     game_code = params[:game_code]
     game = Game.where(:code => game_code).first
     player_secret = params[:player_secret]
     player = game.players.where(:secret => player_secret).first
 
     events = game.events.where(:player_num => player.num)
+    events.each { |e| e.destroy }
+  end
 
+  def check_for_events
+    game_code = params[:game_code]
+    game = Game.where(:code => game_code).first
+    player_secret = params[:player_secret]
+    player = game.players.where(:secret => player_secret).first
+
+    events = []
+    unless player.checking_for_events?
+      ActiveRecord::Base.transaction do
+        begin
+          player.update_attribute(:checking_for_events, true)
+          events = game.events.where(:player_num => player.num)
+          events.each { |e| e.destroy }
+          player.update_attribute(:checking_for_events, false)
+        rescue ActiveRecord::Rollback
+          render :json => []  # return nothing if the transaction is rolled back
+        end
+      end
+    end
 
     render :json => events.to_json
   end

@@ -55,7 +55,7 @@
           <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
             P<%= pnum %>K<%= n %>
             <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
-              <div id='p1_<%= piece.name.downcase %>_1' name='<%= piece.name %>' class='piece player<%= pnum %>'><%= piece.name %></div>
+              <div id='p<%= pnum %>_<%= piece.name.downcase %>_1' name='<%= piece.name %>' class='piece player<%= pnum %>'><%= piece.name %></div>
             <% end %>
           </div>
         <% end %>
@@ -154,6 +154,12 @@
       }
     };
 
-    checkForEvents();
+    // We've just loaded the page, so clear events since we're already displaying the board state
+    $.ajax({
+      url: '/game/<%= @game_code %>/<%= @player_secret %>/init',
+      complete: function() {
+        checkForEvents();
+      }
+    });
   });
 </script>
