@@ -210,3 +210,19 @@ Then /^(I|my opponent) should see (my|my opponents|their) pieces in their starti
 
   page.find(:xpath, "//div[@id='#{nav_space_id(pnum)}']/div")[:class].should have_content("nav")
 end
+
+Then /^there should be exactly one piece on each keep space in both browsers$/ do
+  my_browser
+  1.upto(7) do |n|
+    1.upto(2) do |p|
+      page.find(:xpath, "//div[@id='keep_#{p}_#{n}']").all(:xpath, "./div").size.should == 1
+    end
+  end
+
+  opponent_browser
+  1.upto(7) do |n|
+    1.upto(2) do |p|
+      page.find(:xpath, "//div[@id='keep_#{p}_#{n}']").all(:xpath, "./div").size.should == 1
+    end
+  end
+end
