@@ -82,7 +82,15 @@ class GamesController < ApplicationController
   end
 
   def ready
-    render :text => "HELLOOOO"
+    game = current_game
+    player = current_player(game)
+
+    player.update_attribute(:ready, true)
+    if player.opponent.ready?
+      game.start_game
+    end
+
+    render :nothing => true
   end
 
   def check_for_events
@@ -106,5 +114,19 @@ class GamesController < ApplicationController
     end
 
     render :json => events.to_json
+  end
+
+  private
+
+  def current_game
+    game_code = params[:game_code]
+    game = Game.where(:code => game_code).first
+    game
+  end
+
+  def current_player(game)
+    player_secret = params[:player_secret]
+    player = game.players.where(:secret => player_secret).first
+    player
   end
 end

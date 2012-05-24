@@ -18,7 +18,6 @@ Feature: User interface
     And I should not see my opponents pieces in their starting positions
     And my opponent should not see my pieces in their starting positions
     When my opponent indicates that he is ready
-    And I start the game
     Then I should see my pieces in their starting positions
     And my opponent should see their pieces in their starting positions
     And I should see my opponents pieces in their starting positions

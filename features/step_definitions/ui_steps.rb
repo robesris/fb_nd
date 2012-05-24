@@ -176,16 +176,14 @@ end
 
 When /^my opponent indicates that he is ready$/ do
   opponent_browser
-  # just do this directly on the backend
-  @game = Game.first
-  @game.send(@opponent).update_attribute(:ready, true)
+  click_button "Ready"
 end
 
-When /^I start the game$/ do
-  my_browser
-
-  click_link "Start"
-end
+#When /^I start the game$/ do
+#  my_browser
+#
+#  click_link "Start"
+#end
 
 Then /^(I|my opponent) should(| not) see (my|my opponents|their) pieces in their starting positions$/ do |who, should_val, whose|
   browser(who)
