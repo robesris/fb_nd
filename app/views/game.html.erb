@@ -27,6 +27,7 @@
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
+  <%= link_to "Ready", ready_path(@game.code, @me.secret), :remote => true, "data-type" => :json %>
 
   <%= form_for @game do |f| %>
     <%= hidden_field_tag :player, "player#{@me.num}" %>
@@ -34,7 +35,7 @@
 
     <%= f.radio_button :active_player, :go_first %>Go first
 
-    <%= button_tag "Ready", :type => :button %>
+    <%#= button_tag "Ready", :type => :button %>
     <%= link_to "Start", join_game_path(:game_code => @game_code, :player_secret => @player_secret) %>
 
     <%= fields_for :player1 do |p| %>
@@ -108,6 +109,7 @@
         .append(new_piece);
     }
 
+    $('.button_to').bind("ajax:complete", function(evt, xhr, settings) { console.log("HOORAY") });
 
     $('.draft_piece, .piece').draggable();
     $( ".keep_space, .board_space" ).droppable({

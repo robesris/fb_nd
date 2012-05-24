@@ -77,6 +77,12 @@ class GamesController < ApplicationController
 
     events = game.events.where(:player_num => player.num)
     events.each { |e| e.destroy }
+
+    render :nothing => true
+  end
+
+  def ready
+    render :text => "HELLOOOO"
   end
 
   def check_for_events
@@ -86,7 +92,7 @@ class GamesController < ApplicationController
     player = game.players.where(:secret => player_secret).first
 
     events = []
-    unless player.checking_for_events?
+    unless player.checking_for_events? || game.phase == 'setup'
       ActiveRecord::Base.transaction do
         begin
           player.update_attribute(:checking_for_events, true)
