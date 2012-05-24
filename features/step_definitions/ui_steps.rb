@@ -187,28 +187,53 @@ When /^I start the game$/ do
   click_link "Start"
 end
 
-Then /^(I|my opponent) should see (my|my opponents|their) pieces in their starting positions$/ do |who, whose|
+Then /^(I|my opponent) should(| not) see (my|my opponents|their) pieces in their starting positions$/ do |who, should_val, whose|
   browser(who)
 
+  should_see = should_val == ' not' ? false : true
   pnum = whose == 'my' ? @my_num : @opponent_num
   row = pnum == 1 ? 1 : 7
   piece_names = whose == 'my' ? @my_piece_names : @opponent_piece_names
 
-  # I should see each piece
+  # I should/should not see each piece
   piece_names.each do |piece_name|
     if is_nav?(piece_name)
-      page.find(:xpath, "//div[@id='#{nav_space_id(pnum)}']/div")[:class].should have_content("player#{pnum}")
+      xpath = "//div[@id='#{nav_space_id(pnum)}']/div"
+
+      if should_see
+        page.find(:xpath, xpath)[:class].should have_content("player#{pnum}")
+      else
+        page.should have_no_xpath(xpath)
+      end
     else
-      page.find(:xpath, "//div[@id='keep_#{pnum}']//div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
+      xpath = "//div[@id='keep_#{pnum}']//div[@name='#{piece_name}']"
+
+      if should_see
+        page.find(:xpath, xpath)[:class].should have_content("player#{pnum}")
+      else
+        page.should have_no_xpath(xpath)
+      end
     end
   end
 
   # Each keep space should be filled
   1.upto(7) do |n|
-    page.find(:xpath, "//div[@id='keep_#{pnum}']/div[@id='keep_#{pnum}_#{n}']/div")[:class].should have_content("piece")
+    xpath = "//div[@id='keep_#{pnum}']/div[@id='keep_#{pnum}_#{n}']/div"
+
+    if should_see
+      page.find(:xpath, xpath)[:class].should have_content("piece")
+    else
+      page.should have_no_xpath(xpath)
+    end
   end
 
-  page.find(:xpath, "//div[@id='#{nav_space_id(pnum)}']/div")[:class].should have_content("nav")
+  xpath = "//div[@id='#{nav_space_id(pnum)}']/div"
+
+  if should_see
+    page.find(:xpath, xpath)[:class].should have_content("nav")
+  else
+    page.should have_no_xpath(xpath)
+  end
 end
 
 Then /^there should be exactly one piece on each keep space in both browsers$/ do
