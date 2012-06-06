@@ -197,16 +197,20 @@ Then /^(I|my opponent) should(| not) see (my|my opponents|their) pieces in their
   piece_names.each do |piece_name|
     if is_nav?(piece_name)
       xpath = "//div[@id='#{nav_space_id(pnum)}']/div"
+      img_xpath = "#{xpath}/img[@src='#{piece_name.downcase}.png']"
 
       if should_see
+        page.should have_xpath(img_xpath)
         page.find(:xpath, xpath)[:class].should have_content("player#{pnum}")
       else
         page.should have_no_xpath(xpath)
       end
     else
       xpath = "//div[@id='keep_#{pnum}']//div[@name='#{piece_name}']"
+      img_xpath = "#{xpath}/img[@src='#{piece_name.downcase}.gif']"
 
       if should_see
+        page.should have_xpath(img_xpath)
         page.find(:xpath, xpath)[:class].should have_content("player#{pnum}")
       else
         page.should have_no_xpath(xpath)
@@ -225,6 +229,7 @@ Then /^(I|my opponent) should(| not) see (my|my opponents|their) pieces in their
     end
   end
 
+  # Should see a Nav in the right space
   xpath = "//div[@id='#{nav_space_id(pnum)}']/div"
 
   if should_see
