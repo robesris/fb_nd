@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+  "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr">
+
+<head profile="http://www.w3.org/1999/xhtml/vocab">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://naviadratp.net/files/naviadratpdotnet.ico" type="image/vnd.microsoft.icon" />
+<meta name="Generator" content="Drupal 7 (http://drupal.org)" />
+  <title>Page not found | NaviaDratp.net</title>
+  <style type="text/css" media="all">@import url("http://naviadratp.net/modules/system/system.base.css?lpz1fl");
+@import url("http://naviadratp.net/modules/system/system.menus.css?lpz1fl");
+@import url("http://naviadratp.net/modules/system/system.messages.css?lpz1fl");
+@import url("http://naviadratp.net/modules/system/system.theme.css?lpz1fl");</style>
+<style type="text/css" media="all">@import url("http://naviadratp.net/modules/aggregator/aggregator.css?lpz1fl");
+@import url("http://naviadratp.net/modules/book/book.css?lpz1fl");
+@import url("http://naviadratp.net/modules/comment/comment.css?lpz1fl");
+@import url("http://naviadratp.net/modules/field/theme/field.css?lpz1fl");
+@import url("http://naviadratp.net/sites/naviadratp.net/modules/mollom/mollom.css?lpz1fl");
+@import url("http://naviadratp.net/modules/node/node.css?lpz1fl");
+@import url("http://naviadratp.net/modules/poll/poll.css?lpz1fl");
+@import url("http://naviadratp.net/sites/naviadratp.net/modules/rpx/rpx_widgets.css?lpz1fl");
+@import url("http://naviadratp.net/modules/search/search.css?lpz1fl");
+@import url("http://naviadratp.net/modules/user/user.css?lpz1fl");
+@import url("http://naviadratp.net/modules/forum/forum.css?lpz1fl");
+@import url("http://naviadratp.net/sites/naviadratp.net/modules/views/css/views.css?lpz1fl");</style>
+<style type="text/css" media="all">@import url("http://naviadratp.net/sites/naviadratp.net/modules/ctools/css/ctools.css?lpz1fl");
+@import url("http://naviadratp.net/sites/naviadratp.net/modules/date/date_popup/themes/datepicker.1.7.css?lpz1fl");
+@import url("http://naviadratp.net/sites/naviadratp.net/modules/panels/css/panels.css?lpz1fl");
+@import url("http://naviadratp.net/sites/all/modules/rate/rate.css?lpz1fl");
+@import url("http://naviadratp.net/sites/naviadratp.net/modules/date/date_api/date.css?lpz1fl");</style>
+<style type="text/css" media="all">@import url("http://naviadratp.net/themes/bartik/css/layout.css?lpz1fl");
+@import url("http://naviadratp.net/themes/bartik/css/style.css?lpz1fl");
+@import url("http://naviadratp.net/files/color/bartik-f0cc65e6/colors.css?lpz1fl");</style>
+<style type="text/css" media="print">@import url("http://naviadratp.net/themes/bartik/css/print.css?lpz1fl");</style>
+
+<!--[if lte IE 7]>
+<link type="text/css" rel="stylesheet" href="http://naviadratp.net/themes/bartik/css/ie.css?lpz1fl" media="all" />
+<![endif]-->
+
+<!--[if IE 6]>
+<link type="text/css" rel="stylesheet" href="http://naviadratp.net/themes/bartik/css/ie6.css?lpz1fl" media="all" />
+<![endif]-->
+  <script type="text/javascript" src="http://naviadratp.net/misc/jquery.js?v=1.4.4"></script>
+<script type="text/javascript" src="http://naviadratp.net/misc/jquery.once.js?v=1.2"></script>
+<script type="text/javascript" src="http://naviadratp.net/misc/drupal.js?lpz1fl"></script>
+<script type="text/javascript" src="http://naviadratp.net/sites/naviadratp.net/modules/admin_menu/admin_devel/admin_devel.js?lpz1fl"></script>
+<script type="text/javascript" src="http://naviadratp.net/sites/naviadratp.net/modules/mollom/mollom.js?lpz1fl"></script>
+<script type="text/javascript" src="http://naviadratp.net/sites/naviadratp.net/modules/panels/js/panels.js?lpz1fl"></script>
+<script type="text/javascript" src="http://naviadratp.net/sites/naviadratp.net/modules/views/js/jquery.ui.dialog.patch.js?lpz1fl"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","ajaxPageState":{"theme":"bartik","theme_token":"DVEWUoX9P1DNfjWuPbDvpR1lAtg35BBma2SKsTKkArw","js":{"misc\/jquery.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"sites\/naviadratp.net\/modules\/admin_menu\/admin_devel\/admin_devel.js":1,"sites\/naviadratp.net\/modules\/mollom\/mollom.js":1,"sites\/naviadratp.net\/modules\/panels\/js\/panels.js":1,"sites\/naviadratp.net\/modules\/views\/js\/jquery.ui.dialog.patch.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.messages.css":1,"modules\/system\/system.theme.css":1,"modules\/aggregator\/aggregator.css":1,"modules\/book\/book.css":1,"modules\/comment\/comment.css":1,"modules\/field\/theme\/field.css":1,"sites\/naviadratp.net\/modules\/mollom\/mollom.css":1,"modules\/node\/node.css":1,"modules\/poll\/poll.css":1,"sites\/naviadratp.net\/modules\/rpx\/rpx_widgets.css":1,"modules\/search\/search.css":1,"modules\/user\/user.css":1,"modules\/forum\/forum.css":1,"sites\/naviadratp.net\/modules\/views\/css\/views.css":1,"sites\/naviadratp.net\/modules\/ctools\/css\/ctools.css":1,"sites\/naviadratp.net\/modules\/date\/date_popup\/themes\/datepicker.1.7.css":1,"sites\/naviadratp.net\/modules\/panels\/css\/panels.css":1,"sites\/all\/modules\/rate\/rate.css":1,"sites\/naviadratp.net\/modules\/date\/date_api\/date.css":1,"themes\/bartik\/css\/layout.css":1,"themes\/bartik\/css\/style.css":1,"themes\/bartik\/css\/colors.css":1,"themes\/bartik\/css\/print.css":1,"themes\/bartik\/css\/ie.css":1,"themes\/bartik\/css\/ie6.css":1}}});
+//--><!]]>
+</script>
+</head>
+<body class="html not-front not-logged-in no-sidebars page-files page-files-battle-piece-images page-files-battle-piece-images-m-papilloneragif triptych footer-columns" >
+  <div id="skip-link">
+    <a href="#main-content" class="element-invisible element-focusable">Skip to main content</a>
+  </div>
+    <div id="page-wrapper"><div id="page">
+
+  <div id="header" class="without-secondary-menu"><div class="section clearfix">
+
+          <a href="/" title="Home" rel="home" id="logo">
+        <img src="http://naviadratp.net/files/naviaimage.gif" alt="Home" />
+      </a>
+    
+          <div id="name-and-slogan">
+
+                              <div id="site-name">
+              <strong>
+                <a href="/" title="Home" rel="home"><span>NaviaDratp.net</span></a>
+              </strong>
+            </div>
+                  
+                  <div id="site-slogan">
+            Entry fee: 60 Gyullas          </div>
+        
+      </div> <!-- /#name-and-slogan -->
+    
+      <div class="region region-header">
+    <div id="block-search-form" class="block block-search">
+
+    
+  <div class="content">
+    <form action="/files/battle_piece_images/m_papillonera.gif" method="post" id="search-block-form" accept-charset="UTF-8"><div><div class="container-inline">
+      <h2 class="element-invisible">Search form</h2>
+    <div class="form-item form-type-textfield form-item-search-block-form">
+  <label class="element-invisible" for="edit-search-block-form--2">Search </label>
+ <input title="Enter the terms you wish to search for." type="text" id="edit-search-block-form--2" name="search_block_form" value="" size="15" maxlength="128" class="form-text" />
+</div>
+<div class="form-actions form-wrapper" id="edit-actions"><input type="submit" id="edit-submit" name="op" value="Search" class="form-submit" /></div><input type="hidden" name="form_build_id" value="form-pQjOenfpcSKLIC4DU--Y6kCF7J7yYUWEoxHtEUXs8W8" />
+<input type="hidden" name="form_id" value="search_block_form" />
+</div>
+</div></form>  </div>
+</div>
+  </div>
+
+    
+    
+  </div></div> <!-- /.section, /#header -->
+
+  
+  
+  <div id="main-wrapper" class="clearfix"><div id="main" class="clearfix">
+
+    
+    
+    <div id="content" class="column"><div class="section">
+            <a id="main-content"></a>
+                    <h1 class="title" id="page-title">
+          Page not found        </h1>
+                          <div class="tabs">
+                  </div>
+                          <div class="region region-content">
+    <div id="block-system-main" class="block block-system">
+
+    
+  <div class="content">
+    The requested page could not be found.  </div>
+</div>
+  </div>
+      
+    </div></div> <!-- /.section, /#content -->
+
+    
+  </div></div> <!-- /#main, /#main-wrapper -->
+
+      <div id="triptych-wrapper"><div id="triptych" class="clearfix">
+        <div class="region region-triptych-first">
+    <div id="block-user-login" class="block block-user">
+
+    
+  <div class="content">
+    <form action="/files/battle_piece_images/m_papillonera.gif?destination=files/battle_piece_images/m_papillonera.gif" method="post" id="user-login-form" accept-charset="UTF-8"><div><div class="form-item form-type-textfield form-item-name">
+  <label for="edit-name">Username <span class="form-required" title="This field is required.">*</span></label>
+ <input type="text" id="edit-name" name="name" value="" size="15" maxlength="60" class="form-text required" />
+</div>
+<div class="form-item form-type-password form-item-pass">
+  <label for="edit-pass">Password <span class="form-required" title="This field is required.">*</span></label>
+ <input type="password" id="edit-pass" name="pass" size="15" maxlength="60" class="form-text required" />
+</div>
+<div class="item-list"><ul><li class="first"><a href="/user/register" title="Create a new user account.">Create new account</a></li>
+<li class="last"><a href="/user/password" title="Request new password via e-mail.">Request new password</a></li>
+</ul></div><input type="hidden" name="form_build_id" value="form-15Fi6n9w9HuRp70Dbt3aeh6ElxR0MsflHDL9i6TNhA8" />
+<input type="hidden" name="form_id" value="user_login_block" />
+<div class="form-actions form-wrapper" id="edit-actions--2"><input type="submit" id="edit-submit--2" name="op" value="Log in" class="form-submit" /></div></div></form>  </div>
+</div>
+  </div>
+              <div class="region region-triptych-last">
+    <div id="block-comment-recent" class="block block-comment">
+
+    <h2>Recent comments</h2>
+  
+  <div class="content">
+    <div class="item-list"><ul><li class="first"><a href="/comment/436#comment-436">GenCon was a blast</a>&nbsp;<span>9 months 3 weeks ago</span></li>
+<li><a href="/comment/435#comment-435">GenCon2011 NaviaDratp </a>&nbsp;<span>11 months 3 days ago</span></li>
+<li><a href="/comment/434#comment-434">Ready your G&#039;s</a>&nbsp;<span>1 year 1 month ago</span></li>
+<li><a href="/comment/432#comment-432">Mat</a>&nbsp;<span>1 year 10 months ago</span></li>
+<li><a href="/comment/431#comment-431">I’m working on possibly</a>&nbsp;<span>1 year 11 months ago</span></li>
+<li><a href="/comment/430#comment-430">Quicksilver </a>&nbsp;<span>2 years 1 month ago</span></li>
+<li><a href="/comment/429#comment-429">RULEBOOK link</a>&nbsp;<span>2 years 2 months ago</span></li>
+<li><a href="/comment/428#comment-428">ND gencon</a>&nbsp;<span>2 years 3 months ago</span></li>
+<li><a href="/comment/426#comment-426">Ah….I see you were the</a>&nbsp;<span>2 years 3 months ago</span></li>
+<li class="last"><a href="/comment/425#comment-425">I like navia the way it is,</a>&nbsp;<span>2 years 3 months ago</span></li>
+</ul></div>  </div>
+</div>
+  </div>
+    </div></div> <!-- /#triptych, /#triptych-wrapper -->
+  
+  <div id="footer-wrapper"><div class="section">
+
+          <div id="footer-columns" class="clearfix">
+                  <div class="region region-footer-secondcolumn">
+    <div id="block-aggregator-feed-1" class="block block-aggregator">
+
+    <h2>BGG Navia Dratp forums</h2>
+  
+  <div class="content">
+    <div class="item-list"><ul><li class="first"><a href="http://boardgamegeek.com/article/9238569#9238569">Reply: Navia Dratp:: General:: Re: D&amp;D retheme - please have look</a>
+</li>
+<li><a href="http://boardgamegeek.com/article/9224118#9224118">Reply: Navia Dratp:: General:: Re: D&amp;D retheme - please have look</a>
+</li>
+<li><a href="http://boardgamegeek.com/article/9224090#9224090">Reply: Navia Dratp:: General:: Re: D&amp;D retheme - please have look</a>
+</li>
+<li><a href="http://boardgamegeek.com/article/9216360#9216360">Reply: Navia Dratp:: General:: Re: D&amp;D retheme - please have look</a>
+</li>
+<li class="last"><a href="http://boardgamegeek.com/article/9216357#9216357">Reply: Navia Dratp:: General:: Re: D&amp;D retheme - please have look</a>
+</li>
+</ul></div><div class="more-link"><a href="/aggregator/sources/1" title="View this feed&#039;s recent news.">More</a></div>  </div>
+</div>
+  </div>
+                  <div class="region region-footer-fourthcolumn">
+    <div id="block-aggregator-feed-3" class="block block-aggregator">
+
+    <h2>Navia Dratp eBay listings</h2>
+  
+  <div class="content">
+    <div class="item-list"><ul><li class="first"><a href="http://cgi.ebay.com/Navia-Dratp-Ghost-Crystal-Io-figure-card-Ultra-Rare-N-3_W0QQitemZ300720438352QQcmdZViewItemQQssPageNameZRSS:B:SRCH:US:101">Navia Dratp Ghost Crystal Io figure + card Ultra Rare N-3</a>
+</li>
+<li><a href="http://cgi.ebay.com/AMAZING-NAVIA-DRATP-SET-OVER-50-pieces_W0QQitemZ290722858570QQcmdZViewItemQQssPageNameZRSS:B:SRCH:US:101">AMAZING NAVIA DRATP SET OVER 50 pieces</a>
+</li>
+<li><a href="http://cgi.ebay.com/Navia-Dratp-Demo-Promo-Kit-Bandai_W0QQitemZ270989791071QQcmdZViewItemQQssPageNameZRSS:B:SRCH:US:101">Navia Dratp Demo/Promo Kit (Bandai)</a>
+</li>
+<li><a href="http://cgi.ebay.com/NAVIA-DRATP-MINIATURE-BOOSTER-PACK-Unleashed-Darkness-Figure-Character-Card-Game_W0QQitemZ290720013957QQcmdZViewItemQQssPageNameZRSS:B:SRCH:US:101">NAVIA DRATP MINIATURE BOOSTER PACK Unleashed Darkness Figure Character Card Game</a>
+</li>
+<li class="last"><a href="http://cgi.ebay.com/Navia-Dratp-Demo-Promo-Kit-Bandai_W0QQitemZ270986455572QQcmdZViewItemQQssPageNameZRSS:B:SRCH:US:101">Navia Dratp Demo/Promo Kit (Bandai)</a>
+</li>
+</ul></div><div class="more-link"><a href="/aggregator/sources/3" title="View this feed&#039;s recent news.">More</a></div>  </div>
+</div>
+  </div>
+      </div> <!-- /#footer-columns -->
+    
+    
+  </div></div> <!-- /.section, /#footer-wrapper -->
+
+</div></div> <!-- /#page, /#page-wrapper -->
+  </body>
+</html>
