@@ -116,7 +116,7 @@
 
     //$('#link_to').bind("ajax:complete", function(evt, xhr, settings) { console.log("HOORAY") });
 
-    $('.draft_piece, .piece').draggable();
+    $('.draft_piece, .piece').draggable({ revert: true });
     $( ".keep_space, .board_space" ).droppable({
       drop: function( event, ui ) {
         var piece = $(ui.draggable);
