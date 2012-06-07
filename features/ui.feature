@@ -10,6 +10,9 @@ Feature: User interface
     Then I should see the default setup
     When my opponent joins the game
     And I choose default starter army 1
+
+    # Make sure we can't draft more than 7 pieces
+    #And I draft "Turtle"
     And my opponent chooses default starter army 2
     And I choose to go first
     And I indicate that I am ready

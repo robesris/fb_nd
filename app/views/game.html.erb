@@ -48,7 +48,7 @@
 
     <div class='row'>
       <% @all_piece_klasses.each do |klass| %>
-        <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %>"><div><%= klass.to_s %></div><img src='assets/<%= klass.to_s.downcase %>.gif' width='50%' height='50%' /></div>
+        <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %>"><div><%= klass.to_s %></div><img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' /></div>
       <% end %>
     </div>
 
@@ -106,6 +106,9 @@
       // All logic should be server side - this just does stuff.
       new_piece.addClass(player).addClass('piece');
       new_piece.css('left', 0).css('top', 0).draggable();
+      if (player == 'player2') {
+        new_piece.find('img').attr('src', '/assets/' + new_piece.attr('name').toLowerCase() + '_2.gif');
+      }
       $( keep_space )
         .addClass( "ui-state-highlight" )
         .append(new_piece);
