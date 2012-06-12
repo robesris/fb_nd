@@ -76,7 +76,7 @@
         <div class="row">
           <% 'a'.upto('g') do |col| %>
             <div class="col left">
-              <div id='space_<%= col + '_' + row.to_s %>' class='board_space'>
+              <div id='space_<%= col + '_' + row.to_s %>' class='board_space<%= " nav_space" if (row == 1 || row == 7) && col== "d" %>'>
                 <%= col + '_' + row.to_s %>
                 <% if piece = @game.board.space(col, row).piece %>
                   <% klass = piece.class %>
@@ -123,7 +123,7 @@
     //$('#link_to').bind("ajax:complete", function(evt, xhr, settings) { console.log("HOORAY") });
 
     $('.draft_piece, .piece').draggable({ revert: true });
-    $( ".keep_space, .board_space" ).droppable({
+    $( ".keep_space, .nav_space" ).droppable({
       drop: function( event, ui ) {
         var piece = $(ui.draggable);
         console.log(piece.attr('name'));

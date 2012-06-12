@@ -1,3 +1,6 @@
+P1KROW = 0
+P2KROW = 8
+
 def my_browser
   Capybara.session_name = :my_browser
 end
@@ -32,6 +35,35 @@ def get_empty_keep_space(pnum = 1)
     return keep_space if keep_space.first('div').nil?
   end
   return false
+end
+
+def getcol(col)
+  if col.is_a?(String)
+    col.ord - 96
+  else
+    col
+  end
+end
+
+def get_keep_space(keep_id)
+  page.find_by_id(keep_id)
+end
+
+def get_space(coords)
+  if coords.slice(0, 4) == 'keep'
+    space = get_keep_space(coords)
+  else
+    col = coords.first
+    row = coords.last.to_i
+
+    if row == P1KROW  # p1 keep space
+      space = page.find_by_id("keep_1_#{getcol(col)}")
+    elsif row == P2KROW # p2 keep space
+      space = page.find_by_id("keep_2_#{getcol(col)}")
+    else
+      space = page.find_by_id("space_#{col}_#{row}")
+    end
+  end
 end
 
 def current_game
@@ -106,11 +138,23 @@ Then /^(I|my opponent) should have (\d+) crystals$/ do |who, num|
   find(:xpath, "//input[@id='player#{pnum}_crystals']").value.should == num
 end
 
+Then /^(I|my_opponent) should see player (\d+)s "(.*?)" at "keep_(\d+)_(\d+)"$/ do |who,pnum, piece_name, keep_num, keep_space_num|
+  browser(who)
+  #debugger if piece_name == "Nebgua"
+  page.find(:xpath, "//div[@id='keep_#{keep_num}_#{keep_space_num}']/div[@name='#{piece_name}']").should have_content("player#{pnum}")
+end
+
 Then /^I should see player (\d+)s "([^"]*)" at "([a-g])([^"]*)"$/ do |pnum, piece_name, col, row|
   page.find(:xpath, "//div[@id='space_#{col}_#{row}']/div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
 end
 
-When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
+Then /^(I|my opponent) should see nothing at "(.*?)"$/ do |who, coords|
+  browser(who)  
+  space = get_space(coords)
+  space.should have_no_xpath("/div")
+end
+
+When /^(I|my opponent) drafts? "([^"]*)"(?:()| to "(.*?)")$/ do |who, piece_name, junk, destination_space|
   if who == 'I'
     my_browser
     @my_piece_names ||= []
@@ -118,7 +162,11 @@ When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
     space = if piece[:class].include?('nav')
       my_nav_space
     else
-      get_empty_keep_space
+      if destination_space
+        get_space(destination_space)
+      else
+        get_empty_keep_space
+      end
     end
     piece.drag_to(space)
     @my_piece_names << piece_name
@@ -129,7 +177,11 @@ When /^(I|my opponent) drafts "([^"]*)"$/ do |who, piece_name|
     space = if piece[:class].include?('nav')
       opponent_nav_space
     else
-      get_empty_keep_space(2)
+      if destination_space
+        get_space(destination_space)
+      else
+        get_empty_keep_space(2)
+      end
     end
     piece.drag_to(space)
     @opponent_piece_names << piece_name
@@ -184,6 +236,28 @@ end
 #
 #  click_link "Start"
 #end
+
+Then /^both players should see nothing at "(.*)"$/ do |space|
+  steps %Q{
+    Then I should see nothing at "#{space}"
+    And my opponent should see nothing at "#{space}"
+  }
+end
+
+Then /^both players should see player (\d+)s "(.*?)" at "(.*?)"$/ do |pnum, piece_name, space|
+  steps %Q{
+    Then I should see player #{pnum}s "#{piece_name}" at "#{space}"
+    And my opponent should see player #{pnum}s "#{piece_name}" at "#{space}
+  }
+end
+
+Then /^both players should see player (\d+)s other "(.*?)" at "(.*?)"$/ do |pnum, piece_name, space|
+  steps %Q{
+    Then I should see player #{pnum}s "#{piece_name}" at "#{space}"
+    And my opponent should see player #{pnum}s "#{piece_name}" at "#{space}
+  }
+end
+
 
 Then /^(I|my opponent) should(| not) see (my|my opponents|their) pieces in their starting positions$/ do |who, should_val, whose|
   browser(who)
