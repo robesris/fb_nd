@@ -52,7 +52,7 @@ class GamesController < ApplicationController
     #row = space_string[9]
     #space = @game.board.space(col, row)
     player = game.players.where(:secret => player_secret).first
-    text = ""
+    text = "ok"
 
     if player.draft(piece_name)
       game.add_event(
@@ -65,7 +65,7 @@ class GamesController < ApplicationController
       text = "Can't draft that piece there!"
     end
 
-    render :text => text
+    render :json => text.to_json
   end
 
   def init

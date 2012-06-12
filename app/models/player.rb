@@ -27,9 +27,10 @@ class Player < ActiveRecord::Base
 
   def draft(piece_name)
     piece_class = Kernel.const_get(piece_name)
+    #debugger if piece_name == "Nebgua"
     if piece_class.superclass == Piece::Nav &&
        self.game.phase == 'setup' &&
-       !self.nav
+       !self.nav &&
       piece = piece_class.create(:space => self.game.board.nav_space(:player => self))
       self.pieces << piece
       return true

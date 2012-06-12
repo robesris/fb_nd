@@ -126,12 +126,22 @@
     $( ".keep_space, .nav_space" ).droppable({
       drop: function( event, ui ) {
         var piece = $(ui.draggable);
+        var space = this;
         console.log(piece.attr('name'));
         
-        $.ajax('/game/<%= @game_code %>/<%= @player_secret %>/draft/' + piece.attr('name') + '/' + this.id);
-        var new_piece = piece.clone();
-        draft(me(), new_piece, this); 
+        $.ajax({
+          url: '/game/<%= @game_code %>/<%= @player_secret %>/draft/' + piece.attr('name') + '/' + this.id,
+          success: function (result) {
+            if (result == "ok") {
+              var new_piece = piece.clone();
+              draft(me(), new_piece, space);
+            } else {
+              console.log(result);
+            }
+          } 
+        });
       } 
+      
     });
 
     $( ".board_space" ).droppable({

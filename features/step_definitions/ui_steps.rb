@@ -138,13 +138,14 @@ Then /^(I|my opponent) should have (\d+) crystals$/ do |who, num|
   find(:xpath, "//input[@id='player#{pnum}_crystals']").value.should == num
 end
 
-Then /^(I|my_opponent) should see player (\d+)s "(.*?)" at "keep_(\d+)_(\d+)"$/ do |who,pnum, piece_name, keep_num, keep_space_num|
+Then /^(I|my opponent) should see player (\d+)s "(.*?)" at "keep_(\d+)_(\d+)"$/ do |who, pnum, piece_name, keep_num, keep_space_num|
   browser(who)
   #debugger if piece_name == "Nebgua"
-  page.find(:xpath, "//div[@id='keep_#{keep_num}_#{keep_space_num}']/div[@name='#{piece_name}']").should have_content("player#{pnum}")
+  page.find(:xpath, "//div[@id='keep_#{keep_num}_#{keep_space_num}']/div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
 end
 
-Then /^I should see player (\d+)s "([^"]*)" at "([a-g])([^"]*)"$/ do |pnum, piece_name, col, row|
+Then /^(I|my opponent) should see player (\d+)s "([^"]*)" at "([a-g])([^"]*)"$/ do |who, pnum, piece_name, col, row|
+  browser(who)
   page.find(:xpath, "//div[@id='space_#{col}_#{row}']/div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
 end
 
@@ -157,6 +158,7 @@ end
 When /^(I|my opponent) drafts? "([^"]*)"(?:()| to "(.*?)")$/ do |who, piece_name, junk, destination_space|
   if who == 'I'
     my_browser
+    sleep(1) if @my_last_draft == piece_name
     @my_piece_names ||= []
     piece = page.find_by_id('draft_' + piece_name.downcase)
     space = if piece[:class].include?('nav')
@@ -170,8 +172,10 @@ When /^(I|my opponent) drafts? "([^"]*)"(?:()| to "(.*?)")$/ do |who, piece_name
     end
     piece.drag_to(space)
     @my_piece_names << piece_name
+    @my_last_draft = piece_name
   else
     opponent_browser
+    sleep(1) if @opponent_last_draft == piece_name
     @opponent_piece_names ||= []
     piece = page.find_by_id('draft_' + piece_name.downcase)
     space = if piece[:class].include?('nav')
@@ -185,7 +189,9 @@ When /^(I|my opponent) drafts? "([^"]*)"(?:()| to "(.*?)")$/ do |who, piece_name
     end
     piece.drag_to(space)
     @opponent_piece_names << piece_name
+    @opponent_last_draft = piece_name
   end
+  sleep(0.5)
 end
 
 When /^(I|my opponent) chooses? default starter army (\d+)$/ do |who, army_num|
@@ -245,16 +251,17 @@ Then /^both players should see nothing at "(.*)"$/ do |space|
 end
 
 Then /^both players should see player (\d+)s "(.*?)" at "(.*?)"$/ do |pnum, piece_name, space|
+  #debugger
   steps %Q{
     Then I should see player #{pnum}s "#{piece_name}" at "#{space}"
-    And my opponent should see player #{pnum}s "#{piece_name}" at "#{space}
+    And my opponent should see player #{pnum}s "#{piece_name}" at "#{space}"
   }
 end
 
 Then /^both players should see player (\d+)s other "(.*?)" at "(.*?)"$/ do |pnum, piece_name, space|
   steps %Q{
     Then I should see player #{pnum}s "#{piece_name}" at "#{space}"
-    And my opponent should see player #{pnum}s "#{piece_name}" at "#{space}
+    And my opponent should see player #{pnum}s "#{piece_name}" at "#{space}"
   }
 end
 
