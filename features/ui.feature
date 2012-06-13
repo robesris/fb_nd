@@ -47,9 +47,12 @@ Feature: User interface
     And my opponent drafts "Kom"
     And my opponent drafts "Nebgua"
     And my opponent drafts "Nebgua"
-    # the following draft should fail
+
+    # the following three drafts should fail
+    And my opponent drafts "Aio" to "keep_2_4"
     And my opponent drafts "Nebgua"
-    #And I pause
+    And my opponent drafts "Tro" to "keep_2_1"
+
     And my opponent drafts "Neto"
     Then I should see nothing at "keep_1_4"
     And my opponent should see nothing at "keep_2_5"
@@ -62,9 +65,12 @@ Feature: User interface
     And my opponent drafts "Olp"
     And my opponent drafts "Gar"
     And my opponent drafts "Aio"
+
+    # the following draft should fail
+    And my opponent drafts "Hill"
+
     And I indicate that I am ready
     And my opponent indicates that he is ready
-    #And I pause
     Then both players should see player 1s "Nebgua" at "keep_1_1"
     And both players should see player 1s other "Nebgua" at "keep_1_2"
     And both players should see player 1s "Mses" at "keep_1_3"
@@ -72,6 +78,5 @@ Feature: User interface
     And both players should see player 2s "Nebgua" at "keep_2_2"
     And both players should see player 2s other "Nebgua" at "keep_2_3"
     And both players should see player 2s "Neto" at "keep_2_4"
-    #And I pause
     And there should be exactly one piece on each keep space in both browsers
     

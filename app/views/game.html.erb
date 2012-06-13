@@ -108,9 +108,14 @@
       }
     }
 
+    var occupied = function(space) {
+      return space.find('div[class~="piece"]').length > 0;
+    }
+
     var draft = function(player, new_piece, keep_space) {
       // All logic should be server side - this just does stuff.
       new_piece.addClass(player).addClass('piece');
+      console.log(new_piece);
       new_piece.css('left', 0).css('top', 0).draggable();
       if (player == 'player2') {
         new_piece.find('img').attr('src', '/assets/' + new_piece.attr('name').toLowerCase() + '_2.gif');
@@ -126,20 +131,21 @@
     $( ".keep_space, .nav_space" ).droppable({
       drop: function( event, ui ) {
         var piece = $(ui.draggable);
-        var space = this;
-        console.log(piece.attr('name'));
-        
-        $.ajax({
-          url: '/game/<%= @game_code %>/<%= @player_secret %>/draft/' + piece.attr('name') + '/' + this.id,
-          success: function (result) {
-            if (result == "ok") {
-              var new_piece = piece.clone();
-              draft(me(), new_piece, space);
-            } else {
-              console.log(result);
-            }
-          } 
-        });
+        var space = $('#' + this.id);
+                
+        if (!occupied(space)) {        
+          $.ajax({
+            url: '/game/<%= @game_code %>/<%= @player_secret %>/draft/' + piece.attr('name') + '/' + this.id,
+            success: function (result) {
+              if (result == "ok") {
+                var new_piece = piece.clone();
+                draft(me(), new_piece, space);
+              } else {
+                console.log(result);
+              }
+            } 
+          });
+        }
       } 
       
     });
