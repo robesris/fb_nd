@@ -64,7 +64,10 @@ Feature: User interface
     And my opponent drafts "Tiny"
     And my opponent drafts "Olp"
     And my opponent drafts "Gar"
-    And my opponent drafts "Aio"
+    And my opponent drafts "Aio" to "keep_1_7"
+    And my opponent drafts "Chakra" to "keep_2_7"
+    And my opponent drafts "Aio" to "e_3"
+    And my opponent drafts "Aio" to "d_7"
 
     # the following draft should fail
     And my opponent drafts "Hill"

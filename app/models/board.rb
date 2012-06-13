@@ -22,10 +22,10 @@ class Board < ActiveRecord::Base
   end
 
   def icol(col)
-    if col.is_a?(String)
+    if col.is_a?(String) && col =~ /[a-z]/
       col.ord - 96
     else
-      col
+      col.to_i
     end
   end
 

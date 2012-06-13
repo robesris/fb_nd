@@ -25,21 +25,23 @@ class Player < ActiveRecord::Base
     !self.room_in_keep?
   end
 
-  def draft(piece_name)
+  def draft(piece_name, space)
+    return false if space.occupied?
     piece_class = Kernel.const_get(piece_name)
-    #debugger if piece_name == "Nebgua"
     if piece_class.superclass == Piece::Nav &&
        self.game.phase == 'setup' &&
-       !self.nav &&
-      piece = piece_class.create(:space => self.game.board.nav_space(:player => self))
+       !self.nav
+      return false unless space == self.game.board.nav_space(:player => self)
+      #piece = piece_class.create(:space => self.game.board.nav_space(:player => self))
+      piece = piece_class.create(:space => space)
       self.pieces << piece
       return true
     elsif self.game.phase == 'setup' &&
        self.room_in_keep? &&
-       self.pieces.where(:name => piece_name).size < 2
-      piece = piece_class.create
+       self.pieces.where(:name => piece_name).size < 2 &&
+       piece = piece_class.create(:space => space)
       self.pieces << piece
-      piece.move_to_keep 
+      #piece.move_to_keep 
       return true
     end  
 

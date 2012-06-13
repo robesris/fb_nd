@@ -13,6 +13,10 @@
 
   .draft_piece {
      min-width: 70px;
+   }
+
+  .piece {
+    min-width: 70px;
   }
 
   .keep_space {
@@ -114,7 +118,7 @@
 
     var draft = function(player, new_piece, keep_space) {
       // All logic should be server side - this just does stuff.
-      new_piece.addClass(player).addClass('piece');
+      new_piece.addClass(player).addClass('piece').removeClass('draft_piece');
       console.log(new_piece);
       new_piece.css('left', 0).css('top', 0).draggable();
       if (player == 'player2') {

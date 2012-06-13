@@ -43,18 +43,28 @@ class GamesController < ApplicationController
   end
 
   def draft
+    
     game_code = params[:game_code]
     game = Game.where(:code => game_code).first
     player_secret = params[:player_secret]
     piece_name = params[:piece_name]
-    #space_string = params[:space]
-    #col = space_string[7]
-    #row = space_string[9]
-    #space = @game.board.space(col, row)
+    space_string = params[:space]
+    
+    col = space_string.slice(-3)
+    row = space_string.slice(-1)
+    
+    space = if space_string.slice(0, 4) == 'keep'
+      pnum = col
+      keep_space_num = row.to_i - 1
+      game.playernum(pnum).keep[keep_space_num]
+    else
+      game.board.space(col, row)
+    end
+    
     player = game.players.where(:secret => player_secret).first
     text = "ok"
 
-    if player.draft(piece_name)
+    if player.draft(piece_name, space)
       game.add_event(
         :player_num => player.opponent.num, 
         :action => 'draft',

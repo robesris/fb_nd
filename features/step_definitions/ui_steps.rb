@@ -161,14 +161,12 @@ When /^(I|my opponent) drafts? "([^"]*)"(?:()| to "(.*?)")$/ do |who, piece_name
     sleep(1) if @my_last_draft == piece_name
     @my_piece_names ||= []
     piece = page.find_by_id('draft_' + piece_name.downcase)
-    space = if piece[:class].include?('nav')
+    space = if destination_space
+      get_space(destination_space)
+    elsif piece[:class].include?('nav')
       my_nav_space
     else
-      if destination_space
-        get_space(destination_space)
-      else
-        get_empty_keep_space
-      end
+      get_empty_keep_space
     end
     piece.drag_to(space)
     @my_piece_names << piece_name
@@ -178,14 +176,12 @@ When /^(I|my opponent) drafts? "([^"]*)"(?:()| to "(.*?)")$/ do |who, piece_name
     sleep(1) if @opponent_last_draft == piece_name
     @opponent_piece_names ||= []
     piece = page.find_by_id('draft_' + piece_name.downcase)
-    space = if piece[:class].include?('nav')
+    space = if destination_space
+      get_space(destination_space)
+    elsif piece[:class].include?('nav')
       opponent_nav_space
     else
-      if destination_space
-        get_space(destination_space)
-      else
-        get_empty_keep_space(2)
-      end
+      get_empty_keep_space(2)
     end
     piece.drag_to(space)
     @opponent_piece_names << piece_name
