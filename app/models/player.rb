@@ -21,12 +21,16 @@ class Player < ActiveRecord::Base
     self.keep.select{ |space| space.piece }.empty?
   end
 
+  def empty_keep_space
+    self.keep.select{ |space| !(space.piece) }.first
+  end
+
   def keep_full?
     !self.room_in_keep?
   end
 
   def draft(piece_name, space)
-    return false if space.occupied?
+    return false if !space || space.occupied?
     piece_class = Kernel.const_get(piece_name)
     if piece_class.superclass == Piece::Nav &&
        self.game.phase == 'setup' &&

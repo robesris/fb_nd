@@ -1,5 +1,23 @@
+NAV_NAMES = [ 'Aio', 'Chakra', 'Deb', 'Est', 'Hill', 'Krr', 'Perseph' ]
+
 def get_player(pnum)
   @game.playernum(pnum.to_i)
+end
+
+def empty_keep_space(pnum)
+  get_player(pnum).empty_keep_space
+end
+
+def nav_space(pnum)
+  pnum.to_i == 1 ? @game.board.space(4, 1) : @game.board.space(4, 7)
+end
+
+def draft_space(pnum, piece_name)
+  if NAV_NAMES.include?(piece_name)
+    nav_space(pnum)
+  else
+    empty_keep_space(pnum)
+  end
 end
 
 Given /^a new game$/ do
@@ -16,7 +34,7 @@ Then /^the game should still be in the setup phase$/ do
 end
 
 When /^player (\d+) drafts "([^"]*)"$/ do |pnum, piece_name|
-  get_player(pnum).draft(piece_name)
+  get_player(pnum).draft(piece_name, draft_space(pnum, piece_name))
 end
 
 When /^player (\d+) indicates he is ready$/ do |pnum|
