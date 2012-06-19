@@ -10,9 +10,6 @@ Feature: User interface
     Then I should see the default setup
     When my opponent joins the game
     And I choose default starter army 1
-
-    # Make sure we can't draft more than 7 pieces
-    #And I draft "Turtle"
     And my opponent chooses default starter army 2
     And I choose to go first
     And I indicate that I am ready
@@ -66,12 +63,17 @@ Feature: User interface
     And my opponent drafts "Gar"
     And my opponent drafts "Aio" to "keep_1_7"
     And my opponent drafts "Chakra" to "keep_2_7"
+
+    # the following two drafts should fail
+    And my opponent drafts "Aio" to "d_1"
+    And my opponent drafts "Aio" to "a_5"
+
     And my opponent drafts "Aio" to "e_3"
     And my opponent drafts "Aio" to "d_7"
 
     # the following draft should fail
     And my opponent drafts "Hill"
-
+    
     And I indicate that I am ready
     And my opponent indicates that he is ready
     Then both players should see player 1s "Nebgua" at "keep_1_1"
@@ -82,4 +84,94 @@ Feature: User interface
     And both players should see player 2s other "Nebgua" at "keep_2_3"
     And both players should see player 2s "Neto" at "keep_2_4"
     And there should be exactly one piece on each keep space in both browsers
+
+  @javascript
+  Scenario: Start the game and make some moves
+    When I begin a new game
+    Then both players should not see the draft list
+    When I move the "BlackStone" at "b2" to "b3"
+    Then both players should see that piece at "b3"
+    And both players should see no piece at "b2"
+    And both players should see 1 crystal in my pool
+
+    # try moving again even though it's not my turn
+    When I move the "RedStone" at "a2" to "b2"
+    Then both players should see 1 crystal in my pool
+    And both players should see my "RedStone" at "a2"
+    And both players should see no piece at "b2"
+
+    # summoning
+    When my opponent summons "GilTwo" to "g7"
+    Then both players should see 0 crystals in my opponents pool
+    And both players should see my opponents "GilTwo" at "g7"
+
+    # my turn
+
+    # illegal move - not my opponent's turn
+    When my opponent tries to move the "BlackStone" at "g6" to "g5"
+    Then both players should see 0 crystals in my opponents pool
+    And both players should see my opponents "BlackStone" at "g6"
+    And both players should see no piece at "g5"
+
+    # illegal move - piece can't move like that
+    When I try to move from "c2" to "c4"
+    Then both players should see no piece at "c4"
+    And both players should see my "BlackStone" at "c2"
+
+    # opponent tries to move
+    When my opponent tries to move from "g7" to "c4"
+    Then both players should see no piece at "c4"
+    And both players should see my opponents "GilTwo" at "g7"
+
+    # legal move
+    When I move from "c3" to "d3"
+    Then both players should see 2 crystals in my pool
+    And both players should see my "BlackStone" at "d3"
+
+    # can't make this move because not flipped yet
+    When my opponent tries to move from "g7" to "c4"
+    Then both players should still see my opponents "GilTwo" at "g7"
+
+    When my opponent moves the "BlackStone" at "g6" to "g5"
+    Then both players should see 1 crystal in my opponents pool
+    And both players should see my opponents "BlackStone" at "g5"
+
+    # my turn
+    When I move from "d2" to "d3"
+    Then both players should see 3 crystals in my pool
+
+    # their turn
     
+    # can't capture your own piece
+    When my opponent tries to move the "RedStone" at "f7" to "f6"
+    Then both players should see my opponents "RedStone" at "f7"
+    And both players should see my opponents "BlackStone" at "f6"
+    And both players should see 1 crystal in my opponents pool
+
+    # legal move
+    When my opponent moves from "f7" to "g6"
+    Then both players should see my opponents "RedStone" at "g6"
+    And both players should see 4 crystals in my opponents pool
+
+    # my turn
+
+    # summoning a guard
+
+    # can't summon to a regular summon space
+    When I try to summon "Tro" to "a1"
+    Then both players should see no piece at "a1"
+
+    # summon next to Nav
+    When I summon "Tro" to "d2"
+    Then both players should see my "Tro" at "d2"
+    And both players should not see "Tro" in my keep
+
+    # their turn
+    
+    # move a non-stone piece
+    When my opponent moves his "GilTwo" from "g7" to "g6"
+
+    # my turn
+    # TO BE CONTINUED
+
+

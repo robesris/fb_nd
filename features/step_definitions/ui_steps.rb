@@ -140,7 +140,6 @@ end
 
 Then /^(I|my opponent) should see player (\d+)s "(.*?)" at "keep_(\d+)_(\d+)"$/ do |who, pnum, piece_name, keep_num, keep_space_num|
   browser(who)
-  #debugger if piece_name == "Nebgua"
   page.find(:xpath, "//div[@id='keep_#{keep_num}_#{keep_space_num}']/div[@name='#{piece_name}']")[:class].should have_content("player#{pnum}")
 end
 

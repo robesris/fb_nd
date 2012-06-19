@@ -37,7 +37,7 @@
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
-  <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button' %>
+  <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
 
   <%= form_for @game do |f| %>
     <%= hidden_field_tag :player, "player#{@me.num}" %>
@@ -56,7 +56,7 @@
       <%= p.text_field :crystals, :value => @game.player2.crystals %>
     <% end %>
 
-    <div class='row'>
+    <div id='draft_section' class='row'>
       <% @all_piece_klasses.each do |klass| %>
         <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %>"><div><%= klass.to_s %></div><img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' /></div>
       <% end %>
@@ -84,8 +84,9 @@
                 <%= col + '_' + row.to_s %>
                 <% if piece = @game.board.space(col, row).piece %>
                   <% klass = piece.class %>
-                  <div name='<%= piece.name %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %>">'>
-                    P<%= piece.player.num %>: <%= piece.name %>
+                  <div name='<%= piece.name %>' class='player<%= piece.player.num %> piece ui-draggable<%= klass < Piece::Nav ? ' nav' : '' %>">'>
+                    P<%= piece.player.num %>
+                    <img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' />
                   </div>
                 <% end %>
               </div>
@@ -129,7 +130,7 @@
         .append(new_piece);
     }
 
-    //$('#link_to').bind("ajax:complete", function(evt, xhr, settings) { console.log("HOORAY") });
+    $('#ready_button_form').bind("ajax:complete", function(xhr, status) { $('#draft_section').hide() });
 
     $('.draft_piece, .piece').draggable({ revert: true });
     $( ".keep_space, .nav_space" ).droppable({
@@ -155,7 +156,25 @@
     });
 
     $( ".board_space" ).droppable({
-      
+      drop: function( event, ui ) {
+        var piece = $(ui.draggable);
+        var space = $('#' + this.id);
+                
+        if (!occupied(space)) {        
+          $.ajax({
+            url: '/game/<%= @game_code %>/<%= @player_secret %>/move/' + piece.attr('id') + '/' + this.id,
+            complete: function (result) {
+              space.append(piece);
+              //if (result == "ok") {
+                //var new_piece = piece.clone();
+                //draft(me(), new_piece, space);
+              //} else {
+                //console.log(result);
+              //}
+            } 
+          });
+        }
+      }
     });
 
     // Check for new events from the other player periodically

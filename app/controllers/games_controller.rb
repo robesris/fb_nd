@@ -100,7 +100,7 @@ class GamesController < ApplicationController
       game.start_game
     end
 
-    render :nothing => true
+    render :json => 200
   end
 
   def check_for_events
