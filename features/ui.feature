@@ -90,14 +90,16 @@ Feature: User interface
     When I begin a new game
     Then both players should not see the draft list
     When I move the "BlackStone" at "b2" to "b3"
+
+
     Then both players should see that piece at "b3"
     And both players should see no piece at "b2"
     And both players should see 1 crystal in my pool
 
     # try moving again even though it's not my turn
-    When I move the "RedStone" at "a2" to "b2"
+    When I move the "RedStone" at "b1" to "b2"
     Then both players should see 1 crystal in my pool
-    And both players should see my "RedStone" at "a2"
+    And both players should see my "RedStone" at "b1"
     And both players should see no piece at "b2"
 
     # summoning

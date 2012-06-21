@@ -1,10 +1,12 @@
 class Piece < ActiveRecord::Base
-  attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space
+  attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name
   
   belongs_to :player
   has_one :board, :through => :space
   has_one :game, :through => :player
   has_one :space
+
+  #validates_uniqueness_of :unique_name, :scope => :game_id
 
   def self.all_piece_klasses
     klasses = []
@@ -70,7 +72,15 @@ class Piece < ActiveRecord::Base
   
   def initialize(params = nil, options = {})
     super(params)
+    #raise params.inspect
+    #game = 
     self.name = self.class.to_s
+
+    # realistically, pieces should never be created so fast that these ids would ever be the same
+    # forget this for now.
+    #while self.unique_name.nil? || (game.pieces.present? && game.pieces.select{ |piece| piece.unique_name == self.unique_name }.present?)
+      self.unique_name = self.name.downcase + "_" + Time.now.to_f.to_s.sub('.', '')
+    #end
   end
 
   def grid
@@ -215,12 +225,12 @@ class Piece < ActiveRecord::Base
     game = self.game
     return false if game.active_player != self.player || self.player.active_piece  # moving can never be done after another action, so you can only move when there is no active piece
 
-    col = args[:col]
-    row = args[:row]
+    target_space = if args[:space].kind_of?(Space)
+                     args[:space]
+                   else
+                     self.board.space(args[:col], args[:row])
+                   end
     pass = args[:pass]
-    puts self.game.inspect
-    target_space = self.board.space(col, row)
-    
     if self.can_reach?(target_space)
       # capture the occupying piece, if present
       if target_space.occupied?
@@ -232,6 +242,7 @@ class Piece < ActiveRecord::Base
       if self.save
         # pass turn after a successful move
         self.game.pass_turn if pass
+        return true
       else
         return false
       end

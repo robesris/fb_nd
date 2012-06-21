@@ -49,6 +49,10 @@ class Game < ActiveRecord::Base
     self.players.where(:num => 2).first
   end
 
+  def pieces
+    self.player1.pieces + self.player2.pieces
+  end
+
   def playernum(num)
     num = num.to_i
     if num == 1

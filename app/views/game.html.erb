@@ -37,24 +37,22 @@
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
+  <div>Code: <%= @game.code %></div>
+
   <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
 
   <%= form_for @game do |f| %>
     <%= hidden_field_tag :player, "player#{@me.num}" %>
     <%= hidden_field_tag :my_secret, @me.secret %>
+    <%= hidden_field_tag :phase, @game.phase %>
 
     <%= f.radio_button :active_player, :go_first %>Go first
 
     <%#= button_tag "Ready", :type => :button %>
     <%= link_to "Start", join_game_path(:game_code => @game_code, :player_secret => @player_secret) %>
 
-    <%= fields_for :player1 do |p| %>
-      <%= p.text_field :crystals, :value => @game.player1.crystals %>
-    <% end %>
-
-    <%= fields_for :player2 do |p| %>
-      <%= p.text_field :crystals, :value => @game.player2.crystals %>
-    <% end %>
+    Player 1 Crystals:<span id="crystals_1"><%= @game.player1.crystals %></span><br />
+    Player 2 Crystals:<span id="crystals_2"><%= @game.player2.crystals %></span>
 
     <div id='draft_section' class='row'>
       <% @all_piece_klasses.each do |klass| %>
@@ -68,7 +66,7 @@
           <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
             P<%= pnum %>K<%= n %>
             <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
-              <div id='p<%= pnum %>_<%= piece.name.downcase %>_1' name='<%= piece.name %>' class='piece player<%= pnum %>'><%= piece.name %></div>
+              <div id='<%= piece.unique_name %>' name='<%= piece.name %>' class='piece player<%= pnum %>'><%= piece.name %></div>
             <% end %>
           </div>
         <% end %>
@@ -84,7 +82,7 @@
                 <%= col + '_' + row.to_s %>
                 <% if piece = @game.board.space(col, row).piece %>
                   <% klass = piece.class %>
-                  <div name='<%= piece.name %>' class='player<%= piece.player.num %> piece ui-draggable<%= klass < Piece::Nav ? ' nav' : '' %>">'>
+                  <div id='<%= piece.unique_name %>' name='<%= piece.name %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %>'>
                     P<%= piece.player.num %>
                     <img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' />
                   </div>
@@ -103,7 +101,7 @@
   $(function() {
     var me = function() {
       return $('#player').val();
-    }
+    };
 
     var opponent = function() {
       if ($('#player').val() == 'player1') {
@@ -125,12 +123,50 @@
       if (player == 'player2') {
         new_piece.find('img').attr('src', '/assets/' + new_piece.attr('name').toLowerCase() + '_2.gif');
       }
-      $( keep_space )
-        .addClass( "ui-state-highlight" )
-        .append(new_piece);
+      $( keep_space ).addClass( "ui-state-highlight" ).append(new_piece);
     }
 
-    $('#ready_button_form').bind("ajax:complete", function(xhr, status) { $('#draft_section').hide() });
+    var move = function(piece, space, result) {
+      space.append(piece);
+      if (result) {
+        $('#crystals_1').text(result['p1_crystals']);
+        $('#crystals_2').text(result['p2_crystals']);
+      }
+    }
+
+    var play_phase = function() {
+      $('#phase').val('play');  // Just a temporary stopgap?  Should probably be handled in a more robust way.
+
+      $( ".board_space" ).droppable({
+        drop: function( event, ui ) {
+          var piece = $(ui.draggable);
+          var space = $('#' + this.id);
+                  
+          if (!occupied(space)) {        
+            $.ajax({
+              url: '/game/<%= @game_code %>/<%= @player_secret %>/move/' + piece.attr('id') + '/' + this.id,
+              success: function (result) {
+                if (result['status'] == 'success') {
+                  move(piece, space, result);
+                }
+                //if (result == "ok") {
+                  //var new_piece = piece.clone();
+                  //draft(me(), new_piece, space);
+                //} else {
+                  //console.log(result);
+                //}
+              } 
+            });
+          };
+        }
+      });
+    }
+
+
+    $('#ready_button_form').bind("ajax:complete", function(xhr, status) {
+      $('#draft_section').hide();
+      play_phase();
+    });
 
     $('.draft_piece, .piece').draggable({ revert: true });
     $( ".keep_space, .nav_space" ).droppable({
@@ -142,7 +178,7 @@
           $.ajax({
             url: '/game/<%= @game_code %>/<%= @player_secret %>/draft/' + piece.attr('name') + '/' + this.id,
             success: function (result) {
-              if (result == "ok") {
+              if (result['status'] == "success") {
                 var new_piece = piece.clone();
                 draft(me(), new_piece, space);
               } else {
@@ -155,27 +191,10 @@
       
     });
 
-    $( ".board_space" ).droppable({
-      drop: function( event, ui ) {
-        var piece = $(ui.draggable);
-        var space = $('#' + this.id);
-                
-        if (!occupied(space)) {        
-          $.ajax({
-            url: '/game/<%= @game_code %>/<%= @player_secret %>/move/' + piece.attr('id') + '/' + this.id,
-            complete: function (result) {
-              space.append(piece);
-              //if (result == "ok") {
-                //var new_piece = piece.clone();
-                //draft(me(), new_piece, space);
-              //} else {
-                //console.log(result);
-              //}
-            } 
-          });
-        }
-      }
-    });
+    // Enable board spaces
+    if ($('#phase').val() == 'play') {
+      play_phase();
+    }
 
     // Check for new events from the other player periodically
     var checkForEvents = function() {
@@ -201,6 +220,11 @@
             var draft_piece = $('#draft_' + event.options.piece_name.toLowerCase());
             var new_piece = draft_piece.clone();
             draft(opponent(), new_piece, $('#' + event.to));
+            break;
+          case 'move':
+            var piece = $('#' + event.piece_unique_name);
+            var space = $('#' + event.to);
+            move(piece, space, event.options)
             break;
         }
       }

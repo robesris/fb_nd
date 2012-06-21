@@ -14,6 +14,7 @@ FbNd::Application.routes.draw do
   match 'create_game' => 'games#create', :as => :create_game
   match 'game/:game_code/:player_secret' => 'games#join', :as => :join_game
   match 'game/:game_code/:player_secret/draft/:piece_name/:space' => 'games#draft', :as => :draft
+  match 'game/:game_code/:player_secret/move/:piece_unique_name/:space' => 'games#move', :as => :move
   match 'game/:game_code/:player_secret/events' => 'games#check_for_events', :as => :check_for_events
   match 'game/:game_code/:player_secret/init' => 'games#init', :as => :init
   match 'game/:game_code/:player_secret/ready' => 'games#ready', :as => :ready

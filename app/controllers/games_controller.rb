@@ -43,39 +43,59 @@ class GamesController < ApplicationController
   end
 
   def draft
-    
-    game_code = params[:game_code]
-    game = Game.where(:code => game_code).first
-    player_secret = params[:player_secret]
+    game = current_game
     piece_name = params[:piece_name]
-    space_string = params[:space]
-    
-    col = space_string.slice(-3)
-    row = space_string.slice(-1)
-    
-    space = if space_string.slice(0, 4) == 'keep'
-      pnum = col
-      keep_space_num = row.to_i - 1
-      game.playernum(pnum).keep[keep_space_num]
-    else
-      game.board.space(col, row)
-    end
-    
-    player = game.players.where(:secret => player_secret).first
-    text = "ok"
+    space = get_space(game)
+    player = current_player(game)
 
-    if player.draft(piece_name, space)
+    text = ""
+    status = "success"
+
+    if new_piece = player.draft(piece_name, space)
       game.add_event(
         :player_num => player.opponent.num, 
         :action => 'draft',
         :to => params[:space],
         :options => { :piece_name => piece_name }
       )
+      text = new_piece.unique_name
     else
       text = "Can't draft that piece there!"
+      status = "failure"
     end
 
-    render :json => text.to_json
+    render :json => { :text => text, :status => status }.to_json
+  end
+
+  def move
+    begin
+      game = current_game
+
+      return false unless game.phase == 'play'
+
+      space = get_space(game)
+      player = current_player(game)
+      piece = player.pieces.where(:unique_name => params[:piece_unique_name]).first
+
+      result = nil
+
+      if player.move(piece, space)
+        result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }
+        game.add_event(
+          :player_num => player.opponent.num,
+          :action => 'move',
+          :to => params[:space],
+          :piece => piece,
+          :options => result
+        )
+      else
+        result = { :status => 'failure', :message => "Can't move that piece there!" }
+      end
+
+      render :json => result
+    rescue => e
+      render :nothing => true
+    end
   end
 
   def init
@@ -114,7 +134,7 @@ class GamesController < ApplicationController
       ActiveRecord::Base.transaction do
         begin
           player.update_attribute(:checking_for_events, true)
-          events = game.events.where(:player_num => player.num)
+          events = game.events.where(:player_num => player.num) #.reject{ |e| e.action == 'move' }
           events.each { |e| e.destroy }
           player.update_attribute(:checking_for_events, false)
         rescue ActiveRecord::Rollback
@@ -123,6 +143,7 @@ class GamesController < ApplicationController
       end
     end
 
+    events = events.map{ |event| { :action => event.action, :piece_unique_name => event.piece && event.piece.unique_name, :to => event.to, :options => event.options } }
     render :json => events.to_json
   end
 
@@ -139,4 +160,19 @@ class GamesController < ApplicationController
     player = game.players.where(:secret => player_secret).first
     player
   end
+
+  def get_space(game)
+    space_string = params[:space]
+    col = space_string.slice(-3)
+    row = space_string.slice(-1)
+
+    if space_string.slice(0, 4) == 'keep'
+      pnum = col
+      keep_space_num = row.to_i - 1
+      game.playernum(pnum).keep[keep_space_num]
+    else
+      game.board.space(col, row)
+    end
+  end
+
 end

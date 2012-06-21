@@ -52,9 +52,12 @@ Then /^(I|my opponent) (should|should not) see that piece at "(.*?)"$/ do |who, 
   browser(who)
 
   if should == 'should'
+    piece_at(coords).should_not be_nil
     piece_at(coords)[:id].should == @piece[:id]
   else
-    piece_at(coords)[:id].should_not == @piece[:id]
+    if piece_at(coords)
+      piece_at(coords)[:id].should_not == @piece[:id]
+    end
   end
 end
 
@@ -65,12 +68,32 @@ Then /^both players should see that piece at "(.*?)"$/ do |coords|
   }
 end
 
-Then /^both players should see no piece at "(.*?)"$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+Then /^(I|my opponent) should see no piece at "(.*?)"$/ do |who, coords|
+  browser(who)
+
+  piece_at(coords).should be_nil
 end
 
-Then /^both players should see (\d+) crystal in my pool$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+Then /^(I|my opponent) should see (\d+) crystals? in (my|my opponents) pool$/ do |who, num, whose|
+  browser(who)
+
+  pnum = whose == 'my' ? 1 : 2
+
+  page.find_by_id("crystals_#{pnum}").text.to_i.should == num.to_i
+end
+
+Then /^both players should see no piece at "(.*?)"$/ do |coords|
+  steps %Q{
+    Then I should see no piece at "#{coords}"
+    And my opponent should see no piece at "#{coords}"
+  }
+end
+
+Then /^both players should see (\d+) crystals? in (my|my opponents) pool$/ do |num, whose|
+  steps %Q{
+    Then I should see #{num} crystals in #{whose} pool
+    And my opponent should see #{num} crystals in #{whose} pool
+  }
 end
 
 Then /^both players should see my "(.*?)" at "(.*?)"$/ do |arg1, arg2|
@@ -78,10 +101,6 @@ Then /^both players should see my "(.*?)" at "(.*?)"$/ do |arg1, arg2|
 end
 
 When /^my opponent summons "(.*?)" to "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
-
-Then /^both players should see (\d+) crystals in my opponents pool$/ do |arg1|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -105,19 +124,11 @@ When /^I move from "(.*?)" to "(.*?)"$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
 
-Then /^both players should see (\d+) crystals in my pool$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
-end
-
 Then /^both players should still see my opponents "(.*?)" at "(.*?)"$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
 
 When /^my opponent moves the "(.*?)" at "(.*?)" to "(.*?)"$/ do |arg1, arg2, arg3|
-  pending # express the regexp above with the code you wish you had
-end
-
-Then /^both players should see (\d+) crystal in my opponents pool$/ do |arg1|
   pending # express the regexp above with the code you wish you had
 end
 

@@ -135,7 +135,7 @@ end
 Then /^(I|my opponent) should have (\d+) crystals$/ do |who, num|
   pnum = who == 'I' ? 1 : 2
   
-  find(:xpath, "//input[@id='player#{pnum}_crystals']").value.should == num
+  page.find_by_id("crystals_#{pnum}").text.to_i.should == num.to_i
 end
 
 Then /^(I|my opponent) should see player (\d+)s "(.*?)" at "keep_(\d+)_(\d+)"$/ do |who, pnum, piece_name, keep_num, keep_space_num|
