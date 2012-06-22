@@ -66,7 +66,7 @@
           <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
             P<%= pnum %>K<%= n %>
             <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
-              <div id='<%= piece.unique_name %>' name='<%= piece.name %>' class='piece player<%= pnum %>'><%= piece.name %></div>
+              <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='piece player<%= pnum %>'><%= piece.name %></div>
             <% end %>
           </div>
         <% end %>
@@ -82,7 +82,7 @@
                 <%= col + '_' + row.to_s %>
                 <% if piece = @game.board.space(col, row).piece %>
                   <% klass = piece.class %>
-                  <div id='<%= piece.unique_name %>' name='<%= piece.name %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %>'>
+                  <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %>'>
                     P<%= piece.player.num %>
                     <img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' />
                   </div>
@@ -111,13 +111,17 @@
       }
     }
 
+    var playernum = function(player) {
+      return player == 'player1' ? 1 : 2
+    }
+
     var occupied = function(space) {
       return space.find('div[class~="piece"]').length > 0;
     }
 
     var draft = function(player, new_piece, keep_space) {
       // All logic should be server side - this just does stuff.
-      new_piece.addClass(player).addClass('piece').removeClass('draft_piece');
+      new_piece.addClass(player).addClass('piece').removeClass('draft_piece').attr('data-owner', playernum(player));
       console.log(new_piece);
       new_piece.css('left', 0).css('top', 0).draggable();
       if (player == 'player2') {
@@ -134,6 +138,10 @@
       }
     }
 
+    var in_keep = function(piece) {
+      return false;
+    }
+
     var play_phase = function() {
       $('#phase').val('play');  // Just a temporary stopgap?  Should probably be handled in a more robust way.
 
@@ -142,21 +150,26 @@
           var piece = $(ui.draggable);
           var space = $('#' + this.id);
                   
-          if (!occupied(space)) {        
-            $.ajax({
-              url: '/game/<%= @game_code %>/<%= @player_secret %>/move/' + piece.attr('id') + '/' + this.id,
-              success: function (result) {
-                if (result['status'] == 'success') {
-                  move(piece, space, result);
-                }
-                //if (result == "ok") {
-                  //var new_piece = piece.clone();
-                  //draft(me(), new_piece, space);
-                //} else {
-                  //console.log(result);
-                //}
-              } 
-            });
+          if (!occupied(space)) {
+            // summon, move, other?
+            if in_keep(piece) {
+              //handle
+            } else {
+              $.ajax({
+                url: '/game/<%= @game_code %>/<%= @player_secret %>/move/' + piece.attr('id') + '/' + this.id,
+                success: function (result) {
+                  if (result['status'] == 'success') {
+                    move(piece, space, result);
+                  }
+                  //if (result == "ok") {
+                    //var new_piece = piece.clone();
+                    //draft(me(), new_piece, space);
+                  //} else {
+                    //console.log(result);
+                  //}
+                } 
+              });
+            }
           };
         }
       });

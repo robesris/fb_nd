@@ -7,6 +7,11 @@ def piece_at(coords)
   end
 end
 
+def empty?(coords)
+  space = get_space(coords)
+  space.has_no_xpath?('div')
+end
+
 When /^I begin a new game$/ do
   steps %Q{
     When I am on the app homepage
@@ -71,7 +76,7 @@ end
 Then /^(I|my opponent) should see no piece at "(.*?)"$/ do |who, coords|
   browser(who)
 
-  piece_at(coords).should be_nil
+  empty?(coords).should be_true
 end
 
 Then /^(I|my opponent) should see (\d+) crystals? in (my|my opponents) pool$/ do |who, num, whose|
@@ -96,16 +101,25 @@ Then /^both players should see (\d+) crystals? in (my|my opponents) pool$/ do |n
   }
 end
 
-Then /^both players should see my "(.*?)" at "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
+Then /^both players should see (my|my opponents) "(.*?)" at "(.*?)"$/ do |whose, piece_name, coords|
+  @piece = piece_at(coords)
+  @piece.should_not be_nil
+  pnum = whose == 'my' ? 1 : 2
+  @piece['data-owner'].should == pnum.to_s
+
+  steps %Q{
+    Then I should see that piece at "#{coords}"
+    Then my opponent should see that piece at "#{coords}"
+  }
 end
 
-When /^my opponent summons "(.*?)" to "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
+When /^(I|my opponent) summons? "(.*?)" to "(.*?)"$/ do |who, piece_name, coords|
+  browser(who)
 
-Then /^both players should see my opponents "(.*?)" at "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
+  pnum = who == 'I' ? 1 : 2
+  keep = page.find_by_id("keep_#{pnum}")
+  @piece = keep.find(:xpath, "div/div[@name='#{piece_name}']")
+  @piece.drag_to(get_space(coords))
 end
 
 When /^my opponent tries to move the "(.*?)" at "(.*?)" to "(.*?)"$/ do |arg1, arg2, arg3|
@@ -137,10 +151,6 @@ When /^my opponent moves from "(.*?)" to "(.*?)"$/ do |arg1, arg2|
 end
 
 When /^I try to summon "(.*?)" to "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^I summon "(.*?)" to "(.*?)"$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
 
