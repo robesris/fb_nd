@@ -199,22 +199,27 @@ class Piece < ActiveRecord::Base
     self.board.spaces.include?(self.space) && !self.in_graveyard?
   end
 
-  def summon(col, row)
-    return false if self.game.active_player != self.player
+  def summon(args = {})
+    return false if self.game.active_player != self.player || self.player.active_piece  # moving can never be done after another action, so you can only move when there is no active piece
 
-    space = self.game.board.space(col, row)
+    space = if args[:space].kind_of?(Space)
+                     args[:space]
+                   else
+                     self.board.space(args[:col], args[:row])
+                   end
+    pass = args[:pass]
     
     if self.guard?
       if self.in_keep? && space.adjacent_to_nav?(self.player) && !space.occupied?
         self.update_attribute(:space, space)
-        self.game.pass_turn
+        self.game.pass_turn if pass
       else
         return false
       end
     else
       if self.in_keep? && space.summon_space == self.player.num && !space.occupied?
         self.update_attribute(:space, space)
-        self.game.pass_turn
+        self.game.pass_turn if pass
       else
         return false
       end

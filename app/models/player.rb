@@ -52,9 +52,17 @@ class Player < ActiveRecord::Base
     false
   end
 
-  def move(piece, space)
+  def summon(piece, space)
     if self.pieces.include?(piece)
-      return piece.move({:space => space, :pass => false})
+      return piece.summon({:space => space, :pass => true}) # summoning ends turn unless the result of an ability
+    else
+      return false
+    end
+  end
+
+  def move(piece, space, pass = false)
+    if self.pieces.include?(piece)
+      return piece.move({:space => space, :pass => pass})
     else
       return false
     end

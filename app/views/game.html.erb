@@ -17,6 +17,7 @@
 
   .piece {
     min-width: 70px;
+    font-size: 10px;
   }
 
   .keep_space {
@@ -32,12 +33,25 @@
     border: 1px solid;
     border-color: #000000;
   }
+
+  body {
+    font-size: 8px;
+  }
+
+  #left_section {
+    max-width: 50%;
+  }
+
+  #draft_section {
+    max-width: 50%;
+  }
 </style>
 
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
   <div>Code: <%= @game.code %></div>
+  <div>Player Secret: <%= @me.secret %></div>
 
   <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
 
@@ -54,26 +68,34 @@
     Player 1 Crystals:<span id="crystals_1"><%= @game.player1.crystals %></span><br />
     Player 2 Crystals:<span id="crystals_2"><%= @game.player2.crystals %></span>
 
-    <div id='draft_section' class='row'>
+    <div id="left_section" class="left">
+
+      <div id='draft_section' class=''>
       <% @all_piece_klasses.each do |klass| %>
         <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %>"><div><%= klass.to_s %></div><img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' /></div>
       <% end %>
     </div>
-
+    <br />
     <% 1.upto(2) do |pnum| %>
-      <div id="keep_<%= pnum %>" class="clear">
+      <div id="keep_<%= pnum %>" name="keep" class="row">
         <% 1.upto(7) do |n| %>
           <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
             P<%= pnum %>K<%= n %>
             <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
-              <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='piece player<%= pnum %>'><%= piece.name %></div>
+              <% klass = piece.class %>
+              <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='piece player<%= pnum %>'><%= piece.name %>
+                <img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' />
+              </div>
             <% end %>
           </div>
         <% end %>
       </div>
     <% end %>
 
-    <div>
+      </div>
+
+
+    <div class="left">
       <% 7.downto(1) do |row| %>
         <div class="row">
           <% 'a'.upto('g') do |col| %>
@@ -93,6 +115,8 @@
         </div>
       <% end %>
     </div>
+
+    
   <% end %>
 
 <% end %>
@@ -119,9 +143,16 @@
       return space.find('div[class~="piece"]').length > 0;
     }
 
-    var draft = function(player, new_piece, keep_space) {
+    var in_keep = function(piece) {
+    
+      //alert( piece.parent().parent().attr('name'));
+      //alert( piece.parent().parent().attr('name') == 'keep');
+      return piece.parent().parent().attr('name') == 'keep';
+    }
+
+    var draft = function(player, new_piece, keep_space, result) {
       // All logic should be server side - this just does stuff.
-      new_piece.addClass(player).addClass('piece').removeClass('draft_piece').attr('data-owner', playernum(player));
+      new_piece.addClass(player).addClass('piece').removeClass('draft_piece').attr('data-owner', playernum(player)).attr('id', result['piece_unique_name']);
       console.log(new_piece);
       new_piece.css('left', 0).css('top', 0).draggable();
       if (player == 'player2') {
@@ -131,15 +162,13 @@
     }
 
     var move = function(piece, space, result) {
-      space.append(piece);
+      space.append(piece.css('top', '0px').css('left', '0px'));
+      //piece.remove();
+      //piece.appendTo(space);
       if (result) {
         $('#crystals_1').text(result['p1_crystals']);
         $('#crystals_2').text(result['p2_crystals']);
       }
-    }
-
-    var in_keep = function(piece) {
-      return false;
     }
 
     var play_phase = function() {
@@ -152,21 +181,26 @@
                   
           if (!occupied(space)) {
             // summon, move, other?
-            if in_keep(piece) {
-              //handle
+            if (in_keep(piece)) {
+              // handle as summon
+              console.log("SUMMONING");
+              $.ajax({
+                url: '/game/<%= @game_code %>/<%= @player_secret %>/summon/' + piece.attr('id') + '/' + this.id,
+                success: function (result) {
+                  if (result['status'] == 'success') {
+                    //piece.draggable({ disable: true, revert: false });
+                    move(piece, space, result);
+                  }
+                }
+              });
             } else {
+              // handle as move
               $.ajax({
                 url: '/game/<%= @game_code %>/<%= @player_secret %>/move/' + piece.attr('id') + '/' + this.id,
                 success: function (result) {
                   if (result['status'] == 'success') {
                     move(piece, space, result);
                   }
-                  //if (result == "ok") {
-                    //var new_piece = piece.clone();
-                    //draft(me(), new_piece, space);
-                  //} else {
-                    //console.log(result);
-                  //}
                 } 
               });
             }
@@ -181,7 +215,7 @@
       play_phase();
     });
 
-    $('.draft_piece, .piece').draggable({ revert: true });
+    $('.draft_piece, .piece').draggable({ revert: true, snap: false });
     $( ".keep_space, .nav_space" ).droppable({
       drop: function( event, ui ) {
         var piece = $(ui.draggable);
@@ -193,7 +227,7 @@
             success: function (result) {
               if (result['status'] == "success") {
                 var new_piece = piece.clone();
-                draft(me(), new_piece, space);
+                draft(me(), new_piece, space, result);
               } else {
                 console.log(result);
               }
@@ -232,7 +266,12 @@
           case 'draft':
             var draft_piece = $('#draft_' + event.options.piece_name.toLowerCase());
             var new_piece = draft_piece.clone();
-            draft(opponent(), new_piece, $('#' + event.to));
+            draft(opponent(), new_piece, $('#' + event.to), { piece_unique_name: event.piece_unique_name });
+            break;
+          case 'summon':
+            var piece = $('#' + event.piece_unique_name);
+            var space = $('#' + event.to);
+            move(piece, space, null)
             break;
           case 'move':
             var piece = $('#' + event.piece_unique_name);

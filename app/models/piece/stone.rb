@@ -7,6 +7,7 @@ class Piece::Stone < Piece
       player = self.player
       player.add_crystals(val)
       player.save
+      self.game.pass_turn
     end
   end
 

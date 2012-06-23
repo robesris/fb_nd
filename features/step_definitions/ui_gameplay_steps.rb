@@ -44,8 +44,8 @@ Then /^both players should not see the draft list$/ do
   }
 end
 
-When /^I move the "(.*?)" at "(.*?)" to "(.*?)"$/ do |piece_name, from_space, to_space|
-  my_browser
+When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
+  browser(who)
   
   @piece = piece_at(from_space)
   @piece[:name].should == piece_name
@@ -55,11 +55,13 @@ end
 
 Then /^(I|my opponent) (should|should not) see that piece at "(.*?)"$/ do |who, should, coords|
   browser(who)
-
+  
   if should == 'should'
+    puts "#{who} should..."
     piece_at(coords).should_not be_nil
     piece_at(coords)[:id].should == @piece[:id]
   else
+    puts "#{who} should not..."
     if piece_at(coords)
       piece_at(coords)[:id].should_not == @piece[:id]
     end
@@ -117,36 +119,19 @@ When /^(I|my opponent) summons? "(.*?)" to "(.*?)"$/ do |who, piece_name, coords
   browser(who)
 
   pnum = who == 'I' ? 1 : 2
-  keep = page.find_by_id("keep_#{pnum}")
-  @piece = keep.find(:xpath, "div/div[@name='#{piece_name}']")
+  #keep = page.find_by_id("keep_#{pnum}")
+  @piece = page.find(:xpath, "//div[@id='keep_#{pnum}']/div/div[@name='#{piece_name}']")
   @piece.drag_to(get_space(coords))
 end
 
-When /^my opponent tries to move the "(.*?)" at "(.*?)" to "(.*?)"$/ do |arg1, arg2, arg3|
-  pending # express the regexp above with the code you wish you had
-end
+When /^(I|my opponent)(?: try to| tries to) moves? from "(.*?)" to "(.*?)"$/ do |who, from_coords, to_coords|
+  browser(who)
 
-When /^I try to move from "(.*?)" to "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^my opponent tries to move from "(.*?)" to "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^I move from "(.*?)" to "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
+  @piece = piece_at(from_coords)
+  @piece.drag_to(get_space(to_coords))
 end
 
 Then /^both players should still see my opponents "(.*?)" at "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^my opponent moves the "(.*?)" at "(.*?)" to "(.*?)"$/ do |arg1, arg2, arg3|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^my opponent moves from "(.*?)" to "(.*?)"$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
 

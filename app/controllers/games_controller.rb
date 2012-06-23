@@ -50,21 +50,56 @@ class GamesController < ApplicationController
 
     text = ""
     status = "success"
+    result = ""
 
     if new_piece = player.draft(piece_name, space)
       game.add_event(
         :player_num => player.opponent.num, 
         :action => 'draft',
         :to => params[:space],
-        :options => { :piece_name => piece_name }
+        :options => { :piece_name => piece_name },
+        :piece => new_piece
       )
-      text = new_piece.unique_name
+     result = { :status => status, :piece_unique_name => new_piece.unique_name }.to_json
     else
       text = "Can't draft that piece there!"
       status = "failure"
+      result = { :status => status, :message => text }.to_json
     end
 
-    render :json => { :text => text, :status => status }.to_json
+    render :json => result
+  end
+
+  def summon
+    begin
+      game = current_game
+
+      return false unless game.phase == 'play'
+
+      space = get_space(game)
+      player = current_player(game)
+      piece = player.pieces.where(:unique_name => params[:piece_unique_name]).first
+
+      result = nil
+
+      if player.summon(piece, space)
+        result = { :status => 'success', :piece_unique_name => piece.unique_name }
+        game.add_event(
+          :player_num => player.opponent.num,
+          :action => 'summon',
+          :to => params[:space],
+          :piece => piece,
+          :options => result
+        )
+      else
+        result = { :status => 'failure', :message => "Can't summon there!" }
+      end
+
+      render :json => result
+    rescue => e
+      puts e.message, e.backtrace
+      render :nothing => true
+    end
   end
 
   def move
