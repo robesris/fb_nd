@@ -3,6 +3,10 @@ class Tro < Piece
     4
   end
 
+  def guard?
+    true
+  end
+
   def die
     super
     p = self.player

@@ -126,9 +126,9 @@ Feature: User interface
     And both players should see my opponents "GilTwo" at "g7"
 
     # legal move
-    When I move from "c3" to "d3"
+    When I move from "b3" to "b4"
     Then both players should see 2 crystals in my pool
-    And both players should see my "BlackStone" at "d3"
+    And both players should see my "BlackStone" at "b4"
 
     # can't make this move because not flipped yet
     When my opponent tries to move from "g7" to "c4"
@@ -152,6 +152,7 @@ Feature: User interface
 
     # legal move
     When my opponent moves from "f7" to "g6"
+    And I wait 1 second
     Then both players should see my opponents "RedStone" at "g6"
     And both players should see 4 crystals in my opponents pool
 
@@ -161,6 +162,7 @@ Feature: User interface
 
     # can't summon to a regular summon space
     When I try to summon "Tro" to "a1"
+    And I wait 1 second
     Then both players should see no piece at "a1"
 
     # summon next to Nav

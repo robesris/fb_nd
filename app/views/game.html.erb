@@ -163,6 +163,7 @@
 
     var move = function(piece, space, result) {
       space.append(piece.css('top', '0px').css('left', '0px'));
+      piece.css('top', '0px').css('left', '0px');
       //piece.remove();
       //piece.appendTo(space);
       if (result) {
@@ -205,6 +206,7 @@
               });
             }
           };
+          piece.css('top', '0px').css('left', '0px');
         }
       });
     }

@@ -53,6 +53,12 @@ When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(
   @piece.drag_to(get_space(to_space))
 end
 
+When /^(I|my opponent) moves his "(.*?)" from "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
+  steps %Q{
+    When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}"
+  }
+end
+
 Then /^(I|my opponent) (should|should not) see that piece at "(.*?)"$/ do |who, should, coords|
   browser(who)
   
@@ -86,7 +92,8 @@ Then /^(I|my opponent) should see (\d+) crystals? in (my|my opponents) pool$/ do
 
   pnum = whose == 'my' ? 1 : 2
 
-  page.find_by_id("crystals_#{pnum}").text.to_i.should == num.to_i
+  #page.find_by_id("crystals_#{pnum}").text.should == num
+  page.should have_xpath("//span[@id='crystals_#{pnum}' and text()='#{num}']")
 end
 
 Then /^both players should see no piece at "(.*?)"$/ do |coords|
@@ -103,7 +110,7 @@ Then /^both players should see (\d+) crystals? in (my|my opponents) pool$/ do |n
   }
 end
 
-Then /^both players should see (my|my opponents) "(.*?)" at "(.*?)"$/ do |whose, piece_name, coords|
+Then /^both players should (?:|still )see (my|my opponents) "(.*?)" at "(.*?)"$/ do |whose, piece_name, coords|
   @piece = piece_at(coords)
   @piece.should_not be_nil
   pnum = whose == 'my' ? 1 : 2
@@ -115,7 +122,7 @@ Then /^both players should see (my|my opponents) "(.*?)" at "(.*?)"$/ do |whose,
   }
 end
 
-When /^(I|my opponent) summons? "(.*?)" to "(.*?)"$/ do |who, piece_name, coords|
+When /^(I|my opponent) (?:|try to |tries to )summons? "(.*?)" to "(.*?)"$/ do |who, piece_name, coords|
   browser(who)
 
   pnum = who == 'I' ? 1 : 2
@@ -124,26 +131,24 @@ When /^(I|my opponent) summons? "(.*?)" to "(.*?)"$/ do |who, piece_name, coords
   @piece.drag_to(get_space(coords))
 end
 
-When /^(I|my opponent)(?: try to| tries to) moves? from "(.*?)" to "(.*?)"$/ do |who, from_coords, to_coords|
+When /^(I|my opponent)(?:| try to| tries to) moves? from "(.*?)" to "(.*?)"$/ do |who, from_coords, to_coords|
   browser(who)
 
   @piece = piece_at(from_coords)
   @piece.drag_to(get_space(to_coords))
 end
 
-Then /^both players should still see my opponents "(.*?)" at "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
+Then /^(I|my opponent) should not see "(.*?)" in (my|my opponents) keep$/ do |who, piece_name, whose|
+  browser(who)
+
+  pnum = whose == 'my' ? 1 : 2
+  page.should_not have_xpath("//keep_#{pnum}/div/div[@name='Tro']")
 end
 
-When /^I try to summon "(.*?)" to "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
-
-Then /^both players should not see "(.*?)" in my keep$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^my opponent moves his "(.*?)" from "(.*?)" to "(.*?)"$/ do |arg1, arg2, arg3|
-  pending # express the regexp above with the code you wish you had
+Then /^both players should not see "(.*?)" in (my|my opponents) keep$/ do |piece_name, whose|
+  steps %Q{
+    Then I should not see "#{piece_name}" in #{whose} keep
+    And my opponent should not see "#{piece_name}" in #{whose} keep
+  }
 end
 
