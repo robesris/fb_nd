@@ -158,7 +158,7 @@ end
 When /^player (\d+) (?:tries to summon|summons) '(.*)' to '([a-g])(\d+)'$/ do |pnum, piece_name, col, row|
   player = @game.playernum(pnum)
   piece = player.pieces.where(:name => piece_name).first
-  piece.summon(icol(col), row.to_i)
+  piece.summon({:col => icol(col), :row => row.to_i})
 end
 
 Then /^player (\d+)s '(.*)' should be in his keep$/ do |pnum, piece_name|

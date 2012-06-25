@@ -205,9 +205,9 @@ class Piece < ActiveRecord::Base
     space = if args[:space].kind_of?(Space)
                      args[:space]
                    else
-                     self.board.space(args[:col], args[:row])
+                     self.game.board.space(args[:col], args[:row])
                    end
-    pass = args[:pass]
+    pass = args[:pass].present? ? args[:pass] : true
     
     if self.guard?
       if self.in_keep? && space.adjacent_to_nav?(self.player) && !space.occupied?
