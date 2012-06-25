@@ -6,4 +6,8 @@ class RedStone < Piece::Stone
   def grid
     RED
   end
+
+  def move(args)
+    super(args)
+  end
 end

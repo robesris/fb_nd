@@ -60,6 +60,9 @@ When /^player (\d+) moves from '([a-g])(\d+)' to '([a-g])(\d+)'(| and does not p
   col1 = icol(col1)
   col2 = icol(col2)
   @game.move({ :col1 => col1, :row1 => row1, :col2 => col2, :row2 => row2, :pass => pass.blank? ? true : false })
+
+  # pass the turn unless we specify otherwise
+  @game.playernum(pnum).pass_turn if pass.blank?
 end
 
 When /^player (\d+) tries to move from '([a-g])(\d+)' to '([a-g])(\d+)'$/ do |pnum, col1, row1, col2, row2|

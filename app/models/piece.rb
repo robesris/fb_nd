@@ -246,7 +246,8 @@ class Piece < ActiveRecord::Base
       self.player.update_attribute(:active_piece, self)
       if self.save
         # pass turn after a successful move
-        self.game.pass_turn if pass
+        # actually, maybe better to leave auto-passing up to the stone pieces
+        # self.game.pass_turn if pass
         return true
       else
         return false

@@ -6,4 +6,8 @@ class BlackStone < Piece::Stone
   def grid
     BLACK
   end
+
+  def move(args)
+    super(args)
+  end
 end

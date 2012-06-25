@@ -68,6 +68,11 @@ class Player < ActiveRecord::Base
     end
   end
 
+  def pass_turn
+    # don't forget you have to do SOMETHING on your turn before passing!
+    self.game.pass_turn if self.game.active_player == self && self.active_piece && !self.game.waiting_for
+  end
+
   def get_ready
     self.ready = self.nav && self.keep_full?
     self.save

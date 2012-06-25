@@ -48,7 +48,8 @@ Feature: Gameplay
     And player 2 has 3 crystals
     And it is player 1s turn
     When player 1 moves from 'g1' to 'g2'
-    And player 2 tries to move from 'e5' to 'e6'
+    Then it should be player 2s turn
+    When player 2 tries to move from 'e5' to 'e6'
     Then player 2 should have 3 crystals
     And player 2s 'RedStone' should be at 'e5'
     And it should be player 2s turn
