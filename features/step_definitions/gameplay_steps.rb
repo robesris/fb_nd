@@ -65,9 +65,9 @@ When /^player (\d+) moves from '([a-g])(\d+)' to '([a-g])(\d+)'(| and does not p
   @game.playernum(pnum).pass_turn if pass.blank?
 end
 
-When /^player (\d+) tries to move from '([a-g])(\d+)' to '([a-g])(\d+)'$/ do |pnum, col1, row1, col2, row2|
+When /^player (\d+) tries to move from '([a-g])(\d+)' to '([a-g])(\d+)'(| and does not pass the turn)$/ do |pnum, col1, row1, col2, row2, pass|
   steps %Q{
-    When player #{pnum} moves from '#{col1}#{row1}' to '#{col2}#{row2}'
+    When player #{pnum} moves from '#{col1}#{row1}' to '#{col2}#{row2}'#{pass}
   }
 end
 
@@ -107,7 +107,7 @@ Then /^player (\d+)s '(.*)' should not be at '([a-g])(\d+)'$/ do |pnum, piece_na
   piece.space.should_not == @game.board.space(icol(col), row.to_i)
 end
 
-Then /^it should be player (\d+)s turn$/ do |pnum|
+Then /^it should (?:|still )be player (\d+)s turn$/ do |pnum|
   @game = Game.find(@game.id)
   @game.active_player.num.should == pnum.to_i
 end

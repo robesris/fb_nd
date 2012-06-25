@@ -91,10 +91,13 @@ Feature: Gameplay
     When player 1 tries to move from 'a1' to 'c3'
     Then player 1 should have an 'Agu' at 'a1'
     When player 1 moves from 'a1' to 'b2' and does not pass the turn
-    And player 1 tries to move from 'b2' to 'b3'
+    Then it should be player 1s turn
+    When player 1 tries to move from 'b2' to 'b3' and does not pass the turn
     Then player 1s 'Agu' should be at 'b2'
+    And it should still be player 1s turn
     When player 1 flips 'Agu'
-    Then player 1 should have 0 crystals
+    Then player 1s 'Agu' should be flipped
+    And player 1 should have 0 crystals
     And player 1s 'Agu' should be at 'b2'
     And it should be player 2s turn
     When player 2 moves from 'g5' to 'g4'

@@ -265,7 +265,10 @@ class Piece < ActiveRecord::Base
 
     self.player.add_crystals(-flip_cost)
     self.update_attribute(:flipped, true)
+    
+    # in general, flipping will be the end of the turn
     self.game.pass_turn if pass
+
     true
   end
 
