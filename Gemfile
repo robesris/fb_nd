@@ -5,12 +5,12 @@ gem 'rails', '3.2.3'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-group :test, :development, :cucumber do
+group :test do
   gem 'debugger'
-  #gem 'rspec'
-  #gem 'rspec-rails'
-  #gem 'cucumber'
-  #gem 'cucumber-rails'
+  gem 'rspec'
+  gem 'rspec-rails'
+  gem 'cucumber'
+  gem 'cucumber-rails'
   gem 'capybara'
   gem 'capybara-webkit'
   gem 'selenium'
@@ -18,8 +18,6 @@ group :test, :development, :cucumber do
 end
 
 gem 'sqlite3'
-
-gem 'json'
 
 # Gems used only for assets and not required
 # in production environments by default.
