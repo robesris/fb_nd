@@ -152,7 +152,7 @@ Feature: User interface
 
     # legal move
     When my opponent moves from "f7" to "g6"
-    And I wait 2 seconds
+    And I wait 5 seconds
     Then both players should see my opponents "RedStone" at "g6"
     And both players should see 4 crystals in my opponents pool
     
@@ -179,13 +179,13 @@ Feature: User interface
     And it should be my opponents turn
 
     When my opponent moves his "RedStone" from "g6" to "f5"
-    Then both players should see 6 crystals in my opponents pool
+    Then both players should see 7 crystals in my opponents pool
     And it should be my turn
 
     # my turn
     When I move my "Tro" from "d2" to "e3"
     Then it should still be my turn
-
+    #And I allow user input
     When I try to flip the "Tro" at "e3"
     Then both players should see that piece unflipped
 
@@ -197,10 +197,11 @@ Feature: User interface
     Then it should be my opponents turn
 
     # their turn
-    When my opponent moves the "GilTwo" at "g7" to "g6" and passes the turn
+    When my opponent moves the "GilTwo" at "g7" to "g6"
+    And my opponent passes the turn
 
     # my turn
-    When I move the "BlackStone" at "f2" to "f3"
+    And I move the "BlackStone" at "f2" to "f3"
     Then both players should see 4 crystals in my pool
 
     # their turn
@@ -213,4 +214,5 @@ Feature: User interface
     And both players should see my "BlackStone" at "f4"
     And both players should see 8 crystals in my pool
     And it should be my opponents turn
+    And I allow user input
 

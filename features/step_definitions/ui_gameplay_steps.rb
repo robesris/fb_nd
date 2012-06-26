@@ -53,7 +53,7 @@ When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(
   @piece.drag_to(get_space(to_space))
 end
 
-When /^(I|my opponent)(?:| try to| tries to) moves (?:my|his) "(.*?)" from "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
+When /^(I|my opponent)(?:| try to| tries to) moves? (?:my|his) "(.*?)" from "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
   steps %Q{
     When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}"
   }
@@ -155,13 +155,14 @@ end
 Then /^it should(?:| still) be (my|my opponents) turn$/ do |whose|
   
   my_browser
-  page.find_by_id('active_player').text.should == "#{whose == 'my' ? 'Your turn' : 'Opponent\'s turn'}"
+  page.find_by_id('active_player_text').text.should == "#{whose == 'my' ? 'Your Turn' : 'Opponent\'s Turn'}"
   opponent_browser
-  page.find_by_id('active_player').text.should == "#{whose == 'my' ? 'Opponent\'s turn' : 'Your turn' }"
+  page.find_by_id('active_player_text').text.should == "#{whose == 'my' ? 'Opponent\'s Turn' : 'Your Turn' }"
 end
 
-When /^(I|my opponent) (?:|try |tries ) to flip the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
+When /^(I|my opponent) (?:|try |tries )to flip the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
   browser(who)
+  
   @piece = piece_at(coords)
   @piece[:name].should == piece_name
 
@@ -175,4 +176,19 @@ Then /^both players should see that piece unflipped$/ do
     @piece.find_by_id('compass')[:src].should have_content('_flipped')
   end
 end
+
+When /^(I|my opponent) pass(?:|es) the turn$/ do |who|
+  browser(who)
+
+  click_button("End Turn")
+end
+
+Then /^both players should see (my|my opponents) "(.*?)" in (?:my|their|the) graveyard$/ do |whose, piece_name|
+  steps %Q{
+    Then I should see #{whose} "#{piece_name}" in the graveyard
+    And my opponent should see #{whose} "#{piece_name}" in the graveyard
+  }
+end
+
+
 

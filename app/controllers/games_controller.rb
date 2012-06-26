@@ -179,6 +179,7 @@ class GamesController < ApplicationController
     end
 
     events = events.map{ |event| { :action => event.action, :piece_unique_name => event.piece && event.piece.unique_name, :to => event.to, :options => event.options } }
+    events << { :action => 'active_player', :options => { :active_player_num => game.active_player.num } } if game.active_player && game.active_player.num
     render :json => events.to_json
   end
 

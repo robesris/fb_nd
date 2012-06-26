@@ -3,6 +3,14 @@ class Tro < Piece
     4
   end
 
+  def grid
+    [ 1, 0, 0, 0, 1,
+      0, 1, 0, 1, 0,
+      0, 0, 0, 0, 0,
+      0, 1, 0, 1, 0,
+      1, 0, 0, 0, 1 ]
+  end
+
   def guard?
     true
   end

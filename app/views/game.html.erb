@@ -35,7 +35,8 @@
   }
 
   body {
-    font-size: 8px;
+    font-size: 12px;
+    font-family: sans-serif;
   }
 
   #left_section {
@@ -50,8 +51,16 @@
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
+  <%# debugger %>
   <div>Code: <%= @game.code %></div>
   <div>Player Secret: <%= @me.secret %></div>
+  <input id="player_num" type="hidden" value="<%= @me.num %>" />
+  <div>Player Num: <%= @me && @me.num %></div>
+  
+  <input id='active_player_num' type="hidden" value="<%= @game.active_player && @game.active_player.num %>" />
+  <div id='active_player_text'>
+    <%= (@game.active_player.num == @me.num ? "Your turn" : "Opponent's turn") if @me && @game.active_player %>
+  </div>
 
   <% if Rails.env == 'test' || Rails.env == 'cucumber' %>
     <a href='#' onclick="javascript:$('#debug').val('go')" style="font-size: medium">End Pause</a>
@@ -60,6 +69,8 @@
 
   <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
 
+  <%= button_to "Flip Piece" %>
+
   <%= form_for @game do |f| %>
     <%= hidden_field_tag :player, "player#{@me.num}" %>
     <%= hidden_field_tag :my_secret, @me.secret %>
@@ -67,11 +78,10 @@
 
     <%= f.radio_button :active_player, :go_first %>Go first
 
-    <%#= button_tag "Ready", :type => :button %>
     <%= link_to "Start", join_game_path(:game_code => @game_code, :player_secret => @player_secret) %>
 
-    Player 1 Crystals:<span id="crystals_1"><%= @game.player1.crystals %></span><br />
-    Player 2 Crystals:<span id="crystals_2"><%= @game.player2.crystals %></span>
+    <div>Player 1 Crystals:<span id="crystals_1"><%= @game.player1.crystals %></span></div>
+    <div>Player 2 Crystals:<span id="crystals_2"><%= @game.player2.crystals %></span></div>
 
     <div id="left_section" class="left">
 
@@ -190,7 +200,6 @@
             // summon, move, other?
             if (in_keep(piece)) {
               // handle as summon
-              console.log("SUMMONING");
               $.ajax({
                 url: '/game/<%= @game_code %>/<%= @player_secret %>/summon/' + piece.attr('id') + '/' + this.id,
                 success: function (result) {
@@ -271,6 +280,22 @@
         console.log(event.action);
         switch(event.action)
         {
+          case 'active_player':
+            var active_player_num = event.options.active_player_num
+            var active_player_num_section = $('#active_player_num')
+console.log(active_player_num);
+
+            if (active_player_num != parseInt(active_player_num_section.val())) {
+              active_player_num_section.val(active_player_num);
+              console.log("active_player_num=" + active_player_num);
+              console.log("playernumval=" + $('#player_num').val());
+              if (parseInt(active_player_num) == parseInt($('#player_num').val())) {
+                $('#active_player_text').text('Your Turn');
+              } else {
+                $('#active_player_text').text("Opponent's Turn");
+              }
+            }
+            break;
           case 'draft':
             var draft_piece = $('#draft_' + event.options.piece_name.toLowerCase());
             var new_piece = draft_piece.clone();
