@@ -53,6 +53,11 @@
   <div>Code: <%= @game.code %></div>
   <div>Player Secret: <%= @me.secret %></div>
 
+  <% if Rails.env == 'test' || Rails.env == 'cucumber' %>
+    <a href='#' onclick="javascript:$('#debug').val('go')" style="font-size: medium">End Pause</a>
+    <input id='debug' value='stop' />
+  <%- end %>
+
   <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
 
   <%= form_for @game do |f| %>
@@ -120,6 +125,7 @@
   <% end %>
 
 <% end %>
+
 
 <script>
   $(function() {
