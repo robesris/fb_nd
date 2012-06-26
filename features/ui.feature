@@ -152,17 +152,17 @@ Feature: User interface
 
     # legal move
     When my opponent moves from "f7" to "g6"
-    And I wait 1 second
+    And I wait 2 seconds
     Then both players should see my opponents "RedStone" at "g6"
     And both players should see 4 crystals in my opponents pool
-
+    
     # my turn
 
     # summoning a guard
 
     # can't summon to a regular summon space
     When I try to summon "Tro" to "a1"
-    And I wait 1 second
+    And I wait 5 seconds
     Then both players should see no piece at "a1"
 
     # summon next to Nav
@@ -172,10 +172,45 @@ Feature: User interface
 
     # their turn
     
-    # move a non-stone piece
-    When my opponent moves his "GilTwo" from "g7" to "g6"
+    # move a non-stone piece; can't capture your own piece
+    When my opponent tries to move his "GilTwo" from "g7" to "g6"
+    Then both players should see my opponents "GilTwo" at "g7"
+    And both players should see my opponents "RedStone" at "g6"
+    And it should be my opponents turn
+
+    When my opponent moves his "RedStone" from "g6" to "f5"
+    Then both players should see 6 crystals in my opponents pool
+    And it should be my turn
 
     # my turn
-    # TO BE CONTINUED
+    When I move my "Tro" from "d2" to "e3"
+    Then it should still be my turn
 
+    When I try to flip the "Tro" at "e3"
+    Then both players should see that piece unflipped
+
+    When I try to move the "Est" at "d1" to "c1"
+    Then both players should see my "Est" at "d1"
+    And both players should see no piece at "c1"
+
+    When I pass the turn
+    Then it should be my opponents turn
+
+    # their turn
+    When my opponent moves the "GilTwo" at "g7" to "g6" and passes the turn
+
+    # my turn
+    When I move the "BlackStone" at "f2" to "f3"
+    Then both players should see 4 crystals in my pool
+
+    # their turn
+    When my opponent moves the "RedStone" at "f5" to "f4"
+    Then both players should see 9 crystals in my opponents pool
+
+    # my turn - capture RedStone!
+    When I move the "BlackStone" at "f3" to "f4"
+    Then both players should see my opponents "RedStone" in their graveyard
+    And both players should see my "BlackStone" at "f4"
+    And both players should see 8 crystals in my pool
+    And it should be my opponents turn
 

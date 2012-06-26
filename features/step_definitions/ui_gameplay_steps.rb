@@ -53,7 +53,7 @@ When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(
   @piece.drag_to(get_space(to_space))
 end
 
-When /^(I|my opponent) moves his "(.*?)" from "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
+When /^(I|my opponent)(?:| try to| tries to) moves (?:my|his) "(.*?)" from "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
   steps %Q{
     When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}"
   }
@@ -150,5 +150,29 @@ Then /^both players should not see "(.*?)" in (my|my opponents) keep$/ do |piece
     Then I should not see "#{piece_name}" in #{whose} keep
     And my opponent should not see "#{piece_name}" in #{whose} keep
   }
+end
+
+Then /^it should(?:| still) be (my|my opponents) turn$/ do |whose|
+  
+  my_browser
+  page.find_by_id('active_player').text.should == "#{whose == 'my' ? 'Your turn' : 'Opponent\'s turn'}"
+  opponent_browser
+  page.find_by_id('active_player').text.should == "#{whose == 'my' ? 'Opponent\'s turn' : 'Your turn' }"
+end
+
+When /^(I|my opponent) (?:|try |tries ) to flip the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
+  browser(who)
+  @piece = piece_at(coords)
+  @piece[:name].should == piece_name
+
+  click_button('Flip Piece')
+end
+
+Then /^both players should see that piece unflipped$/ do
+  [:my_browser, :opponent_browser].each do |whose|
+    send(whose)
+
+    @piece.find_by_id('compass')[:src].should have_content('_flipped')
+  end
 end
 
