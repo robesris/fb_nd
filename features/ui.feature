@@ -89,6 +89,7 @@ Feature: User interface
   Scenario: Start the game and make some moves
     When I begin a new game
     Then both players should not see the draft list
+    And I wait 2 seconds
     When I move the "BlackStone" at "b2" to "b3"
     Then both players should see that piece at "b3"
     And both players should see no piece at "b2"
@@ -150,7 +151,7 @@ Feature: User interface
 
     # legal move
     When my opponent moves from "f7" to "g6"
-    #And I wait 5 seconds
+    And I wait 3 seconds
     Then both players should see my opponents "RedStone" at "g6"
     And both players should see 4 crystals in my opponents pool
     
