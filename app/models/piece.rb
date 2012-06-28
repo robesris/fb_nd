@@ -179,7 +179,7 @@ class Piece < ActiveRecord::Base
       intervening_spaces.each do |space|
         if space.occupied?
           if leap_over <= 0
-            return space.piece.player != self.player
+            return false
           else
             leap_over -= 1
           end
