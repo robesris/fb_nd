@@ -150,8 +150,9 @@ Feature: User interface
     And both players should see 1 crystal in my opponents pool
 
     # legal move
+    And I wait 2 seconds
     When my opponent moves from "f7" to "g6"
-    And I wait 3 seconds
+    And I wait 4 seconds
     Then both players should see my opponents "RedStone" at "g6"
     And both players should see 4 crystals in my opponents pool
     
@@ -214,9 +215,9 @@ Feature: User interface
 
     # my turn - capture RedStone!
     When I move the "BlackStone" at "f3" to "f4"
+    And I wait 2 seconds
     Then both players should see my opponents "RedStone" in their graveyard
     And both players should see my "BlackStone" at "f4"
     And both players should see 8 crystals in my pool
     And it should be my opponents turn
-    And I allow user input
 

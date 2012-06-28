@@ -188,7 +188,7 @@ end
 
 Then /^(I|my opponent) should see (my|my opponents) "(.*?)" in the graveyard$/ do |who, whose, piece_name|
   browser(who)
-  pnum = who == 'I' ? 1 : 2
+  pnum = whose == 'my' ? 1 : 2
 
   page.should have_xpath("//div[@id='graveyard_#{pnum}']/div[@name='#{piece_name}']")
 end
