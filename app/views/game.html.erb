@@ -34,6 +34,10 @@
     border-color: #000000;
   }
 
+  .compass {
+    position: relative;
+  }
+
   body {
     font-size: 12px;
     font-family: sans-serif;
@@ -69,7 +73,8 @@
 
   <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
 
-  <%= button_to "Flip Piece" %>
+  <%= button_tag "Flip Piece", :type => 'button', :id => 'flip_button' %>
+  <%= button_tag "End Turn", :type => 'button', :id => 'pass_turn_button' %>
 
   <%= form_for @game do |f| %>
     <%= hidden_field_tag :player, "player#{@me.num}" %>
@@ -87,7 +92,11 @@
 
       <div id='draft_section' class=''>
       <% @all_piece_klasses.each do |klass| %>
-        <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %>"><div><%= klass.to_s %></div><img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' /></div>
+        <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %>">
+          <div><%= klass.to_s %></div>
+          <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' width='50%' height='50%' />
+          <img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' />
+        </div>
       <% end %>
     </div>
     <br />
@@ -99,7 +108,8 @@
             <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
               <% klass = piece.class %>
               <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='piece player<%= pnum %>'><%= piece.name %>
-                <img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' />
+                <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' width='50%' height='50%' />
+                <img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' />
               </div>
             <% end %>
           </div>
@@ -107,8 +117,9 @@
       </div>
     <% end %>
 
-      </div>
-
+    <% 1.upto(2) do |pnum| %>
+      <div id="graveyard_<%= pnum %>" name="graveyard" class="row"> </div>
+    <% end %>
 
     <div class="left">
       <% 7.downto(1) do |row| %>
@@ -121,7 +132,8 @@
                   <% klass = piece.class %>
                   <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %>'>
                     P<%= piece.player.num %>
-                    <img src='/assets/<%= klass.to_s.downcase %>_1.gif' width='50%' height='50%' />
+                    <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' width='50%' height='50%' />
+                    <% unless piece.kind_of?(Piece::Stone) %><img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' /><% end %>
                   </div>
                 <% end %>
               </div>
@@ -138,6 +150,8 @@
 
 
 <script>
+  var current_piece = null;
+
   $(function() {
     var me = function() {
       return $('#player').val();
@@ -172,7 +186,9 @@
       console.log(new_piece);
       new_piece.css('left', 0).css('top', 0).draggable();
       if (player == 'player2') {
-        new_piece.find('img').attr('src', '/assets/' + new_piece.attr('name').toLowerCase() + '_2.gif');
+        new_piece.find('.portrait').attr('src', '/assets/' + new_piece.attr('name').toLowerCase() + '_2.gif');
+        new_piece.find('.compass').attr('src', '/assets/' + 'tro_compass_1.jpg');
+
       }
       $( keep_space ).addClass( "ui-state-highlight" ).append(new_piece);
     }
@@ -188,15 +204,45 @@
       }
     }
 
+    var kill = function(piece_unique_name) {
+      console.log("GRAVEYARD ************");
+      console.log('#' + piece_unique_name);
+      piece = $('#' + piece_unique_name);
+      console.log(piece);
+      console.log($('graveyard_' + piece.attr('data-owner')));
+      $('#graveyard_' + piece.attr('data-owner')).append(piece);
+    }
+
+    var flip = function(piece) {
+      $.ajax({
+        url: '/game/<%= @game_code %>/<%= @player_secret %>/flip/' + piece.attr('id'),
+        success: function(result) {
+          // FLIP THE COMPASS
+        }
+      });
+    }
+    $('#flip_button').click(function() { flip(current_piece); });
+
+    var pass_turn = function() {
+      $.ajax({
+        url: '/game/<%= @game_code %>/<%= @player_secret %>/pass_turn',
+        success: function(result) {
+          // PASS
+        }
+      });
+    }
+    $('#pass_turn_button').click(pass_turn);
+
     var play_phase = function() {
       $('#phase').val('play');  // Just a temporary stopgap?  Should probably be handled in a more robust way.
 
       $( ".board_space" ).droppable({
         drop: function( event, ui ) {
           var piece = $(ui.draggable);
+          current_piece = piece;
           var space = $('#' + this.id);
                   
-          if (!occupied(space)) {
+          //if (!occupied(space)) {
             // summon, move, other?
             if (in_keep(piece)) {
               // handle as summon
@@ -214,13 +260,22 @@
               $.ajax({
                 url: '/game/<%= @game_code %>/<%= @player_secret %>/move/' + piece.attr('id') + '/' + this.id,
                 success: function (result) {
+                  console.log("RESULT:");
+                  console.log(result);
                   if (result['status'] == 'success') {
+                    console.log(result.kill);
+                    for (i = 0; i < result.kill.length; i++) {
+                      console.log(result.kill[i]);
+                      kill(result.kill[i]);
+                    }
+                    console.log("moving");
+                    console.log(result);
                     move(piece, space, result);
                   }
                 } 
               });
             }
-          };
+          //};
           piece.css('top', '0px').css('left', '0px');
         }
       });
@@ -309,6 +364,10 @@ console.log(active_player_num);
           case 'move':
             var piece = $('#' + event.piece_unique_name);
             var space = $('#' + event.to);
+            for (i = 0; i < event.options.kill.length; i++) {
+              console.log(event.options.kill[i]);
+              kill(event.options.kill[i]);
+            }
             move(piece, space, event.options)
             break;
         }

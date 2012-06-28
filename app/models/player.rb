@@ -70,6 +70,7 @@ class Player < ActiveRecord::Base
 
   def pass_turn
     # don't forget you have to do SOMETHING on your turn before passing!
+    #debugger
     self.game.pass_turn if self.game.active_player == self && self.active_piece && !self.game.waiting_for
   end
 

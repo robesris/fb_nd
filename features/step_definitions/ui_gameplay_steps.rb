@@ -153,7 +153,6 @@ Then /^both players should not see "(.*?)" in (my|my opponents) keep$/ do |piece
 end
 
 Then /^it should(?:| still) be (my|my opponents) turn$/ do |whose|
-  
   my_browser
   page.find_by_id('active_player_text').text.should == "#{whose == 'my' ? 'Your Turn' : 'Opponent\'s Turn'}"
   opponent_browser
@@ -162,18 +161,22 @@ end
 
 When /^(I|my opponent) (?:|try |tries )to flip the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
   browser(who)
-  
+
   @piece = piece_at(coords)
   @piece[:name].should == piece_name
 
   click_button('Flip Piece')
 end
 
-Then /^both players should see that piece unflipped$/ do
+Then /^both players should see that piece (|un)flipped$/ do |flip_state|
   [:my_browser, :opponent_browser].each do |whose|
     send(whose)
 
-    @piece.find_by_id('compass')[:src].should have_content('_flipped')
+    if flip_state.blank?
+      @piece.find('.compass')[:src].should have_content('_flipped')
+    else
+      @piece.find('.compass')[:src].should_not have_content('_flipped')
+    end
   end
 end
 
@@ -181,6 +184,13 @@ When /^(I|my opponent) pass(?:|es) the turn$/ do |who|
   browser(who)
 
   click_button("End Turn")
+end
+
+Then /^(I|my opponent) should see (my|my opponents) "(.*?)" in the graveyard$/ do |who, whose, piece_name|
+  browser(who)
+  pnum = who == 'I' ? 1 : 2
+
+  page.find("#graveyard_#{pnum}").should have_xpath("/div[@name='#{piece_name}']")
 end
 
 Then /^both players should see (my|my opponents) "(.*?)" in (?:my|their|the) graveyard$/ do |whose, piece_name|

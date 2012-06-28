@@ -3,11 +3,14 @@
 
 class Piece::Stone < Piece
   def move(args)
-    if super(args)
+    if result = super(args)
       player = self.player
       player.add_crystals(val)
       player.save
       self.game.pass_turn
+      return result
+    else
+      return false
     end
   end
 

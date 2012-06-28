@@ -111,11 +111,10 @@ class GamesController < ApplicationController
       space = get_space(game)
       player = current_player(game)
       piece = player.pieces.where(:unique_name => params[:piece_unique_name]).first
-
       result = nil
-
-      if player.move(piece, space)
-        result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }
+      move_result = player.move(piece, space)
+      if move_result
+        result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }.merge(:kill => move_result[:kill].map { |piece| piece.unique_name })
         game.add_event(
           :player_num => player.opponent.num,
           :action => 'move',
@@ -128,10 +127,66 @@ class GamesController < ApplicationController
       end
 
       render :json => result
+    rescue Exception => e
+      render :nothing => true
+    end
+  end
+
+  def flip
+    begin
+      game = current_game
+      player = current_player(game)
+
+      return false unless game.phase == 'play'
+
+      piece = player.pieces.where(:unique_name => params[:piece_unique_name]).first
+
+      result = nil
+
+      if player.flip(piece)
+        result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }
+        game.add_event(
+          :player_num => player.opponent.num,
+          :action => 'flip',
+          :piece => piece,
+          :options => result
+        )
+      else
+        result = { :status => 'failure', :message => "Can't flip that piece!" }
+      end
+
+      render :json => result
     rescue => e
       render :nothing => true
     end
   end
+
+  def pass_turn
+    begin
+      game = current_game
+      player = current_player(game)
+
+      return false unless game.phase == 'play'
+
+      result = nil
+
+      if player.pass_turn
+        result = { :status => 'success' }
+        game.add_event(
+          :player_num => player.opponent.num,
+          :action => 'pass_turn',
+          :options => result
+        )
+      else
+        result = { :status => 'failure', :message => "Can't pass turn now!" }
+      end
+
+      render :json => result
+    rescue => e
+      render :nothing => true
+    end
+  end
+
 
   def init
     # get rid of all events for this player because we would have just drawn the board anyway

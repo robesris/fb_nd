@@ -179,7 +179,7 @@ class Piece < ActiveRecord::Base
       intervening_spaces.each do |space|
         if space.occupied?
           if leap_over <= 0
-            return false
+            return space.piece.player != self.player
           else
             leap_over -= 1
           end
@@ -228,6 +228,7 @@ class Piece < ActiveRecord::Base
 
   def move(args = {})
     game = self.game
+    
     return false if game.active_player != self.player || self.player.active_piece  # moving can never be done after another action, so you can only move when there is no active piece
 
     target_space = if args[:space].kind_of?(Space)
@@ -236,11 +237,19 @@ class Piece < ActiveRecord::Base
                      self.board.space(args[:col], args[:row])
                    end
     pass = args[:pass]
+
+    result = { :kill => [] }
     if self.can_reach?(target_space)
       # capture the occupying piece, if present
       if target_space.occupied?
-        self.player.add_crystals(target_space.piece.val)
-        target_space.piece.die
+        # can't capture your own piece
+        if target_space.piece.player == self.player
+          return false
+        else
+          self.player.add_crystals(target_space.piece.val)
+          result[:kill] << target_space.piece
+          target_space.piece.die
+        end
       end
       self.space = target_space
       self.player.update_attribute(:active_piece, self)
@@ -248,7 +257,7 @@ class Piece < ActiveRecord::Base
         # pass turn after a successful move
         # actually, maybe better to leave auto-passing up to the stone pieces
         # self.game.pass_turn if pass
-        return true
+        return result
       else
         return false
       end

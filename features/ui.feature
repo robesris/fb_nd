@@ -90,8 +90,6 @@ Feature: User interface
     When I begin a new game
     Then both players should not see the draft list
     When I move the "BlackStone" at "b2" to "b3"
-
-
     Then both players should see that piece at "b3"
     And both players should see no piece at "b2"
     And both players should see 1 crystal in my pool
@@ -152,7 +150,7 @@ Feature: User interface
 
     # legal move
     When my opponent moves from "f7" to "g6"
-    And I wait 5 seconds
+    #And I wait 5 seconds
     Then both players should see my opponents "RedStone" at "g6"
     And both players should see 4 crystals in my opponents pool
     
@@ -162,7 +160,7 @@ Feature: User interface
 
     # can't summon to a regular summon space
     When I try to summon "Tro" to "a1"
-    And I wait 5 seconds
+    And I wait 2 seconds
     Then both players should see no piece at "a1"
 
     # summon next to Nav
@@ -180,6 +178,7 @@ Feature: User interface
 
     When my opponent moves his "RedStone" from "g6" to "f5"
     Then both players should see 7 crystals in my opponents pool
+    And I wait 1 second
     And it should be my turn
 
     # my turn
@@ -194,19 +193,23 @@ Feature: User interface
     And both players should see no piece at "c1"
 
     When I pass the turn
+    And I wait 2 seconds
     Then it should be my opponents turn
 
     # their turn
-    When my opponent moves the "GilTwo" at "g7" to "g6"
-    And my opponent passes the turn
+    When my opponent moves the "RedStone" at "f5" to "f4"
+    And I wait 2 seconds
+    Then both players should see 10 crystals in my opponents pool
+    
+    When my opponent passes the turn
 
     # my turn
     And I move the "BlackStone" at "f2" to "f3"
     Then both players should see 4 crystals in my pool
 
     # their turn
-    When my opponent moves the "RedStone" at "f5" to "f4"
-    Then both players should see 9 crystals in my opponents pool
+    When my opponent moves the "BlackStone" at "f6" to "f5"
+    Then both players should see 11 crystals in my opponents pool
 
     # my turn - capture RedStone!
     When I move the "BlackStone" at "f3" to "f4"

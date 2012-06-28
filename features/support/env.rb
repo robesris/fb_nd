@@ -16,7 +16,7 @@ Capybara.register_driver :selenium do |app|
   Capybara::Selenium::Driver.new(app, :browser => :chrome)
 end
 Capybara.default_selector = :css
-Capybara.default_wait_time = 5
+Capybara.default_wait_time = 7
 
 # By default, any exception happening in your Rails application will bubble up
 # to Cucumber so that your scenario will fail. This is a different from how 
