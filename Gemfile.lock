@@ -41,7 +41,7 @@ GEM
     capybara-webkit (0.12.1)
       capybara (>= 1.0.0, < 1.2)
       json
-    childprocess (0.3.2)
+    childprocess (0.3.3)
       ffi (~> 1.0.6)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)

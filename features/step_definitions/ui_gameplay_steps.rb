@@ -190,7 +190,7 @@ Then /^(I|my opponent) should see (my|my opponents) "(.*?)" in the graveyard$/ d
   browser(who)
   pnum = who == 'I' ? 1 : 2
 
-  page.find("#graveyard_#{pnum}").should have_xpath("/div[@name='#{piece_name}']")
+  page.should have_xpath("//div[@id='graveyard_#{pnum}']/div[@name='#{piece_name}']")
 end
 
 Then /^both players should see (my|my opponents) "(.*?)" in (?:my|their|the) graveyard$/ do |whose, piece_name|
