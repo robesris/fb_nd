@@ -200,5 +200,59 @@ Then /^both players should see (my|my opponents) "(.*?)" in (?:my|their|the) gra
   }
 end
 
+When /^I join a game in progress$/ do
+  pending # express the regexp above with the code you wish you had
+end
 
+When /^my opponent flips the "(.*?)" at "(.*?)"$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^I flip the "(.*?)" at "(.*?)"$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^my opponent moves his "(.*?)" from "(.*?)" to "(.*?)" to capture$/ do |arg1, arg2, arg3|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^both players should see the captured piece in my graveyard$/ do
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^I move my "(.*?)" from "(.*?)" to "(.*?)" to capture$/ do |arg1, arg2, arg3|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^both players should see my opponents "(.*?)" in my opponents graveyard$/ do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^my opoonent moves his "(.*?)" from "(.*?)" to "(.*?)"$/ do |arg1, arg2, arg3|
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^my opponent summons his "(.*?)" to "(.*?)"$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^I summon my "(.*?)" to "(.*?)"$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^my opponent flips his "(.*?)"$/ do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^my opponent should have a choice to "(.*?)"$/ do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^my opponent chooses his "(.*?)" at "(.*?)"$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^my opponent should still have a choice to "(.*?)"$/ do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
 
