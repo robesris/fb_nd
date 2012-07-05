@@ -1,5 +1,5 @@
 class Piece < ActiveRecord::Base
-  attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name
+  attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name, :in_graveyard
   
   belongs_to :player
   has_one :board, :through => :space

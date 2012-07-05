@@ -12,6 +12,63 @@ def empty?(coords)
   space.has_no_xpath?('div')
 end
 
+def default_game_in_progress
+  game = Game.create("phase"=>"play")
+  game.update_attribute(:active_player, game.player2)
+  game.update_attribute(:code, "default_game_in_progress")
+  game.player1.update_attribute(:crystals, 8)
+  game.player1.update_attribute(:secret, 'player_1_secretABC')
+  game.player2.update_attribute(:crystals, 11)
+  game.player2.update_attribute(:secret, 'player_2_secret123')
+
+  pieces = [[{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>2, :col=>1, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>1, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>4, :col=>2, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>2, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>2, :col=>3, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>3, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>3, :col=>4, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>4, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>2, :col=>5, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>5, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>4, :col=>6, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>5, :col=>6, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>2, :col=>7, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>5, :col=>7, :pnum=>2}],
+            [{:name=>"RedStone", :flipped=>nil, :type=>"RedStone", :in_graveyard=>nil}, {:row=>1, :col=>2, :pnum=>1}],
+            [{:name=>"RedStone", :flipped=>nil, :type=>"RedStone", :in_graveyard=>nil}, {:row=>1, :col=>6, :pnum=>1}],
+            [{:name=>"RedStone", :flipped=>nil, :type=>"RedStone", :in_graveyard=>nil}, {:row=>7, :col=>2, :pnum=>2}],
+            [{:name=>"RedStone", :flipped=>nil, :type=>"RedStone", :in_graveyard=>true}, {:row=>nil, :col=>nil, :pnum=>2}],
+            [{:name=>"Tro", :flipped=>nil, :type=>"Tro", :in_graveyard=>nil}, {:row=>3, :col=>5, :pnum=>1}],
+            [{:name=>"Agu", :flipped=>nil, :type=>"Agu", :in_graveyard=>nil}, {:row=>-2, :col=>2, :pnum=>1}],
+            [{:name=>"Ham", :flipped=>nil, :type=>"Ham", :in_graveyard=>nil}, {:row=>-2, :col=>3, :pnum=>1}],
+            [{:name=>"Gar", :flipped=>nil, :type=>"Gar", :in_graveyard=>nil}, {:row=>-2, :col=>4, :pnum=>1}],
+            [{:name=>"Neto", :flipped=>nil, :type=>"Neto", :in_graveyard=>nil}, {:row=>-2, :col=>5, :pnum=>1}],
+            [{:name=>"Gun", :flipped=>nil, :type=>"Gun", :in_graveyard=>nil}, {:row=>-2, :col=>6, :pnum=>1}],
+            [{:name=>"Tiny", :flipped=>nil, :type=>"Tiny", :in_graveyard=>nil}, {:row=>-2, :col=>7, :pnum=>1}],
+            [{:name=>"Est", :flipped=>nil, :type=>"Est", :in_graveyard=>nil}, {:row=>1, :col=>4, :pnum=>1}],
+            [{:name=>"Olp", :flipped=>nil, :type=>"Olp", :in_graveyard=>nil}, {:row=>9, :col=>1, :pnum=>2}],
+            [{:name=>"GilTwo", :flipped=>nil, :type=>"GilTwo", :in_graveyard=>nil}, {:row=>7, :col=>7, :pnum=>2}],
+            [{:name=>"Mses", :flipped=>nil, :type=>"Mses", :in_graveyard=>nil}, {:row=>9, :col=>3, :pnum=>2}],
+            [{:name=>"Nebgua", :flipped=>nil, :type=>"Nebgua", :in_graveyard=>nil}, {:row=>9, :col=>4, :pnum=>2}],
+            [{:name=>"Turtle", :flipped=>nil, :type=>"Turtle", :in_graveyard=>nil}, {:row=>9, :col=>5, :pnum=>2}],
+            [{:name=>"Kap", :flipped=>nil, :type=>"Kap", :in_graveyard=>nil}, {:row=>9, :col=>6, :pnum=>2}],
+            [{:name=>"Kom", :flipped=>nil, :type=>"Kom", :in_graveyard=>nil}, {:row=>9, :col=>7, :pnum=>2}],
+            [{:name=>"Deb", :flipped=>nil, :type=>"Deb", :in_graveyard=>nil}, {:row=>7, :col=>4, :pnum=>2}]]
+  
+  pieces.each do |p|
+    player = game.playernum(p.last[:pnum])
+    piece = Piece.create(p.first)
+    if p.last[:row] && p.last[:col]
+      space = Space.where(:col => p.last[:col], :row => p.last[:row]).first
+      space.update_attribute(:piece, piece)
+    end
+    player.pieces << piece
+  end
+
+  game
+end
+
 When /^I begin a new game$/ do
   steps %Q{
     When I am on the app homepage
@@ -201,7 +258,9 @@ Then /^both players should see (my|my opponents) "(.*?)" in (?:my|their|the) gra
 end
 
 When /^I join a game in progress$/ do
-  pending # express the regexp above with the code you wish you had
+  @game = default_game_in_progress
+
+  visit join_game_path(:game_code => @game.code, :player_secret => @game.player1.secret)
 end
 
 When /^my opponent flips the "(.*?)" at "(.*?)"$/ do |arg1, arg2|
