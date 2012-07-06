@@ -156,7 +156,8 @@ class GamesController < ApplicationController
       end
 
       render :json => result
-    rescue => e
+    rescue Exception => exception
+      puts e.inspect
       render :nothing => true
     end
   end

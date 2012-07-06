@@ -260,7 +260,7 @@ Feature: User interface
     And it should be my opponents turn
 
     # Tro's ability
-    When my opoonent moves his "BlackStone" from "f5" to "f4"
+    When my opponent moves his "BlackStone" from "f5" to "f4"
     Then both players should see my "Tro" in my graveyard
     And both players should see 6 crystals in my opponents pool
     And both players should see 25 crystals in my pool

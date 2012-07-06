@@ -112,6 +112,8 @@ When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(
 end
 
 When /^(I|my opponent)(?:| try to| tries to) moves? (?:my|his) "(.*?)" from "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
+  @piece = piece_at(from_space)
+
   steps %Q{
     When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}"
   }
@@ -217,13 +219,14 @@ Then /^it should(?:| still) be (my|my opponents) turn$/ do |whose|
   page.find_by_id('active_player_text').text.should == "#{whose == 'my' ? 'Opponent\'s Turn' : 'Your Turn' }"
 end
 
-When /^(I|my opponent) (?:|try |tries )to flip the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
+When /^(I|my opponent) (?:|try to |tries to )flips? the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
   browser(who)
 
   @piece = piece_at(coords)
   @piece[:name].should == piece_name
-
-  click_button('Flip Piece')
+  
+  @piece.click
+  click_on('Flip Piece')
 end
 
 Then /^both players should see that piece (|un)flipped$/ do |flip_state|
@@ -266,14 +269,6 @@ When /^I join a game in progress$/ do
   visit join_game_path(:game_code => @game.code, :player_secret => @game.player1.secret)
 end
 
-When /^(I|my opponent) flips? the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
-  browser(who)
-
-  piece = piece_at(coords)
-  find('#' + piece[:id]).click
-  click_on('Flip Piece')
-end
-
 When /^my opponent moves his "(.*?)" from "(.*?)" to "(.*?)" to capture$/ do |arg1, arg2, arg3|
   pending # express the regexp above with the code you wish you had
 end
@@ -287,10 +282,6 @@ When /^I move my "(.*?)" from "(.*?)" to "(.*?)" to capture$/ do |arg1, arg2, ar
 end
 
 Then /^both players should see my opponents "(.*?)" in my opponents graveyard$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^my opoonent moves his "(.*?)" from "(.*?)" to "(.*?)"$/ do |arg1, arg2, arg3|
   pending # express the regexp above with the code you wish you had
 end
 

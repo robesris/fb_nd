@@ -68,6 +68,14 @@ class Player < ActiveRecord::Base
     end
   end
 
+  def flip(piece)
+    if self.pieces.include?(piece)
+      piece.flip
+    else
+      false
+    end
+  end
+
   def pass_turn
     # don't forget you have to do SOMETHING on your turn before passing!
     #debugger

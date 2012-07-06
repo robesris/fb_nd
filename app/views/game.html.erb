@@ -230,6 +230,8 @@
           if (result.status == 'success') {
             var compass = piece.find('img.compass');
             compass.attr('src', compass.attr('src').replace('.jpg', '_flipped.jpg'));
+            $('#crystals_1').text(result['p1_crystals']);
+            $('#crystals_2').text(result['p2_crystals']);
           }
         }
       });
