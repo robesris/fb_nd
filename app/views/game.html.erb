@@ -217,20 +217,25 @@
     }
 
     var select_div = function(piece) {
-      $('#selected_id').val(piece.id);
+      $('#selected_id').val(piece.attr('id'));
       $('#selected_text').html(piece.attr('name'));
     }
 
-    var flip = function(piece) {
+    var flip = function(piece_id) {
+      piece = $(piece_id);
       $.ajax({
         url: '/game/<%= @game_code %>/<%= @player_secret %>/flip/' + piece.attr('id'),
         success: function(result) {
           // FLIP THE COMPASS
+          if (result.status == 'success') {
+            var compass = piece.find('img.compass');
+            compass.attr('src', compass.attr('src').replace('.jpg', '_flipped.jpg'));
+          }
         }
       });
     }
     $('.piece').click(function() { select_div($(this)); });
-    $('#flip_button').click(function() { flip(current_piece); });
+    $('#flip_button').click(function() { flip($('#' + $('#selected_id').val())); });
 
     var pass_turn = function() {
       $.ajax({
