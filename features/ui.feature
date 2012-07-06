@@ -236,6 +236,7 @@ Feature: User interface
     And it should be my turn
 
     When I flip the "Tro" at "e3"
+    And I wait 1 second
     Then both players should see that piece flipped
     And both players should see 4 crystals in my pool
     And it should be my opponents turn
@@ -244,10 +245,12 @@ Feature: User interface
     Then both players should see the captured piece in my graveyard
     And both players should see my opponents "GilTwo" at "f4"
     And both players should see 1 crystal in my opponents pool
+
+    When my opponent passes the turn
     And it should be my turn
 
     When I move my "Tro" from "e3" to "f4" to capture
-    Then both players should see my opponents "GilTwo" in my opponents graveyard
+    Then both players should see my opponents "GilTwo" in the graveyard
     And both players should see my "Tro" at "f4"
     And both players should see 15 crystals in my pool
     And it should be my opponents turn

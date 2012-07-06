@@ -116,7 +116,7 @@ When /^(I|my opponent)(?:| try to| tries to) moves? (?:my|his) "(.*?)" from "(.*
   @piece = piece_at(from_space)
 
   steps %Q{
-    When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}#{capture}"
+    When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}"#{capture}
   }
 end
 
@@ -272,12 +272,15 @@ When /^I join a game in progress$/ do
   visit join_game_path(:game_code => @game.code, :player_secret => @game.player1.secret)
 end
 
-Then /^both players should see the captured piece in my graveyard$/ do
-  pending # express the regexp above with the code you wish you had
-end
+Then /^both players should see the captured piece in (my|my opponents) graveyard$/ do |whose|
+  capture_piece_id = @capture_piece[:id]
+  pnum = whose == 'my' ? 1 : 2
 
-Then /^both players should see my opponents "(.*?)" in my opponents graveyard$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+  my_browser
+  page.should have_xpath("//div[@id='graveyard_#{pnum}']/div[@id='#{capture_piece_id}']")
+
+  opponent_browser
+  page.should have_xpath("//div[@id='graveyard_#{pnum}']/div[@id='#{capture_piece_id}']")
 end
 
 When /^my opponent summons his "(.*?)" to "(.*?)"$/ do |arg1, arg2|
