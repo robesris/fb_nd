@@ -85,6 +85,9 @@
 
     <%= link_to "Start", join_game_path(:game_code => @game_code, :player_secret => @player_secret) %>
 
+    <input id='selected_id' type='hidden' value='' />
+    <div id='selected_text'>(No piece selected)</div>
+
     <div>Player 1 Crystals:<span id="crystals_1"><%= @game.player1.crystals %></span></div>
     <div>Player 2 Crystals:<span id="crystals_2"><%= @game.player2.crystals %></span></div>
 
@@ -213,6 +216,11 @@
       $('#graveyard_' + piece.attr('data-owner')).append(piece);
     }
 
+    var select_div = function(piece) {
+      $('#selected_id').val(piece.id);
+      $('#selected_text').html(piece.attr('name'));
+    }
+
     var flip = function(piece) {
       $.ajax({
         url: '/game/<%= @game_code %>/<%= @player_secret %>/flip/' + piece.attr('id'),
@@ -221,6 +229,7 @@
         }
       });
     }
+    $('.piece').click(function() { select_div($(this)); });
     $('#flip_button').click(function() { flip(current_piece); });
 
     var pass_turn = function() {

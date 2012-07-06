@@ -271,6 +271,7 @@ When /^(I|my opponent) flips? the "(.*?)" at "(.*?)"$/ do |who, piece_name, coor
 
   piece = piece_at(coords)
   find('#' + piece[:id]).click
+  click_on('Flip Piece')
 end
 
 When /^my opponent moves his "(.*?)" from "(.*?)" to "(.*?)" to capture$/ do |arg1, arg2, arg3|
