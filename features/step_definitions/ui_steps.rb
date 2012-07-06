@@ -101,14 +101,27 @@ When /^I join game "([^"]*)" as a new player$/ do |game_code|
   visit join_game_path(:game_code => game_code, :player_secret => 'new_player')
 end
 
-When /^my opponent joins the game$/ do
+When /^I join game "([^"]*)" as "(player1|player2)"$/ do |game_code, player_method|
+  opponent_browser
+  player = @game.send(player_method)
+  visit join_game_path(:game_code => game_code, :player_secret => player.secret)
+end
+
+When /^my opponent joins the game(| in progress)$/ do |game_state|
   opponent_browser
 
   @game_code ||= current_game.code
-  steps %Q{
-    When I visit the app homepage
-    And I join game "#{@game_code}" as a new player
-  }
+  if game_state.blank?
+    steps %Q{
+      When I visit the app homepage
+      And I join game "#{@game_code}" as a new player
+    }
+  else
+    steps %Q{
+      When I visit the app homepage
+      And I join game "#{@game_code}" as "player2" 
+    }
+  end
 end
 
 Then /^I should see the default setup$/ do
@@ -246,7 +259,6 @@ Then /^both players should see nothing at "(.*)"$/ do |space|
 end
 
 Then /^both players should see player (\d+)s "(.*?)" at "(.*?)"$/ do |pnum, piece_name, space|
-  #debugger
   steps %Q{
     Then I should see player #{pnum}s "#{piece_name}" at "#{space}"
     And my opponent should see player #{pnum}s "#{piece_name}" at "#{space}"

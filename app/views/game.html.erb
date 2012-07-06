@@ -63,7 +63,7 @@
   
   <input id='active_player_num' type="hidden" value="<%= @game.active_player && @game.active_player.num %>" />
   <div id='active_player_text'>
-    <%= (@game.active_player.num == @me.num ? "Your turn" : "Opponent's turn") if @me && @game.active_player %>
+    <%= (@game.active_player.num == @me.num ? "Your Turn" : "Opponent's Turn") if @me && @game.active_player %>
   </div>
 
   <% if Rails.env == 'test' || Rails.env == 'cucumber' %>

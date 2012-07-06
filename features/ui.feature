@@ -220,11 +220,11 @@ Feature: User interface
     And both players should see my "BlackStone" at "f4"
     And both players should see 8 crystals in my pool
     And it should be my opponents turn
-    And I allow user input
 
   @javascript
   Scenario: Start the game and make some moves (continued)
     When I join a game in progress
+    And my opponent joins the game in progress
     Then it should be my opponents turn
 
     When my opponent moves his "GilTwo" from "g7" to "f6"

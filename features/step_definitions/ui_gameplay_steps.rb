@@ -258,6 +258,8 @@ Then /^both players should see (my|my opponents) "(.*?)" in (?:my|their|the) gra
 end
 
 When /^I join a game in progress$/ do
+  my_browser
+
   @game = default_game_in_progress
 
   visit join_game_path(:game_code => @game.code, :player_secret => @game.player1.secret)
