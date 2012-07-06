@@ -90,7 +90,7 @@
 
     <div id="left_section" class="left">
 
-      <div id='draft_section' class=''>
+      <div id='draft_section' class=''<% unless @game.phase == 'setup' %> style='display: none'<% end %>>
       <% @all_piece_klasses.each do |klass| %>
         <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %>">
           <div><%= klass.to_s %></div>

@@ -13,7 +13,8 @@ def empty?(coords)
 end
 
 def default_game_in_progress
-  game = Game.create("phase"=>"play")
+  game = Game.create
+  game.update_attribute(:phase, 'play')
   game.update_attribute(:active_player, game.player2)
   game.update_attribute(:code, "default_game_in_progress")
   game.player1.update_attribute(:crystals, 8)
@@ -58,7 +59,7 @@ def default_game_in_progress
   
   pieces.each do |p|
     player = game.playernum(p.last[:pnum])
-    piece = Piece.create(p.first)
+    piece = p.first[:name].constantize.create(p.first)
     if p.last[:row] && p.last[:col]
       space = Space.where(:col => p.last[:col], :row => p.last[:row]).first
       space.update_attribute(:piece, piece)
@@ -103,7 +104,7 @@ end
 
 When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
   browser(who)
-  
+
   @piece = piece_at(from_space)
   @piece[:name].should == piece_name
 
@@ -265,12 +266,11 @@ When /^I join a game in progress$/ do
   visit join_game_path(:game_code => @game.code, :player_secret => @game.player1.secret)
 end
 
-When /^my opponent flips the "(.*?)" at "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
+When /^(I|my opponent) flips? the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
+  browser(who)
 
-When /^I flip the "(.*?)" at "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
+  piece = piece_at(coords)
+  find('#' + piece[:id]).click
 end
 
 When /^my opponent moves his "(.*?)" from "(.*?)" to "(.*?)" to capture$/ do |arg1, arg2, arg3|

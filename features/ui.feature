@@ -226,6 +226,7 @@ Feature: User interface
     When I join a game in progress
     And my opponent joins the game in progress
     Then it should be my opponents turn
+    And both players should not see the draft list
 
     When my opponent moves his "GilTwo" from "g7" to "f6"
     And my opponent flips the "GilTwo" at "f6"
