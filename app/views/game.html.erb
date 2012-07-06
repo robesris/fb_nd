@@ -221,23 +221,27 @@
       $('#selected_text').html(piece.attr('name'));
     }
 
-    var flip = function(piece_id) {
+    var flip = function(piece, result) {
+      // FLIP THE COMPASS
+      var compass = piece.find('img.compass');
+      compass.attr('src', compass.attr('src').replace('.jpg', '_flipped.jpg'));
+      $('#crystals_1').text(result['p1_crystals']);
+      $('#crystals_2').text(result['p2_crystals']);
+    }
+
+    var send_flip = function(piece_id) {
       piece = $(piece_id);
       $.ajax({
         url: '/game/<%= @game_code %>/<%= @player_secret %>/flip/' + piece.attr('id'),
         success: function(result) {
-          // FLIP THE COMPASS
           if (result.status == 'success') {
-            var compass = piece.find('img.compass');
-            compass.attr('src', compass.attr('src').replace('.jpg', '_flipped.jpg'));
-            $('#crystals_1').text(result['p1_crystals']);
-            $('#crystals_2').text(result['p2_crystals']);
+            flip(piece, result);
           }
         }
       });
     }
     $('.piece').click(function() { select_div($(this)); });
-    $('#flip_button').click(function() { flip($('#' + $('#selected_id').val())); });
+    $('#flip_button').click(function() { send_flip($('#' + $('#selected_id').val())); });
 
     var pass_turn = function() {
       $.ajax({
@@ -385,6 +389,10 @@ console.log(active_player_num);
               kill(event.options.kill[i]);
             }
             move(piece, space, event.options)
+            break;
+          case 'flip':
+            var piece = $('#' + event.piece_unique_name);
+            flip(piece, event.options);
             break;
         }
       }
