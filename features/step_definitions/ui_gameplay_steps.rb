@@ -102,20 +102,21 @@ Then /^both players should not see the draft list$/ do
   }
 end
 
-When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
+When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(.*?)"(| to capture)$/ do |who, piece_name, from_space, to_space, capture|
   browser(who)
 
   @piece = piece_at(from_space)
+  @capture_piece = piece_at(to_space) if capture.present?
   @piece[:name].should == piece_name
 
   @piece.drag_to(get_space(to_space))
 end
 
-When /^(I|my opponent)(?:| try to| tries to) moves? (?:my|his) "(.*?)" from "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
+When /^(I|my opponent)(?:| try to| tries to) moves? (?:my|his) "(.*?)" from "(.*?)" to "(.*?)"(| to capture)$/ do |who, piece_name, from_space, to_space, capture|
   @piece = piece_at(from_space)
 
   steps %Q{
-    When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}"
+    When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}#{capture}"
   }
 end
 
@@ -154,6 +155,8 @@ Then /^(I|my opponent) should see (\d+) crystals? in (my|my opponents) pool$/ do
 
   #page.find_by_id("crystals_#{pnum}").text.should == num
   page.should have_xpath("//span[@id='crystals_#{pnum}' and text()='#{num}']")
+
+  sleep(2)
 end
 
 Then /^both players should see no piece at "(.*?)"$/ do |coords|
@@ -269,15 +272,7 @@ When /^I join a game in progress$/ do
   visit join_game_path(:game_code => @game.code, :player_secret => @game.player1.secret)
 end
 
-When /^my opponent moves his "(.*?)" from "(.*?)" to "(.*?)" to capture$/ do |arg1, arg2, arg3|
-  pending # express the regexp above with the code you wish you had
-end
-
 Then /^both players should see the captured piece in my graveyard$/ do
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^I move my "(.*?)" from "(.*?)" to "(.*?)" to capture$/ do |arg1, arg2, arg3|
   pending # express the regexp above with the code you wish you had
 end
 

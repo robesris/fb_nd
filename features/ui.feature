@@ -230,6 +230,7 @@ Feature: User interface
 
     When my opponent moves his "GilTwo" from "g7" to "f6"
     And my opponent flips the "GilTwo" at "f6"
+    And I wait 1 second
     Then both players should see that piece flipped
     And both players should see 0 crystals in my opponents pool
     And it should be my turn
