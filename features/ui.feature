@@ -263,17 +263,19 @@ Feature: User interface
     #And I allow user input
     When I move my "Est" from "d1" to "d2"
     And I pass the turn
+    And I wait 1 second
     Then both players should see my "Est" at "d2"
     And it should be my opponents turn
 
     # Tro's ability
     When my opponent moves his "BlackStone" from "f5" to "f4"
     Then both players should see my "Tro" in my graveyard
-    And both players should see 6 crystals in my opponents pool
+    And both players should see 7 crystals in my opponents pool
     And both players should see 25 crystals in my pool
     And it should be my turn
 
     When I move from "a2" to "a3"
+    And I wait 1 second
     Then both players should see 26 crystals in my pool
     And it should be my opponents turn
 
@@ -282,10 +284,11 @@ Feature: User interface
     And it should be my turn
 
     When I summon my "Tiny" to "a2"
+    And I wait 1 second
     Then it should be my opponents turn
 
     # A flip that requires a choice
-    When my opponent flips his "Olp"
+    When my opponent flips the "Olp" at "d6"
     Then it should still be my opponents turn
     And my opponent should have a choice to "Choose a piece."
 

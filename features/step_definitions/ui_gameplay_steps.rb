@@ -185,7 +185,7 @@ Then /^both players should (?:|still )see (my|my opponents) "(.*?)" at "(.*?)"$/
   }
 end
 
-When /^(I|my opponent) (?:|try to |tries to )summons? "(.*?)" to "(.*?)"$/ do |who, piece_name, coords|
+When /^(I|my opponent) (?:|try to |tries to )summons? (?:|my |his )"(.*?)" to "(.*?)"$/ do |who, piece_name, coords|
   browser(who)
 
   pnum = who == 'I' ? 1 : 2
@@ -281,18 +281,6 @@ Then /^both players should see the captured piece in (my|my opponents) graveyard
 
   opponent_browser
   page.should have_xpath("//div[@id='graveyard_#{pnum}']/div[@id='#{capture_piece_id}']")
-end
-
-When /^my opponent summons his "(.*?)" to "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^I summon my "(.*?)" to "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
-
-When /^my opponent flips his "(.*?)"$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
 end
 
 Then /^my opponent should have a choice to "(.*?)"$/ do |arg1|
