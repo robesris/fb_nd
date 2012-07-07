@@ -259,7 +259,10 @@ Feature: User interface
     Then both players should see 2 crystals in my opponents pool
     And it should be my turn
 
+
+    #And I allow user input
     When I move my "Est" from "d1" to "d2"
+    And I pass the turn
     Then both players should see my "Est" at "d2"
     And it should be my opponents turn
 

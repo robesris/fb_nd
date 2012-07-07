@@ -106,7 +106,7 @@ class Piece < ActiveRecord::Base
 
   def can_reach?(to_space)
     # can't move to a space we're already on
-    return false if to_space == self.space
+    return false if !self.on_board? || to_space == self.space
   
     #Flip the movement grid around for player 2 (i.e. second player)
 		grid = self.player.num == 1 ? self.grid : self.grid.reverse
@@ -196,7 +196,8 @@ class Piece < ActiveRecord::Base
   end
 
   def on_board?
-    self.board.spaces.include?(self.space) && !self.in_graveyard?
+    #self.board.spaces.include?(self.space) && !self.in_graveyard?
+    !self.in_graveyard? && !self.in_keep?
   end
 
   def summon(args = {})
