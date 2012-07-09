@@ -283,8 +283,8 @@ Then /^both players should see the captured piece in (my|my opponents) graveyard
   page.should have_xpath("//div[@id='graveyard_#{pnum}']/div[@id='#{capture_piece_id}']")
 end
 
-Then /^my opponent should have a choice to "(.*?)"$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+Then /^my opponent should have a choice to "(.*?)"$/ do |choice|
+  page.should have_content(choice)
 end
 
 When /^my opponent chooses his "(.*?)" at "(.*?)"$/ do |arg1, arg2|
