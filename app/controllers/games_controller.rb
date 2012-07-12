@@ -144,7 +144,13 @@ class GamesController < ApplicationController
       result = nil
 
       if player.flip(piece)
+        prompts = if piece.waiting_state.present?
+          piece.prompts
+        else
+          nil
+        end
         result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }
+        result.merge!(:prompts => prompts) if prompts
         game.add_event(
           :player_num => player.opponent.num,
           :action => 'flip',
@@ -160,6 +166,10 @@ class GamesController < ApplicationController
       puts e.inspect
       render :nothing => true
     end
+  end
+
+  def send_prompts
+    puts params
   end
 
   def pass_turn

@@ -122,7 +122,6 @@ end
 
 Then /^(I|my opponent) (should|should not) see that piece at "(.*?)"$/ do |who, should, coords|
   browser(who)
-  
   if should == 'should'
     puts "#{who} should..."
     piece_at(coords).should_not be_nil
@@ -156,7 +155,7 @@ Then /^(I|my opponent) should see (\d+) crystals? in (my|my opponents) pool$/ do
   #page.find_by_id("crystals_#{pnum}").text.should == num
   page.should have_xpath("//span[@id='crystals_#{pnum}' and text()='#{num}']")
 
-  sleep(2)
+  #sleep(2)
 end
 
 Then /^both players should see no piece at "(.*?)"$/ do |coords|
@@ -176,6 +175,7 @@ end
 Then /^both players should (?:|still )see (my|my opponents) "(.*?)" at "(.*?)"$/ do |whose, piece_name, coords|
   @piece = piece_at(coords)
   @piece.should_not be_nil
+  @piece['name'].should == piece_name
   pnum = whose == 'my' ? 1 : 2
   @piece['data-owner'].should == pnum.to_s
 
@@ -283,15 +283,15 @@ Then /^both players should see the captured piece in (my|my opponents) graveyard
   page.should have_xpath("//div[@id='graveyard_#{pnum}']/div[@id='#{capture_piece_id}']")
 end
 
-Then /^my opponent should have a choice to "(.*?)"$/ do |choice|
+Then /^my opponent should(?:| still) have a choice to "(.*?)"$/ do |choice|
   page.should have_content(choice)
 end
 
-When /^my opponent chooses his "(.*?)" at "(.*?)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
+When /^(I|my opponent) chooses? (?:the|his|my) "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
+  browser(who)
 
-Then /^my opponent should still have a choice to "(.*?)"$/ do |arg1|
-  pending # express the regexp above with the code you wish you had
+  @piece = piece_at(coords)
+  @piece[:name].should == piece_name
+  click_elt(@piece[:id]) 
 end
 

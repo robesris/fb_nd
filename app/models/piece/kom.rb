@@ -21,6 +21,9 @@ class Kom < Piece
 
   def player_input(args)
     choosing_player = args[:player]
+
+    return false unless super(choosing_player)
+
     target = args[:target]
     if self.waiting_state == 'piece' &&
        choosing_player == self.player && 

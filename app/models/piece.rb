@@ -257,7 +257,7 @@ class Piece < ActiveRecord::Base
       if self.save
         # pass turn after a successful move
         # actually, maybe better to leave auto-passing up to the stone pieces and flipped pieces with no invoke ability
-        self.game.pass_turn if self.flipped && !self.respond_to?(:invoke) 
+        self.game.pass_turn if self.flipped? && !self.respond_to?(:invoke) 
         return result
       else
         return false
@@ -291,6 +291,11 @@ class Piece < ActiveRecord::Base
 
     self.flipped = false
     self.save
+  end
+
+  def player_input
+    # Can only make choices for your own pieces
+    return false unless choosing_player == self.player && self.waiting_state.present?
   end
 
   def die

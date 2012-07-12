@@ -87,6 +87,7 @@
 
     <input id='selected_id' type='hidden' value='' />
     <div id='selected_text'>(No piece selected)</div>
+    <div id='prompt'> </div>
 
     <div>Player 1 Crystals:<span id="crystals_1"><%= @game.player1.crystals %></span></div>
     <div>Player 2 Crystals:<span id="crystals_2"><%= @game.player2.crystals %></span></div>
@@ -135,7 +136,7 @@
                   <% klass = piece.class %>
                   <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %>'>
                     P<%= piece.player.num %>
-                    <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' width='50%' height='50%' />
+                    <img src='/assets/<%= klass.to_s.downcase %>_<%= piece.player.num %>.gif' class='portrait' width='50%' height='50%' />
                     <% unless piece.kind_of?(Piece::Stone) %><img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' /><% end %>
                   </div>
                 <% end %>
@@ -153,9 +154,11 @@
 
 
 <script>
-  var current_piece = null;
-
   $(function() {
+    var current_piece = null;
+    var current_prompt_index = <%= @game && @game.waiting_for ? 0 : -1 %>;
+    var prompts = null;
+
     var me = function() {
       return $('#player').val();
     };
@@ -219,6 +222,32 @@
     var select_div = function(piece) {
       $('#selected_id').val(piece.attr('id'));
       $('#selected_text').html(piece.attr('name'));
+
+      if (current_prompt_index >= 0) {
+        prompts[current_prompt_index]['unique_name'] = piece.attr('id');
+        current_prompt_index++;
+        if (current_prompt_index < prompts.length) {
+          show_prompt(prompts[current_prompt_index]);
+        } else {
+          // This was the final prompt - send the user's choices to the server
+          current_prompt_index = -1;
+          console.log("PROMPTS:");
+          console.log(prompts);
+          $.ajax({
+            url: '/game/<%= @game_code %>/<%= @player_secret %>/send_prompts',
+            dataType: 'json',
+            data: $.param({ prompts: prompts }),
+            type: 'POST',
+            success: function() {
+              // TODO: maybe nothing - just create Events for both players?
+            }
+          });
+        }
+      }
+    }
+
+    var show_prompt = function(prompt) {
+      $('#prompt').text(prompt['message']);
     }
 
     var flip = function(piece, result) {
@@ -227,6 +256,13 @@
       compass.attr('src', compass.attr('src').replace('.jpg', '_flipped.jpg'));
       $('#crystals_1').text(result['p1_crystals']);
       $('#crystals_2').text(result['p2_crystals']);
+      console.log("RESULT:");
+      console.log(result);
+      if(result.prompts) {
+        prompts = result['prompts'];
+        current_prompt_index = 0;
+        show_prompt(prompts[0]);
+      }
     }
 
     var send_flip = function(piece_id) {
@@ -337,6 +373,9 @@
 
     // Check for new events from the other player periodically
     var checkForEvents = function() {
+      console.log("CURRENT:");
+      console.log(current_piece);
+
       $.ajax({
         url: '/game/<%= @game_code %>/<%= @player_secret %>/events',
         success: function(events) {
