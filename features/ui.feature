@@ -126,6 +126,7 @@ Feature: User interface
 
     # legal move
     When I move from "b3" to "b4"
+    And I wait 5 seconds
     Then both players should see 2 crystals in my pool
     And both players should see my "BlackStone" at "b4"
 
@@ -258,6 +259,7 @@ Feature: User interface
     And it should be my opponents turn
 
     When my opponent moves his "BlackStone" from "d6" to "d5"
+    And I wait 2 seconds
     Then both players should see 2 crystals in my opponents pool
     And it should be my turn
 
@@ -270,7 +272,7 @@ Feature: User interface
 
     # Tro's ability
     When my opponent moves his "BlackStone" from "f5" to "f4"
-    And I wait 2 seconds
+    And I wait 5 seconds
     Then both players should see my "Tro" in my graveyard
     And both players should see 7 crystals in my opponents pool
     And both players should see 25 crystals in my pool
@@ -282,6 +284,7 @@ Feature: User interface
     And it should be my opponents turn
 
     When my opponent summons his "Olp" to "d6"
+    And I wait 5 seconds
     Then both players should see my opponents "Olp" at "d6"
     And it should be my turn
 
@@ -310,14 +313,14 @@ Feature: User interface
     Then both players should see my opponents "Olp" at "f4"
     And both players should see my opponents "BlackStone" at "d6"
     And both players should see 3 crystals in my opponents pool
-    And I allow user input
     And it should be my turn
 
     When I move my "RedStone" from "b1" to "b2"
-    Then both players should see 28 crystals in my pool
+    And I wait 2 seconds
+    Then both players should see 29 crystals in my pool
     And it should be my opponents turn
 
     When my opponent moves his "BlackStone" from "b6" to "b5"
-    Then both players should see 3 crystals in my opponents pool
+    Then both players should see 4 crystals in my opponents pool
 
     # TO BE CONTINUED...

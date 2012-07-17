@@ -124,6 +124,12 @@ Then /^(I|my opponent) (should|should not) see that piece at "(.*?)"$/ do |who, 
   browser(who)
   if should == 'should'
     puts "#{who} should..."
+    if piece_at(coords).nil? || piece_at(coords)[:id] != @piece[:id]
+      steps %Q{
+        And I allow user input
+      }
+    end
+
     piece_at(coords).should_not be_nil
     piece_at(coords)[:id].should == @piece[:id]
   else
@@ -153,9 +159,15 @@ Then /^(I|my opponent) should see (\d+) crystals? in (my|my opponents) pool$/ do
   pnum = whose == 'my' ? 1 : 2
 
   #page.find_by_id("crystals_#{pnum}").text.should == num
-  page.should have_xpath("//span[@id='crystals_#{pnum}' and text()='#{num}']")
+  #page.should have_xpath("//span[@id='crystals_#{pnum}' and text()='#{num}']")
 
-  #sleep(2)
+  max_wait = 5
+  wait = 0
+  while page.find_by_id("crystals_#{pnum}").text != num && wait < max_wait
+    sleep(1)
+    wait += 1
+  end
+  page.find_by_id("crystals_#{pnum}").text.should == num
 end
 
 Then /^both players should see no piece at "(.*?)"$/ do |coords|
@@ -216,9 +228,22 @@ Then /^both players should not see "(.*?)" in (my|my opponents) keep$/ do |piece
 end
 
 Then /^it should(?:| still) be (my|my opponents) turn$/ do |whose|
+  max_wait = 10
+
   my_browser
+  sec = 0
+  while sec < max_wait && page.find_by_id('active_player_text').text != "#{whose == 'my' ? 'Your Turn' : 'Opponent\'s Turn'}"
+    sleep(1)
+    sec += 1
+  end
   page.find_by_id('active_player_text').text.should == "#{whose == 'my' ? 'Your Turn' : 'Opponent\'s Turn'}"
   opponent_browser
+  sec = 0
+  while sec < max_wait && page.find_by_id('active_player_text').text != "#{whose == 'my' ? 'Opponent\'s Turn' : 'Your Turn'}"
+    sleep(1)
+    sec += 1
+  end
+
   page.find_by_id('active_player_text').text.should == "#{whose == 'my' ? 'Opponent\'s Turn' : 'Your Turn' }"
 end
 
