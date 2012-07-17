@@ -55,7 +55,6 @@
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
-  <%# debugger %>
   <div>Code: <%= @game.code %></div>
   <div>Player Secret: <%= @me.secret %></div>
   <input id="player_num" type="hidden" value="<%= @me.num %>" />
@@ -238,8 +237,17 @@
             dataType: 'json',
             data: $.param({ prompts: prompts }),
             type: 'POST',
-            success: function() {
-              // TODO: maybe nothing - just create Events for both players?
+            success: function(result) {
+              if (result['status'] == 'failure') {
+                console.log("FAILURE");
+                // start over
+                current_prompt_index = 0;
+                } else {
+                alert("SUCCESS");
+                console.log("SUCCESS");
+                current_prompt_index = -1;
+                prompts = null;
+              }
             }
           });
         }
@@ -378,6 +386,7 @@
 
       $.ajax({
         url: '/game/<%= @game_code %>/<%= @player_secret %>/events',
+        timeout: 990,
         success: function(events) {
           console.log(events);
           processEvents(events);
@@ -423,9 +432,11 @@ console.log(active_player_num);
           case 'move':
             var piece = $('#' + event.piece_unique_name);
             var space = $('#' + event.to);
-            for (i = 0; i < event.options.kill.length; i++) {
-              console.log(event.options.kill[i]);
-              kill(event.options.kill[i]);
+            if (event.options.kill) {
+              for (i = 0; i < event.options.kill.length; i++) {
+                console.log(event.options.kill[i]);
+                kill(event.options.kill[i]);
+              }
             }
             move(piece, space, event.options)
             break;
