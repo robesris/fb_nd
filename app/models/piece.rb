@@ -293,9 +293,9 @@ class Piece < ActiveRecord::Base
     self.save
   end
 
-  def player_input
+  def player_input(choosing_player)
     # Can only make choices for your own pieces
-    return false unless choosing_player == self.player && self.waiting_state.present?
+    choosing_player == self.player && self.waiting_state.present?
   end
 
   def die
