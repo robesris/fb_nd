@@ -169,7 +169,29 @@ class GamesController < ApplicationController
   end
 
   def send_prompts
-    puts params
+    game = current_game
+    player = current_player(game)
+    
+    return false unless player = game.active_player
+
+    results = game.waiting_for.player_input(:player => player, :prompts => params[:prompts])
+    
+    if results
+      # Handle as events for both players
+      results.each do |result|
+        [1, 2].each do |pnum|
+          game.add_event(
+            :player_num => pnum,
+            :action => result[:action],
+            :to => textify(result[:to]),
+            :piece => result[:piece],
+            :options => { :result => { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals } }
+          )
+        end
+      end
+    else
+      render :json => { :status => 'failure' }
+    end
   end
 
   def pass_turn
@@ -277,4 +299,7 @@ class GamesController < ApplicationController
     end
   end
 
+  def textify(space)
+    "space_#{(space.col + 96).chr}_#{space.row}"
+  end
 end
