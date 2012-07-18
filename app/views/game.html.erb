@@ -386,13 +386,13 @@
 
       $.ajax({
         url: '/game/<%= @game_code %>/<%= @player_secret %>/events',
-        timeout: 990,
+        timeout: 1990,
         success: function(events) {
           console.log(events);
           processEvents(events);
         },
         complete: function() {
-          setTimeout(checkForEvents, 1000);
+          setTimeout(checkForEvents, 2000);
         }
       });
     };
