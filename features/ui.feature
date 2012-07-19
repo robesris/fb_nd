@@ -316,11 +316,39 @@ Feature: User interface
     And it should be my turn
 
     When I move my "RedStone" from "b1" to "b2"
-    And I wait 2 seconds
+    And I wait 5 seconds
     Then both players should see 29 crystals in my pool
     And it should be my opponents turn
 
     When my opponent moves his "BlackStone" from "b6" to "b5"
     Then both players should see 4 crystals in my opponents pool
+And I allow user input
+    When I save the database as "game_part_1"...
 
-    # TO BE CONTINUED...
+  Scenario: Continue the game
+    Given I restore the database from "game_part_1"
+    And I join the game in progress
+    And my opponent joins the game in progress
+    Then it should be my turn
+
+    When I flip the "Tiny" at "a2"
+    Then I should have a choice to "Choose a piece to destroy."
+
+    When I choose the "Est" at "d7"
+    Then it should still be my turn
+    And I should still have a choice to "Choose a piece to destroy."
+
+    # Can't choose an empty space
+    When I choose "f3"
+    Then it should still be my turn
+    And I should still have a choice to "Choose a piece to destroy."
+
+    When I choose the "Olp" at "f4"
+    Then both players should see my opponents "Olp" in my opponents graveyard
+    And both players should see 29 crystals in my pool
+    And both players should see 4 crystals in my opponents pool
+    And it should be my opponents turn
+
+    When I save the database as "game_part_2"...
+
+    
