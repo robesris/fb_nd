@@ -12,6 +12,64 @@ def empty?(coords)
   space.has_no_xpath?('div')
 end
 
+def default_game_in_progress
+  game = Game.create
+  game.update_attribute(:phase, 'play')
+  game.update_attribute(:active_player, game.player2)
+  game.update_attribute(:code, "default_game_in_progress")
+  game.player1.update_attribute(:crystals, 8)
+  game.player1.update_attribute(:secret, 'player_1_secretABC')
+  game.player2.update_attribute(:crystals, 11)
+  game.player2.update_attribute(:secret, 'player_2_secret123')
+
+  pieces = [[{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>2, :col=>1, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>1, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>4, :col=>2, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>2, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>2, :col=>3, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>3, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>3, :col=>4, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>4, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>2, :col=>5, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>6, :col=>5, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>4, :col=>6, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>5, :col=>6, :pnum=>2}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>2, :col=>7, :pnum=>1}],
+            [{:name=>"BlackStone", :flipped=>nil, :type=>"BlackStone", :in_graveyard=>nil}, {:row=>5, :col=>7, :pnum=>2}],
+            [{:name=>"RedStone", :flipped=>nil, :type=>"RedStone", :in_graveyard=>nil}, {:row=>1, :col=>2, :pnum=>1}],
+            [{:name=>"RedStone", :flipped=>nil, :type=>"RedStone", :in_graveyard=>nil}, {:row=>1, :col=>6, :pnum=>1}],
+            [{:name=>"RedStone", :flipped=>nil, :type=>"RedStone", :in_graveyard=>nil}, {:row=>7, :col=>2, :pnum=>2}],
+            [{:name=>"RedStone", :flipped=>nil, :type=>"RedStone", :in_graveyard=>true}, {:row=>nil, :col=>nil, :pnum=>2}],
+            [{:name=>"Tro", :flipped=>nil, :type=>"Tro", :in_graveyard=>nil}, {:row=>3, :col=>5, :pnum=>1}],
+            [{:name=>"Agu", :flipped=>nil, :type=>"Agu", :in_graveyard=>nil}, {:row=>-2, :col=>2, :pnum=>1}],
+            [{:name=>"Ham", :flipped=>nil, :type=>"Ham", :in_graveyard=>nil}, {:row=>-2, :col=>3, :pnum=>1}],
+            [{:name=>"Gar", :flipped=>nil, :type=>"Gar", :in_graveyard=>nil}, {:row=>-2, :col=>4, :pnum=>1}],
+            [{:name=>"Neto", :flipped=>nil, :type=>"Neto", :in_graveyard=>nil}, {:row=>-2, :col=>5, :pnum=>1}],
+            [{:name=>"Gun", :flipped=>nil, :type=>"Gun", :in_graveyard=>nil}, {:row=>-2, :col=>6, :pnum=>1}],
+            [{:name=>"Tiny", :flipped=>nil, :type=>"Tiny", :in_graveyard=>nil}, {:row=>-2, :col=>7, :pnum=>1}],
+            [{:name=>"Est", :flipped=>nil, :type=>"Est", :in_graveyard=>nil}, {:row=>1, :col=>4, :pnum=>1}],
+            [{:name=>"Olp", :flipped=>nil, :type=>"Olp", :in_graveyard=>nil}, {:row=>9, :col=>1, :pnum=>2}],
+            [{:name=>"GilTwo", :flipped=>nil, :type=>"GilTwo", :in_graveyard=>nil}, {:row=>7, :col=>7, :pnum=>2}],
+            [{:name=>"Mses", :flipped=>nil, :type=>"Mses", :in_graveyard=>nil}, {:row=>9, :col=>3, :pnum=>2}],
+            [{:name=>"Nebgua", :flipped=>nil, :type=>"Nebgua", :in_graveyard=>nil}, {:row=>9, :col=>4, :pnum=>2}],
+            [{:name=>"Turtle", :flipped=>nil, :type=>"Turtle", :in_graveyard=>nil}, {:row=>9, :col=>5, :pnum=>2}],
+            [{:name=>"Kap", :flipped=>nil, :type=>"Kap", :in_graveyard=>nil}, {:row=>9, :col=>6, :pnum=>2}],
+            [{:name=>"Kom", :flipped=>nil, :type=>"Kom", :in_graveyard=>nil}, {:row=>9, :col=>7, :pnum=>2}],
+            [{:name=>"Deb", :flipped=>nil, :type=>"Deb", :in_graveyard=>nil}, {:row=>7, :col=>4, :pnum=>2}]]
+  
+  pieces.each do |p|
+    player = game.playernum(p.last[:pnum])
+    piece = p.first[:name].constantize.create(p.first)
+    if p.last[:row] && p.last[:col]
+      space = Space.where(:col => p.last[:col], :row => p.last[:row]).first
+      space.update_attribute(:piece, piece)
+    end
+    player.pieces << piece
+  end
+
+  game
+end
+
 When /^I begin a new game$/ do
   steps %Q{
     When I am on the app homepage
@@ -44,26 +102,34 @@ Then /^both players should not see the draft list$/ do
   }
 end
 
-When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
+When /^(I|my opponent)(?:| try to| tries to) moves? the "(.*?)" at "(.*?)" to "(.*?)"(| to capture)$/ do |who, piece_name, from_space, to_space, capture|
   browser(who)
-  
+
   @piece = piece_at(from_space)
+  @capture_piece = piece_at(to_space) if capture.present?
   @piece[:name].should == piece_name
 
   @piece.drag_to(get_space(to_space))
 end
 
-When /^(I|my opponent)(?:| try to| tries to) moves? (?:my|his) "(.*?)" from "(.*?)" to "(.*?)"$/ do |who, piece_name, from_space, to_space|
+When /^(I|my opponent)(?:| try to| tries to) moves? (?:my|his) "(.*?)" from "(.*?)" to "(.*?)"(| to capture)$/ do |who, piece_name, from_space, to_space, capture|
+  @piece = piece_at(from_space)
+
   steps %Q{
-    When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}"
+    When #{who} moves the "#{piece_name}" at "#{from_space}" to "#{to_space}"#{capture}
   }
 end
 
 Then /^(I|my opponent) (should|should not) see that piece at "(.*?)"$/ do |who, should, coords|
   browser(who)
-  
   if should == 'should'
     puts "#{who} should..."
+    if piece_at(coords).nil? || piece_at(coords)[:id] != @piece[:id]
+      steps %Q{
+        And I allow user input
+      }
+    end
+
     piece_at(coords).should_not be_nil
     piece_at(coords)[:id].should == @piece[:id]
   else
@@ -93,7 +159,15 @@ Then /^(I|my opponent) should see (\d+) crystals? in (my|my opponents) pool$/ do
   pnum = whose == 'my' ? 1 : 2
 
   #page.find_by_id("crystals_#{pnum}").text.should == num
-  page.should have_xpath("//span[@id='crystals_#{pnum}' and text()='#{num}']")
+  #page.should have_xpath("//span[@id='crystals_#{pnum}' and text()='#{num}']")
+
+  max_wait = 5
+  wait = 0
+  while page.find_by_id("crystals_#{pnum}").text != num && wait < max_wait
+    sleep(1)
+    wait += 1
+  end
+  page.find_by_id("crystals_#{pnum}").text.should == num
 end
 
 Then /^both players should see no piece at "(.*?)"$/ do |coords|
@@ -113,6 +187,7 @@ end
 Then /^both players should (?:|still )see (my|my opponents) "(.*?)" at "(.*?)"$/ do |whose, piece_name, coords|
   @piece = piece_at(coords)
   @piece.should_not be_nil
+  @piece['name'].should == piece_name
   pnum = whose == 'my' ? 1 : 2
   @piece['data-owner'].should == pnum.to_s
 
@@ -122,7 +197,7 @@ Then /^both players should (?:|still )see (my|my opponents) "(.*?)" at "(.*?)"$/
   }
 end
 
-When /^(I|my opponent) (?:|try to |tries to )summons? "(.*?)" to "(.*?)"$/ do |who, piece_name, coords|
+When /^(I|my opponent) (?:|try to |tries to )summons? (?:|my |his )"(.*?)" to "(.*?)"$/ do |who, piece_name, coords|
   browser(who)
 
   pnum = who == 'I' ? 1 : 2
@@ -153,19 +228,33 @@ Then /^both players should not see "(.*?)" in (my|my opponents) keep$/ do |piece
 end
 
 Then /^it should(?:| still) be (my|my opponents) turn$/ do |whose|
+  max_wait = 10
+
   my_browser
+  sec = 0
+  while sec < max_wait && page.find_by_id('active_player_text').text != "#{whose == 'my' ? 'Your Turn' : 'Opponent\'s Turn'}"
+    sleep(1)
+    sec += 1
+  end
   page.find_by_id('active_player_text').text.should == "#{whose == 'my' ? 'Your Turn' : 'Opponent\'s Turn'}"
   opponent_browser
+  sec = 0
+  while sec < max_wait && page.find_by_id('active_player_text').text != "#{whose == 'my' ? 'Opponent\'s Turn' : 'Your Turn'}"
+    sleep(1)
+    sec += 1
+  end
+
   page.find_by_id('active_player_text').text.should == "#{whose == 'my' ? 'Opponent\'s Turn' : 'Your Turn' }"
 end
 
-When /^(I|my opponent) (?:|try |tries )to flip the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
+When /^(I|my opponent) (?:|try to |tries to )flips? the "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
   browser(who)
 
   @piece = piece_at(coords)
   @piece[:name].should == piece_name
-
-  click_button('Flip Piece')
+  
+  @piece.click
+  click_on('Flip Piece')
 end
 
 Then /^both players should see that piece (|un)flipped$/ do |flip_state|
@@ -200,5 +289,34 @@ Then /^both players should see (my|my opponents) "(.*?)" in (?:my|their|the) gra
   }
 end
 
+When /^I join a game in progress$/ do
+  my_browser
 
+  @game = default_game_in_progress
+
+  visit join_game_path(:game_code => @game.code, :player_secret => @game.player1.secret)
+end
+
+Then /^both players should see the captured piece in (my|my opponents) graveyard$/ do |whose|
+  capture_piece_id = @capture_piece[:id]
+  pnum = whose == 'my' ? 1 : 2
+
+  my_browser
+  page.should have_xpath("//div[@id='graveyard_#{pnum}']/div[@id='#{capture_piece_id}']")
+
+  opponent_browser
+  page.should have_xpath("//div[@id='graveyard_#{pnum}']/div[@id='#{capture_piece_id}']")
+end
+
+Then /^my opponent should(?:| still) have a choice to "(.*?)"$/ do |choice|
+  page.should have_content(choice)
+end
+
+When /^(I|my opponent) chooses? (?:the|his|my) "(.*?)" at "(.*?)"$/ do |who, piece_name, coords|
+  browser(who)
+
+  @piece = piece_at(coords)
+  @piece[:name].should == piece_name
+  click_elt(@piece[:id]) 
+end
 

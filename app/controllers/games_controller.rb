@@ -144,7 +144,13 @@ class GamesController < ApplicationController
       result = nil
 
       if player.flip(piece)
+        prompts = if piece.waiting_state.present?
+          piece.prompts
+        else
+          nil
+        end
         result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }
+        result.merge!(:prompts => prompts) if prompts
         game.add_event(
           :player_num => player.opponent.num,
           :action => 'flip',
@@ -156,8 +162,35 @@ class GamesController < ApplicationController
       end
 
       render :json => result
-    rescue => e
+    rescue Exception => exception
+      puts e.inspect
       render :nothing => true
+    end
+  end
+
+  def send_prompts
+    game = current_game
+    player = current_player(game)
+    
+    return false unless player = game.active_player
+
+    results = game.waiting_for.player_input(:player => player, :prompts => params[:prompts])
+    
+    if results
+      # Handle as events for both players
+      results.each do |result|
+        [1, 2].each do |pnum|
+          game.add_event(
+            :player_num => pnum,
+            :action => result[:action],
+            :to => textify(result[:to]),
+            :piece => result[:piece],
+            :options => { :result => { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals } }
+          )
+        end
+      end
+    else
+      render :json => { :status => 'failure' }
     end
   end
 
@@ -266,4 +299,7 @@ class GamesController < ApplicationController
     end
   end
 
+  def textify(space)
+    "space_#{(space.col + 96).chr}_#{space.row}"
+  end
 end

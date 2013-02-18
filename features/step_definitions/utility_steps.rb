@@ -1,3 +1,10 @@
+# enable clicking on arbitrary elements (from http://collectiveidea.com/blog/archives/2010/08/03/clicking-any-element-with-cucumber-and-capybara/)
+
+def click_elt(locator)
+  msg = "No element found with the content of '#{locator}'"
+  page.find_by_id(locator).click
+end
+
 Given /^I pause$/ do
   debugger
   puts "Pausing..."

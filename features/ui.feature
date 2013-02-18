@@ -126,6 +126,7 @@ Feature: User interface
 
     # legal move
     When I move from "b3" to "b4"
+    And I wait 5 seconds
     Then both players should see 2 crystals in my pool
     And both players should see my "BlackStone" at "b4"
 
@@ -221,3 +222,133 @@ Feature: User interface
     And both players should see 8 crystals in my pool
     And it should be my opponents turn
 
+  @javascript
+  Scenario: Start the game and make some moves (continued)
+    When I join a game in progress
+    And my opponent joins the game in progress
+    Then it should be my opponents turn
+    And both players should not see the draft list
+    #And I allow user input
+
+    When my opponent moves his "GilTwo" from "g7" to "f6"
+    And my opponent flips the "GilTwo" at "f6"
+    And I wait 1 second
+    Then both players should see that piece flipped
+    And both players should see 0 crystals in my opponents pool
+    And it should be my turn
+
+    When I flip the "Tro" at "e3"
+    And I wait 1 second
+    Then both players should see that piece flipped
+    And both players should see 4 crystals in my pool
+    And it should be my opponents turn
+
+    When my opponent moves his "GilTwo" from "f6" to "f4" to capture
+    Then both players should see the captured piece in my graveyard
+    And both players should see my opponents "GilTwo" at "f4"
+    And both players should see 1 crystal in my opponents pool
+    When my opponent passes the turn
+    And I wait 5 seconds
+    Then it should be my turn
+
+    When I move my "Tro" from "e3" to "f4" to capture
+    And I wait 2 seconds
+    Then both players should see my opponents "GilTwo" in the graveyard
+    And both players should see my "Tro" at "f4"
+    And both players should see 15 crystals in my pool
+    And it should be my opponents turn
+
+    When my opponent moves his "BlackStone" from "d6" to "d5"
+    And I wait 2 seconds
+    Then both players should see 2 crystals in my opponents pool
+    And it should be my turn
+
+    #And I allow user input
+    When I move my "Est" from "d1" to "d2"
+    And I pass the turn
+    And I wait 1 second
+    Then both players should see my "Est" at "d2"
+    And it should be my opponents turn
+
+    # Tro's ability
+    When my opponent moves his "BlackStone" from "f5" to "f4"
+    And I wait 5 seconds
+    Then both players should see my "Tro" in my graveyard
+    And both players should see 7 crystals in my opponents pool
+    And both players should see 25 crystals in my pool
+    And it should be my turn
+
+    When I move from "a2" to "a3"
+    And I wait 1 second
+    Then both players should see 26 crystals in my pool
+    And it should be my opponents turn
+
+    When my opponent summons his "Olp" to "d6"
+    And I wait 5 seconds
+    Then both players should see my opponents "Olp" at "d6"
+    And it should be my turn
+
+    When I summon my "Tiny" to "a2"
+    And I wait 2 seconds
+    Then it should be my opponents turn
+
+    # A flip that requires a choice
+    When my opponent flips the "Olp" at "d6"
+    Then it should still be my opponents turn
+    And my opponent should have a choice to "Choose a piece."
+
+    # Can't choose a Nav
+    When my opponent chooses his "Deb" at "d7"
+    #Then my opponent should still have a choice to "Choose a piece."
+
+    When my opponent chooses his "Olp" at "d6"
+    Then my opponent should have a choice to "Choose a piece to switch places with."
+
+    # Choose the Olp itself
+    When my opponent chooses his "Olp" at "d6"
+    Then my opponent should still have a choice to "Choose a piece to switch places with."
+
+    When my opponent chooses his "BlackStone" at "f4"
+    And I wait 5 seconds
+    Then both players should see my opponents "Olp" at "f4"
+    And both players should see my opponents "BlackStone" at "d6"
+    And both players should see 3 crystals in my opponents pool
+    And it should be my turn
+
+    When I move my "RedStone" from "b1" to "b2"
+    And I wait 5 seconds
+    Then both players should see 29 crystals in my pool
+    And it should be my opponents turn
+
+    When my opponent moves his "BlackStone" from "b6" to "b5"
+    Then both players should see 4 crystals in my opponents pool
+And I allow user input
+    When I save the database as "game_part_1"...
+
+  Scenario: Continue the game
+    Given I restore the database from "game_part_1"
+    And I join the game in progress
+    And my opponent joins the game in progress
+    Then it should be my turn
+
+    When I flip the "Tiny" at "a2"
+    Then I should have a choice to "Choose a piece to destroy."
+
+    When I choose the "Est" at "d7"
+    Then it should still be my turn
+    And I should still have a choice to "Choose a piece to destroy."
+
+    # Can't choose an empty space
+    When I choose "f3"
+    Then it should still be my turn
+    And I should still have a choice to "Choose a piece to destroy."
+
+    When I choose the "Olp" at "f4"
+    Then both players should see my opponents "Olp" in my opponents graveyard
+    And both players should see 29 crystals in my pool
+    And both players should see 4 crystals in my opponents pool
+    And it should be my opponents turn
+
+    When I save the database as "game_part_2"...
+
+    

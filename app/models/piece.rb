@@ -1,5 +1,5 @@
 class Piece < ActiveRecord::Base
-  attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name
+  attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name, :in_graveyard
   
   belongs_to :player
   has_one :board, :through => :space
@@ -106,7 +106,7 @@ class Piece < ActiveRecord::Base
 
   def can_reach?(to_space)
     # can't move to a space we're already on
-    return false if to_space == self.space
+    return false if !self.on_board? || to_space == self.space
   
     #Flip the movement grid around for player 2 (i.e. second player)
 		grid = self.player.num == 1 ? self.grid : self.grid.reverse
@@ -196,7 +196,8 @@ class Piece < ActiveRecord::Base
   end
 
   def on_board?
-    self.board.spaces.include?(self.space) && !self.in_graveyard?
+    #self.board.spaces.include?(self.space) && !self.in_graveyard?
+    !self.in_graveyard? && !self.in_keep?
   end
 
   def summon(args = {})
@@ -255,8 +256,8 @@ class Piece < ActiveRecord::Base
       self.player.update_attribute(:active_piece, self)
       if self.save
         # pass turn after a successful move
-        # actually, maybe better to leave auto-passing up to the stone pieces
-        # self.game.pass_turn if pass
+        # actually, maybe better to leave auto-passing up to the stone pieces and flipped pieces with no invoke ability
+        self.game.pass_turn if self.flipped? && !self.respond_to?(:invoke) 
         return result
       else
         return false
@@ -290,6 +291,11 @@ class Piece < ActiveRecord::Base
 
     self.flipped = false
     self.save
+  end
+
+  def player_input(choosing_player)
+    # Can only make choices for your own pieces
+    choosing_player == self.player && self.waiting_state.present?
   end
 
   def die
