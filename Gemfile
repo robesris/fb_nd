@@ -1,12 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.3'
+gem 'rails', '3.2.11'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 group :test do
-  gem 'debugger'
+  #gem 'ruby-debug-base19x'
+  #gem 'ruby-debug19'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'cucumber'

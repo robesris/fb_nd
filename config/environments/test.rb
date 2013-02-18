@@ -1,5 +1,5 @@
 FbNd::Application.configure do
-  require 'debugger'
+  #require 'ruby-debug'
 
   # Settings specified here will take precedence over those in config/application.rb
 
