@@ -14,12 +14,42 @@
 }
 
 .draft_piece {
-  min-width: 70px;
+  width: 37px;
+  background-color: #33CCFF;
+  border-radius: 15px;
+  padding: 10px 10px 10px 10px;
+  margin: 3px 10px;
 }
 
 .piece {
-  min-width: 70px;
+  width: 37px;
   font-size: 10px;
+  margin: 0 auto;
+  #background-color: #D4D4D4
+}
+
+.shaded {
+  background-color: pink;
+}
+
+.piece.stone {
+}
+
+img.portrait {
+  height: 50px;
+  #height: 50%;
+}
+
+div.stone img.portrait {
+  height: 50%;
+}
+
+.player1.piece {
+  #background-color: #FFDAB9;
+}
+
+.player2.piece {
+  #background-color: #000099;
 }
 
 .keep_space {
@@ -27,6 +57,7 @@
   height: 75px;
   border: 1px solid #CCCCCC;
   margin-bottom: 10px;
+  font-size: 5pt;
 }
 
 .board_space {
@@ -34,10 +65,23 @@
   height: 75px;
   border: 1px solid;
   border-color: #000000;
+  font-size: 5pt;
 }
 
 .compass {
+  position: absolute;
+  top: 42px;
+  left: 15px;
+  width: 20px;
+  height: 20px;
+}
+
+.piece_player_num {
   position: relative;
+  margin: 0 auto;
+  #left: 4px;
+  #top: 2px;
+  color: #333333;
 }
 
 body {
@@ -45,10 +89,14 @@ body {
   font-family: sans-serif;
 }
 
+.board {
+  margin-left: auto;
+  margin-right: auto;
+  width: 500px;
+}
+
 #left_section {
-  max-width: 50%;
 }
 
 #draft_section {
-  max-width: 50%;
 }

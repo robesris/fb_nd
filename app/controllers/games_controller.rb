@@ -15,6 +15,7 @@ class GamesController < ApplicationController
       @me.update_attribute(:secret, Game.generate_secret)
 
       @all_piece_klasses = Piece.all_piece_klasses
+      @all_draft_klasses = @all_piece_klasses.select { |klass| klass != BlackStone && klass != RedStone }
 
       @game_code = @game.code
       @player_secret = @me.secret
@@ -37,6 +38,7 @@ class GamesController < ApplicationController
     else
       @me = @game.players.where(:secret => @player_secret).first
       @all_piece_klasses = Piece.all_piece_klasses
+      @all_draft_klasses = @all_piece_klasses.select { |klass| klass != BlackStone && klass != RedStone }
 
       render :template => 'game'
     end
@@ -293,6 +295,8 @@ class GamesController < ApplicationController
     if space_string.slice(0, 4) == 'keep'
       pnum = col
       keep_space_num = row.to_i - 1
+      #raise game.inspect
+      debugger
       game.playernum(pnum).keep[keep_space_num]
     else
       game.board.space(col, row)

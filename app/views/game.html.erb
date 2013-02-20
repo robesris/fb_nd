@@ -1,6 +1,7 @@
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
+  <div>Phase: <%= @game.phase %></div>
   <div>Code: <%= @game.code %></div>
   <div>Player Secret: <%= @me.secret %></div>
   <input id="player_num" type="hidden" value="<%= @me.num %>" />
@@ -38,51 +39,55 @@
     <div>Player 2 Crystals:<span id="crystals_2"><%= @game.player2.crystals %></span></div>
 
     <div id="left_section" class="left">
-
       <div id='draft_section' class=''<% unless @game.phase == 'setup' %> style='display: none'<% end %>>
-      <% @all_piece_klasses.each do |klass| %>
-        <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %>">
-          <div><%= klass.to_s %></div>
-          <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' width='50%' height='50%' />
-          <img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' />
+        <% @all_draft_klasses.each_with_index do |klass, i| %>
+          <% unless klass == BlackStone || klass == RedStone %>
+            <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %><%= i % 7 == 0 ? ' clear' : '' %>">
+              <div><%= klass.to_s %></div>
+              <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' />
+              <img src='/assets/tro_compass_1.jpg' class='compass' />
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+    <br />
+    <div class='board'>
+      <% 1.upto(2) do |pnum| %>
+        <div id="keep_<%= pnum %>" name="keep" class="row">
+          <% 1.upto(7) do |n| %>
+            <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
+              <%= pnum %>K<%= n %>
+              <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
+                <% klass = piece.class %>
+                <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='piece player<%= pnum %>'><div class='piece_player_num'><%= piece.name %></div>
+                  <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' />
+                  <img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' />
+                </div>
+              <% end %>
+            </div>
+          <% end %>
         </div>
       <% end %>
     </div>
-    <br />
-    <% 1.upto(2) do |pnum| %>
-      <div id="keep_<%= pnum %>" name="keep" class="row">
-        <% 1.upto(7) do |n| %>
-          <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
-            P<%= pnum %>K<%= n %>
-            <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
-              <% klass = piece.class %>
-              <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='piece player<%= pnum %>'><%= piece.name %>
-                <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' width='50%' height='50%' />
-                <img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' />
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
-
     <% 1.upto(2) do |pnum| %>
       <div id="graveyard_<%= pnum %>" name="graveyard" class="row"> </div>
     <% end %>
 
-    <div class="left">
+    <div class="board">
       <% 7.downto(1) do |row| %>
         <div class="row">
           <% 'a'.upto('g') do |col| %>
             <div class="col left">
-              <div id='space_<%= col + '_' + row.to_s %>' class='board_space<%= " nav_space" if (row == 1 || row == 7) && col== "d" %>'>
+              <%# raise "#{row} #{col}" %>
+              <div id='space_<%= col + '_' + row.to_s %>' class='board_space<%= " nav_space" if (row == 1 || row == 7) && col== "d" %><%= (row.odd? && ['a', 'c', 'e', 'g'].include?(col)) || (row.even? && ['b', 'd', 'f'].include?(col)) ? ' shaded' : '' %>'>
                 <%= col + '_' + row.to_s %>
                 <% if piece = @game.board.space(col, row).piece %>
                   <% klass = piece.class %>
-                  <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %>'>
-                    P<%= piece.player.num %>
-                    <img src='/assets/<%= klass.to_s.downcase %>_<%= piece.player.num %>.gif' class='portrait' width='50%' height='50%' />
-                    <% unless piece.kind_of?(Piece::Stone) %><img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' /><% end %>
+                  <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %><%= klass == Piece::RedStone || klass == Piece::BlackStone ? ' stone' : '' %>'>
+                    <div class='piece_player_num'>P<%= piece.player.num %></div>
+                    <img src='/assets/<%= klass.to_s.downcase %>_<%= piece.player.num %>.gif' class='portrait' />
+                    <% unless piece.kind_of?(Piece::Stone) %><img src='/assets/tro_compass_1.jpg' class='compass' /><% end %>
                   </div>
                 <% end %>
               </div>
