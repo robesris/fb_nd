@@ -1,3 +1,54 @@
 // Place all the styles related to the games controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+.row {
+  clear: both;
+}
+
+.left {
+  float: left;
+}
+
+.clear {
+  clear: both;
+}
+
+.draft_piece {
+  min-width: 70px;
+}
+
+.piece {
+  min-width: 70px;
+  font-size: 10px;
+}
+
+.keep_space {
+  width: 60px;
+  height: 75px;
+  border: 1px solid #CCCCCC;
+  margin-bottom: 10px;
+}
+
+.board_space {
+  width: 60px;
+  height: 75px;
+  border: 1px solid;
+  border-color: #000000;
+}
+
+.compass {
+  position: relative;
+}
+
+body {
+  font-size: 12px;
+  font-family: sans-serif;
+}
+
+#left_section {
+  max-width: 50%;
+}
+
+#draft_section {
+  max-width: 50%;
+}
