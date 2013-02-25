@@ -52,8 +52,12 @@
       </div>
     </div>
     <br />
-    <div class='board'>
-      <% 1.upto(2) do |pnum| %>
+    <% 1.upto(2) do |pnum| %>
+      <div id="graveyard_<%= pnum %>" name="graveyard" class="row"> </div>
+    <% end %>
+
+    <div id="left_keep" class='left'>
+      <% 1.upto(1) do |pnum| %>
         <div id="keep_<%= pnum %>" name="keep" class="row">
           <% 1.upto(7) do |n| %>
             <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
@@ -70,11 +74,8 @@
         </div>
       <% end %>
     </div>
-    <% 1.upto(2) do |pnum| %>
-      <div id="graveyard_<%= pnum %>" name="graveyard" class="row"> </div>
-    <% end %>
 
-    <div class="board">
+    <div id="board" class="left">
       <% 7.downto(1) do |row| %>
         <div class="row">
           <% 'a'.upto('g') do |col| %>
@@ -97,7 +98,25 @@
       <% end %>
     </div>
 
-    
+    <div id="right_keep" class='left'>
+      <% 2.upto(2) do |pnum| %>
+        <div id="keep_<%= pnum %>" name="keep" class="row">
+          <% 1.upto(7) do |n| %>
+            <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
+              <%= pnum %>K<%= n %>
+              <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
+                <% klass = piece.class %>
+                <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='piece player<%= pnum %>'><div class='piece_player_num'><%= piece.name %></div>
+                  <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' />
+                  <img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' />
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
   <% end %>
 
 <% end %>

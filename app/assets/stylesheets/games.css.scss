@@ -13,11 +13,16 @@
   clear: both;
 }
 
+#left_section {
+  position: absolute;
+  width: 400px;
+}
+
 .draft_piece {
   width: 37px;
   background-color: #33CCFF;
   border-radius: 15px;
-  padding: 10px 10px 10px 10px;
+  padding: 10px 5px 10px 5px;
   margin: 3px 10px;
 }
 
@@ -90,8 +95,8 @@ body {
 }
 
 .board {
-  margin-left: auto;
-  margin-right: auto;
+  #margin-left: auto;
+  #margin-right: auto;
   width: 500px;
 }
 
@@ -99,4 +104,21 @@ body {
 }
 
 #draft_section {
+}
+
+#board {
+  margin-bottom: 100px;
+}
+
+#keep_1 {
+  //margin-top: 462px;
+}
+
+#left_keep {
+  margin-top: 462px;
+  margin-right: 5px;
+}
+
+#right_keep {
+  margin-left: 5px;
 }
