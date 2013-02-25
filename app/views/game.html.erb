@@ -1,6 +1,11 @@
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
+  <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
+
+  <%= button_tag "Flip Piece", :type => 'button', :id => 'flip_button' %>
+  <%= button_tag "End Turn", :type => 'button', :id => 'pass_turn_button' %>
+
   <%= form_for @game do |f| %>
     <div class='left'>
       <div>Phase: <%= @game.phase %></div>
@@ -19,11 +24,7 @@
         <input id='debug' value='stop' />
       <%- end %>
 
-      <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
-
-      <%= button_tag "Flip Piece", :type => 'button', :id => 'flip_button' %>
-      <%= button_tag "End Turn", :type => 'button', :id => 'pass_turn_button' %>
-
+      
       <%= hidden_field_tag :player, "player#{@me.num}" %>
       <%= hidden_field_tag :my_secret, @me.secret %>
       <%= hidden_field_tag :phase, @game.phase %>
