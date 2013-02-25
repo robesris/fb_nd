@@ -1,6 +1,10 @@
 // Place all the styles related to the games controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+body {
+  width: 1000px;
+}
+
 .row {
   clear: both;
 }
@@ -24,12 +28,14 @@
   border-radius: 15px;
   padding: 10px 5px 10px 5px;
   margin: 3px 10px;
+  cursor: pointer;
 }
 
 .piece {
   width: 37px;
   font-size: 10px;
   margin: 0 auto;
+  cursor: pointer;
   #background-color: #D4D4D4
 }
 
@@ -101,6 +107,8 @@ body {
 }
 
 #left_section {
+  position: absolute;
+  left: 900px;
 }
 
 #draft_section {
@@ -108,6 +116,7 @@ body {
 
 #board {
   margin-bottom: 100px;
+  width: 500px;
 }
 
 #keep_1 {

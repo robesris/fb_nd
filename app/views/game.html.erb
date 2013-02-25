@@ -41,19 +41,6 @@
 
     </div>
 
-    <div id="left_section" class="left">
-      <div id='draft_section' class=''<% unless @game.phase == 'setup' %> style='display: none'<% end %>>
-        <% @all_draft_klasses.each_with_index do |klass, i| %>
-          <% unless klass == BlackStone || klass == RedStone %>
-            <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %><%= i % 7 == 0 && false ? ' clear' : '' %>">
-              <div><%= klass.to_s %></div>
-              <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' />
-              <img src='/assets/tro_compass_1.jpg' class='compass' />
-            </div>
-          <% end %>
-        <% end %>
-      </div>
-    </div>
     <br />
     <% 1.upto(2) do |pnum| %>
       <div id="graveyard_<%= pnum %>" name="graveyard" class="row"> </div>
@@ -100,6 +87,21 @@
         </div>
       <% end %>
     </div>
+
+    <div id="left_section" class="left">
+      <div id='draft_section' class=''<% unless @game.phase == 'setup' %> style='display: none'<% end %>>
+        <% @all_draft_klasses.each_with_index do |klass, i| %>
+          <% unless klass == BlackStone || klass == RedStone %>
+            <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %><%= i % 7 == 0 && false ? ' clear' : '' %>">
+              <div><%= klass.to_s %></div>
+              <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' />
+              <img src='/assets/tro_compass_1.jpg' class='compass' />
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
 
     
   <% end %>
