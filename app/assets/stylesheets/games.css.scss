@@ -14,8 +14,8 @@
 }
 
 #left_section {
-  position: absolute;
-  width: 400px;
+  //position: absolute;
+  //width: 400px;
 }
 
 .draft_piece {
@@ -111,14 +111,14 @@ body {
 }
 
 #keep_1 {
-  //margin-top: 462px;
+  margin-top: 412px;
 }
 
-#left_keep {
-  margin-top: 462px;
-  margin-right: 5px;
+#keep_2 {
+  clear: both;
 }
 
-#right_keep {
-  margin-left: 5px;
+.keep {
+  width: 434px;
+  height: 50px;
 }

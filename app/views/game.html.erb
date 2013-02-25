@@ -1,48 +1,51 @@
 <%= link_to "New Game", create_game_path %>
 
 <% if @game %>
-  <div>Phase: <%= @game.phase %></div>
-  <div>Code: <%= @game.code %></div>
-  <div>Player Secret: <%= @me.secret %></div>
-  <input id="player_num" type="hidden" value="<%= @me.num %>" />
-  <div>Player Num: <%= @me && @me.num %></div>
-  
-  <input id='active_player_num' type="hidden" value="<%= @game.active_player && @game.active_player.num %>" />
-  <div id='active_player_text'>
-    <%= (@game.active_player.num == @me.num ? "Your Turn" : "Opponent's Turn") if @me && @game.active_player %>
-  </div>
-
-  <% if Rails.env == 'test' || Rails.env == 'cucumber' %>
-    <a href='#' onclick="javascript:$('#debug').val('go')" style="font-size: medium">End Pause</a>
-    <input id='debug' value='stop' />
-  <%- end %>
-
-  <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
-
-  <%= button_tag "Flip Piece", :type => 'button', :id => 'flip_button' %>
-  <%= button_tag "End Turn", :type => 'button', :id => 'pass_turn_button' %>
-
   <%= form_for @game do |f| %>
-    <%= hidden_field_tag :player, "player#{@me.num}" %>
-    <%= hidden_field_tag :my_secret, @me.secret %>
-    <%= hidden_field_tag :phase, @game.phase %>
+    <div class='left'>
+      <div>Phase: <%= @game.phase %></div>
+      <div>Code: <%= @game.code %></div>
+      <div>Player Secret: <%= @me.secret %></div>
+      <input id="player_num" type="hidden" value="<%= @me.num %>" />
+      <div>Player Num: <%= @me && @me.num %></div>
+      
+      <input id='active_player_num' type="hidden" value="<%= @game.active_player && @game.active_player.num %>" />
+      <div id='active_player_text'>
+        <%= (@game.active_player.num == @me.num ? "Your Turn" : "Opponent's Turn") if @me && @game.active_player %>
+      </div>
 
-    <%= f.radio_button :active_player, :go_first %>Go first
+      <% if Rails.env == 'test' || Rails.env == 'cucumber' %>
+        <a href='#' onclick="javascript:$('#debug').val('go')" style="font-size: medium">End Pause</a>
+        <input id='debug' value='stop' />
+      <%- end %>
 
-    <%= link_to "Start", join_game_path(:game_code => @game_code, :player_secret => @player_secret) %>
+      <%= button_to "Ready", ready_path(@game.code, @me.secret), :remote => true, :id => 'ready_button', :form => { :id => 'ready_button_form'} %>
 
-    <input id='selected_id' type='hidden' value='' />
-    <div id='selected_text'>(No piece selected)</div>
-    <div id='prompt'> </div>
+      <%= button_tag "Flip Piece", :type => 'button', :id => 'flip_button' %>
+      <%= button_tag "End Turn", :type => 'button', :id => 'pass_turn_button' %>
 
-    <div>Player 1 Crystals:<span id="crystals_1"><%= @game.player1.crystals %></span></div>
-    <div>Player 2 Crystals:<span id="crystals_2"><%= @game.player2.crystals %></span></div>
+      <%= hidden_field_tag :player, "player#{@me.num}" %>
+      <%= hidden_field_tag :my_secret, @me.secret %>
+      <%= hidden_field_tag :phase, @game.phase %>
+
+      <%= f.radio_button :active_player, :go_first %>Go first
+
+      <%= link_to "Start", join_game_path(:game_code => @game_code, :player_secret => @player_secret) %>
+
+      <input id='selected_id' type='hidden' value='' />
+      <div id='selected_text'>(No piece selected)</div>
+      <div id='prompt'> </div>
+
+      <div>Player 1 Crystals:<span id="crystals_1"><%= @game.player1.crystals %></span></div>
+      <div>Player 2 Crystals:<span id="crystals_2"><%= @game.player2.crystals %></span></div>
+
+    </div>
 
     <div id="left_section" class="left">
       <div id='draft_section' class=''<% unless @game.phase == 'setup' %> style='display: none'<% end %>>
         <% @all_draft_klasses.each_with_index do |klass, i| %>
           <% unless klass == BlackStone || klass == RedStone %>
-            <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %><%= i % 7 == 0 ? ' clear' : '' %>">
+            <div id="draft_<%= klass.to_s.downcase %>" name="<%= klass.to_s %>" class="left draft_piece<%= klass < Piece::Nav ? ' nav' : '' %><%= i % 7 == 0 && false ? ' clear' : '' %>">
               <div><%= klass.to_s %></div>
               <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' />
               <img src='/assets/tro_compass_1.jpg' class='compass' />
@@ -56,9 +59,9 @@
       <div id="graveyard_<%= pnum %>" name="graveyard" class="row"> </div>
     <% end %>
 
-    <div id="left_keep" class='left'>
-      <% 1.upto(1) do |pnum| %>
-        <div id="keep_<%= pnum %>" name="keep" class="row">
+    <div id="keep_section" class='left'>
+      <% 2.downto(1) do |pnum| %>
+        <div id="keep_<%= pnum %>" name="keep" class="row keep">
           <% 1.upto(7) do |n| %>
             <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
               <%= pnum %>K<%= n %>
@@ -98,25 +101,7 @@
       <% end %>
     </div>
 
-    <div id="right_keep" class='left'>
-      <% 2.upto(2) do |pnum| %>
-        <div id="keep_<%= pnum %>" name="keep" class="row">
-          <% 1.upto(7) do |n| %>
-            <div id="keep_<%= pnum %>_<%= n %>" class="keep_space left">
-              <%= pnum %>K<%= n %>
-              <% if piece = @game.playernum(pnum).keep[n - 1].piece %>
-                <% klass = piece.class %>
-                <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='piece player<%= pnum %>'><div class='piece_player_num'><%= piece.name %></div>
-                  <img src='/assets/<%= klass.to_s.downcase %>_1.gif' class='portrait' />
-                  <img src='/assets/tro_compass_1.jpg' class='compass' width='25%' height='25%' />
-                </div>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-      <% end %>
-    </div>
-
+    
   <% end %>
 
 <% end %>
