@@ -137,46 +137,38 @@ class Piece < ActiveRecord::Base
       # We don't have to check if both are 0 because we already reject this case at the start of the method
       if col_distance.abs == 0 || row_distance.abs == 0
         if col_distance.abs == 0    # same col: move in direction of row_distance's sign
-          direction_params = nil
-
+          direction_params = { :same => :col, 
+                               :different => :row,
+                               :my_same_row_or_col => my_col }
           if row_distance > 0  # moving up
-            direction_params = { :normal => :up, 
-                                 :leap => :leap_up, 
-                                 :same => :col, 
-                                 :different => :row,
-                                 :my_same_row_or_col => my_col,
-                                 :gt_board_different_row_or_col => to_space.row,
-                                 :lt_board_different_row_or_col => my_row
-            }
+            direction_params.merge!( { :normal => :up, 
+                                       :leap => :leap_up, 
+                                       :gt_board_different_row_or_col => to_space.row,
+                                       :lt_board_different_row_or_col => my_row
+            })
           else                 # moving down
-            direction_params = { :normal => :dn, 
-                                 :leap => :leap_dn, 
-                                 :same => :col, 
-                                 :different => :row,
-                                 :my_same_row_or_col => my_col,
-                                 :gt_board_different_row_or_col => my_row,
-                                 :lt_board_different_row_or_col => to_space.row
-            }
+            direction_params.merge!( { :normal => :dn, 
+                                       :leap => :leap_dn, 
+                                       :gt_board_different_row_or_col => my_row,
+                                       :lt_board_different_row_or_col => to_space.row
+            })
           end
         elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
+          direction_params = { :same => :row, 
+                               :different => :col,
+                               :my_same_row_or_col => my_row }
           if col_distance > 0  # moving right 
-            direction_params = { :normal => :rt, 
-                                 :leap => :leap_rt, 
-                                 :same => :row, 
-                                 :different => :col,
-                                 :my_same_row_or_col => my_row,
-                                 :gt_board_different_row_or_col => to_space.col,
-                                 :lt_board_different_row_or_col => my_col
-            }
+            direction_params.merge!( { :normal => :rt, 
+                                       :leap => :leap_rt, 
+                                       :gt_board_different_row_or_col => to_space.col,
+                                       :lt_board_different_row_or_col => my_col
+            })
           else                 # moving left
-            direction_params = { :normal => :lt, 
-                                 :leap => :leap_lt, 
-                                 :same => :row, 
-                                 :different => :col,
-                                 :my_same_row_or_col => my_row,
-                                 :gt_board_different_row_or_col => my_col,
-                                 :lt_board_different_row_or_col => to_space.col
-            }
+            direction_params.merge!( { :normal => :lt, 
+                                       :leap => :leap_lt, 
+                                       :gt_board_different_row_or_col => my_col,
+                                       :lt_board_different_row_or_col => to_space.col
+            })
           end
         end
 
