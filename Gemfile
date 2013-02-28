@@ -7,7 +7,7 @@ gem 'rails', '3.2.11'
 
 group :test do
   #gem 'ruby-debug-base19x'
-  #gem 'ruby-debug19'
+  gem 'debugger'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'cucumber'

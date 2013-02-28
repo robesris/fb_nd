@@ -135,26 +135,52 @@ class Piece < ActiveRecord::Base
       dir_sym = nil
 
       # We don't have to check if both are 0 because we already reject this case at the start of the method
-      if col_distance.abs == 0    # same col: move in direction of row_distance's sign
-        if row_distance > 0  # moving up
-          return false unless self.grid.include?(:up) || self.grid.include?(:leap_up)
-          dir_sym = self.grid.include?(:leap_up) ? :leap_up : :up
-          intervening_spaces = self.board.spaces.select{ |s| s.col == my_col && s.row > my_row && s.row < to_space.row}
-        else                 # moving down
-          return false unless self.grid.include?(:dn) || self.grid.include?(:leap_dn)
-          dir_sym = self.grid.include?(:leap_dn) ? :leap_dn : :dn
-          intervening_spaces = self.board.spaces.select{ |s| s.col == my_col && s.row < my_row && s.row > to_space.row}
+      if col_distance.abs == 0 || row_distance.abs == 0
+        if col_distance.abs == 0    # same col: move in direction of row_distance's sign
+          direction_params = nil
+
+          if row_distance > 0  # moving up
+            direction_params = { :normal => :up, 
+                                 :leap => :leap_up, 
+                                 :same => :col, 
+                                 :different => :row,
+                                 :my_same_row_or_col => my_col,
+                                 :gt_board_different_row_or_col => to_space.row,
+                                 :lt_board_different_row_or_col => my_row
+            }
+          else                 # moving down
+            direction_params = { :normal => :dn, 
+                                 :leap => :leap_dn, 
+                                 :same => :col, 
+                                 :different => :row,
+                                 :my_same_row_or_col => my_col,
+                                 :gt_board_different_row_or_col => my_row,
+                                 :lt_board_different_row_or_col => to_space.row
+            }
+          end
+        elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
+          if col_distance > 0  # moving right 
+            direction_params = { :normal => :rt, 
+                                 :leap => :leap_rt, 
+                                 :same => :row, 
+                                 :different => :col,
+                                 :my_same_row_or_col => my_row,
+                                 :gt_board_different_row_or_col => to_space.col,
+                                 :lt_board_different_row_or_col => my_col
+            }
+          else                 # moving left
+            direction_params = { :normal => :lt, 
+                                 :leap => :leap_lt, 
+                                 :same => :row, 
+                                 :different => :col,
+                                 :my_same_row_or_col => my_row,
+                                 :gt_board_different_row_or_col => my_col,
+                                 :lt_board_different_row_or_col => to_space.col
+            }
+          end
         end
-      elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
-        if col_distance > 0  # moving right 
-          return false unless self.grid.include?(:rt) || self.grid.include?(:leap_rt)
-          dir_sym = self.grid.include?(:leap_rt) ? :leap_rt : :rt
-          intervening_spaces = self.board.spaces.select{ |s| s.row == my_row && s.col > my_col && s.col < to_space.col}
-        else                 # moving left
-          return false unless self.grid.include?(:lt) || self.grid.include?(:leap_lt)
-          dir_sym = self.grid.include?(:leap_lt) ? :leap_lt : :lt
-          intervening_spaces = self.board.spaces.select{ |s| s.row == my_row && s.col < my_col && s.col > to_space.col}
-        end
+
+        return false unless intervening_spaces = check_orthogonal_direction(direction_params)
       elsif col_distance.abs == row_distance.abs # diagonal line
         col_dir = col_distance / col_distance   # +1 or -1
         row_dir = row_distance / row_distance   # +1 or -1
@@ -315,4 +341,45 @@ class Piece < ActiveRecord::Base
   def is_creature?
     true
   end
+
+  
+  
+  
+  private
+
+  def check_orthogonal_direction(direction_params)
+    normal = direction_params[:normal]
+    leap = direction_params[:leap]
+    my_same_row_or_col = direction_params[:my_same_row_or_col]
+    gt_board_different_row_or_col = direction_params[:gt_board_different_row_or_col]
+    lt_board_different_row_or_col = direction_params[:lt_board_different_row_or_col]
+    same = direction_params[:same]
+  
+    return false unless self.grid.include?(normal) || self.grid.include?(leap)
+    dir_sym = self.grid.include?(leap) ? leap : normal
+
+    self.board.spaces.select do |s| 
+      board_same_row_or_col = (same == :col ? s.col : s.row)
+      board_different_row_or_col = (same == :col ? s.row : s.col)
+
+      board_same_row_or_col == my_same_row_or_col && 
+      board_different_row_or_col > lt_board_different_row_or_col && 
+      board_different_row_or_col < gt_board_different_row_or_col
+    end
+  end
+
+  #def check_orthogonal_move(row_or_col_distance)
+  #def check_orthogonal_move(direction_params)
+    #direction_params = { :normal => :up, :leap => :leap_up, :my_same_row_or_col => my_col, :gt_board_different => to_space.row }
+   # check_orthogonal_direction( direction_params ) do |board_same_row_or_col, 
+                                                                                 #my_same_row_or_col,
+                                                                                 #board_different_row_or_col, 
+                                                                                 #gt_board_different,
+                                                                                 #lt_board_different|
+
+
+    #  board_same_row_or_col == my_same_row_or_col && board_different_row_or_col < gt_board_different && board_different_row_or_col > lt_board_different
+    #end
+  #end
+
 end
