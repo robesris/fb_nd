@@ -109,79 +109,34 @@ class Piece < ActiveRecord::Base
     return false if !self.on_board? || to_space == self.space
   
     #Flip the movement grid around for player 2 (i.e. second player)
-		grid = self.player.num == 1 ? self.grid : self.grid.reverse
 
 		#calculate the number of columns and rows the space is from current position
 		col_move = to_space.col - self.space.col # Left: <0  Right: >0
 		row_move = to_space.row - self.space.row # Up: >0  Down: <0
 
     #check if the piece's movement grid allows it to move DIRECTLY (i.e. 'jump') to the specified space 
-		if col_move.abs <= MAX_COL_MOVE &&
-			 row_move.abs <= MAX_ROW_MOVE &&
-			 grid[MOVEMENT_GRID_CENTER - (MOVEMENT_GRID_WIDTH * row_move) + col_move] != 0
+		if can_move_directly? col_move, row_move
 		  return true
 		else #if the piece can't jump to the specified space, see if it can 'slide' there
 			# almost all pieces need a straight line to the target - it must be in same row, col, or diagonal
 
-      my_col = self.space.col
-      my_row = self.space.row
-      col_distance = to_space.col - self.space.col
-      row_distance = to_space.row - self.space.row
-      if self.player.num == 2
+      col_distance = calculate_col_distance(to_space)
+      row_distance = calculate_row_distance(to_space)
+
+      if second_players_piece?
         col_distance *= -1
         row_distance *= -1
       end
-      intervening_spaces = nil
-      dir_sym = nil
 
       # We don't have to check if both are 0 because we already reject this case at the start of the method
       if col_distance.abs == 0 || row_distance.abs == 0
-        if col_distance.abs == 0    # same col: move in direction of row_distance's sign
-          direction_params = { :same => :col, 
-                               :different => :row,
-                               :my_same_row_or_col => my_col }
-          if row_distance > 0  # moving up
-            direction_params.merge!( { :normal => :up, 
-                                       :leap => :leap_up, 
-                                       :gt_board_different_row_or_col => to_space.row,
-                                       :lt_board_different_row_or_col => my_row
-            })
-          else                 # moving down
-            direction_params.merge!( { :normal => :dn, 
-                                       :leap => :leap_dn, 
-                                       :gt_board_different_row_or_col => my_row,
-                                       :lt_board_different_row_or_col => to_space.row
-            })
-          end
-        elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
-          direction_params = { :same => :row, 
-                               :different => :col,
-                               :my_same_row_or_col => my_row }
-          if col_distance > 0  # moving right 
-            direction_params.merge!( { :normal => :rt, 
-                                       :leap => :leap_rt, 
-                                       :gt_board_different_row_or_col => to_space.col,
-                                       :lt_board_different_row_or_col => my_col
-            })
-          else                 # moving left
-            direction_params.merge!( { :normal => :lt, 
-                                       :leap => :leap_lt, 
-                                       :gt_board_different_row_or_col => my_col,
-                                       :lt_board_different_row_or_col => to_space.col
-            })
-          end
-        end
-
-        return false unless intervening_spaces = check_orthogonal_direction(direction_params)
+        return false unless intervening_spaces = check_orthogonal_direction(:col_distance => col_distance, 
+                                                                            :row_distance => row_distance, 
+                                                                            :to_space => to_space)
       elsif col_distance.abs == row_distance.abs # diagonal line
-        col_dir = col_distance / col_distance   # +1 or -1
-        row_dir = row_distance / row_distance   # +1 or -1
-        col_dir_sym = col_dir > 0 ? 'r' : 'l'
-        row_dir_sym = row_dir > 0 ? 'u' : 'd'
-        dir_sym = "#{row_dir_sym}#{col_dir_sym}".to_sym
-        leap_dir_sym = "leap_#{row_dir_sym}#{col_dir_sym}".to_sym
-        dir_sym = leap_dir_sym if self.grid.include?(leap_dir_sym)
-        return false unless self.grid.include?(dir_sym)
+        
+        dir_sym = calculate_dir_sum(col_distance, row_distance)
+        return false unless self.compass_has_dir?(dir_sym)
         intervening_spaces = self.game.board.spaces.select do |s|
           s.col * col_dir > my_col && s.col * col_dir < to_space.col &&    # spaces in intervening cols...
           s.row * row_dir > my_row && s.row * row_dir < to_space.row &&    # and intervening rows...
@@ -339,7 +294,105 @@ class Piece < ActiveRecord::Base
   
   private
 
-  def check_orthogonal_direction(direction_params)
+  def calculate_dir_sym(col_distance, row_distance)
+    col_dir = col_distance / col_distance   # +1 or -1
+    row_dir = row_distance / row_distance   # +1 or -1
+    col_dir_sym = col_dir > 0 ? 'r' : 'l'
+    row_dir_sym = row_dir > 0 ? 'u' : 'd'
+    dir_sym = "#{row_dir_sym}#{col_dir_sym}".to_sym
+    leap_dir_sym = "leap_#{row_dir_sym}#{col_dir_sym}".to_sym
+    dir_sym = leap_dir_sym if self.can_leap?(leap_dir_sym)
+  end
+
+  def compass_has_dir?(dir_sym)
+    self.my_adjusted_grid.include?(dir_sym)
+  end
+
+  def can_leap?(leap_dir_sym)
+    self.my_adjusted_grid.include? leap_dir_sym
+  end
+
+  def can_move_directly?(col_move, row_move)
+    col_move.abs <= MAX_COL_MOVE &&
+		row_move.abs <= MAX_ROW_MOVE &&
+		my_adjusted_grid[MOVEMENT_GRID_CENTER - (MOVEMENT_GRID_WIDTH * row_move) + col_move] != 0
+  end
+
+  def dir_params_hash(normal, leap, gt, lt)
+    { :normal => normal, 
+      :leap => leap, 
+      :gt_board_different_row_or_col => gt,
+      :lt_board_different_row_or_col => lt
+    }
+  end
+
+  def my_player_num
+    self.player.num
+  end
+
+  def first_players_piece?
+    my_player_num == 1
+  end
+
+  def second_players_piece?
+    my_player_num == 2
+  end
+
+  def my_reverse_grid
+    self.grid.reverse
+  end
+
+  def my_adjusted_grid
+    first_players_piece? ? self.grid : my_reverse_grid
+  end
+
+  def my_col
+    self.space.col
+  end
+
+  def my_row
+    self.space.row
+  end
+
+  def calculate_col_distance(to_space, reverse = false)
+    to_space.col - my_col
+  end
+
+  def calculate_row_distance(to_space, reverse = false)
+    to_space.row - my_row
+  end
+
+  def calculate_direction_params(move_params)
+    col_distance = move_params[:col_distance]
+    row_distance = move_params[:row_distance]
+    to_space = move_params[:to_space]
+
+    if col_distance.abs == 0    # same col: move in direction of row_distance's sign
+      direction_params = { :same => :col, 
+                           :different => :row,
+                           :my_same_row_or_col => my_col }
+      if row_distance > 0  # moving up
+        direction_params.merge!(dir_params_hash(:up, :leap_up, to_space.row, my_row))                                     
+      else                 # moving down
+        direction_params.merge!(dir_params_hash(:dn, :leap_dn, my_row, to_space.row))
+      end
+    elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
+      direction_params = { :same => :row, 
+                           :different => :col,
+                           :my_same_row_or_col => my_row }
+      if col_distance > 0  # moving right 
+        direction_params.merge!(dir_params_hash(:rt, :leap_rt, to_space.col, my_col))
+      else                 # moving left
+        direction_params.merge!(dir_params_hash(:lt, :leap_lt, my_col, to_space.col))
+      end
+    end
+
+    direction_params
+  end
+
+  def check_orthogonal_direction(move_params)
+    direction_params = calculate_direction_params(move_params)
+    
     normal = direction_params[:normal]
     leap = direction_params[:leap]
     my_same_row_or_col = direction_params[:my_same_row_or_col]
@@ -359,19 +412,4 @@ class Piece < ActiveRecord::Base
       board_different_row_or_col < gt_board_different_row_or_col
     end
   end
-
-  #def check_orthogonal_move(row_or_col_distance)
-  #def check_orthogonal_move(direction_params)
-    #direction_params = { :normal => :up, :leap => :leap_up, :my_same_row_or_col => my_col, :gt_board_different => to_space.row }
-   # check_orthogonal_direction( direction_params ) do |board_same_row_or_col, 
-                                                                                 #my_same_row_or_col,
-                                                                                 #board_different_row_or_col, 
-                                                                                 #gt_board_different,
-                                                                                 #lt_board_different|
-
-
-    #  board_same_row_or_col == my_same_row_or_col && board_different_row_or_col < gt_board_different && board_different_row_or_col > lt_board_different
-    #end
-  #end
-
 end
