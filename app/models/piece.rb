@@ -133,8 +133,7 @@ class Piece < ActiveRecord::Base
         return false unless intervening_spaces = check_orthogonal_direction(:col_distance => col_distance, 
                                                                             :row_distance => row_distance, 
                                                                             :to_space => to_space)
-      elsif col_distance.abs == row_distance.abs # diagonal line
-        
+      elsif col_dir = calculate_col_dir && row_dir = calculate_row_dir && diagonal_move?(col_distance, row_distance, col_dir, row_dir)
         dir_sym = calculate_dir_sum(col_distance, row_distance)
         return false unless self.compass_has_dir?(dir_sym)
         intervening_spaces = self.game.board.spaces.select do |s|
@@ -294,9 +293,17 @@ class Piece < ActiveRecord::Base
   
   private
 
-  def calculate_dir_sym(col_distance, row_distance)
-    col_dir = col_distance / col_distance   # +1 or -1
-    row_dir = row_distance / row_distance   # +1 or -1
+  def calculate_col_dir(col_distance, row_distance)
+    # +1 or -1
+    col_distance / row_distance
+  end
+
+  def calculate_row_dir(row_distance, col_distance)
+    # +1 or -1
+    row_distance / col_distance
+  end
+
+  def calculate_dir_sym(col_distance, row_distance, col_dir, row_dir)
     col_dir_sym = col_dir > 0 ? 'r' : 'l'
     row_dir_sym = row_dir > 0 ? 'u' : 'd'
     dir_sym = "#{row_dir_sym}#{col_dir_sym}".to_sym
@@ -360,6 +367,10 @@ class Piece < ActiveRecord::Base
 
   def calculate_row_distance(to_space, reverse = false)
     to_space.row - my_row
+  end
+
+  def diagonal_move?(col_distance, row_distance)
+    col_distance.abs = row_distance.abs
   end
 
   def calculate_direction_params(move_params)
