@@ -118,27 +118,10 @@ class Piece < ActiveRecord::Base
 		if can_move_directly? col_move, row_move
 		  return true
 		else #if the piece can't jump to the specified space, see if it can 'slide' there
-			# almost all pieces need a straight line to the target - it must be in same row, col, or diagonal
-
-      col_distance = calculate_distance(:col, to_space)
-      row_distance = calculate_distance(:row, to_space)
-
-      # We don't have to check if both are 0 because we already reject this case at the start of the method
-      if col_distance.abs == 0 || row_distance.abs == 0
-        return false unless intervening_spaces = check_orthogonal_direction(:col_distance => col_distance, 
-                                                                            :row_distance => row_distance, 
-                                                                            :to_space => to_space)
-      elsif col_dir = calculate_col_dir && row_dir = calculate_row_dir && diagonal_move?(col_distance, row_distance, col_dir, row_dir)
-        dir_sym = calculate_dir_sym(col_distance, row_distance)
-        return false unless self.compass_has_dir?(dir_sym)
-        intervening_spaces = calculate_intervening_spaces(to_space)
-      else
-        # TODO: put in stuff to handle Ghora, Han, and leaping pieces
-        return false
-      end
+      intervening_spaces = can_slide_to?(to_space)
 
       # check to see if we can or need to leap, and then decide if movement is possible or not
-      return enough_leaps?(intervening_space)
+      return intervening_spaces && enough_leaps?(intervening_spaces)
 		end
 	end
 
@@ -321,6 +304,27 @@ class Piece < ActiveRecord::Base
     col_move.abs <= MAX_COL_MOVE &&
 		row_move.abs <= MAX_ROW_MOVE &&
 		my_adjusted_grid[MOVEMENT_GRID_CENTER - (MOVEMENT_GRID_WIDTH * row_move) + col_move] != 0
+  end
+
+  def can_slide_to?(to_space)
+    # almost all pieces need a straight line to the target - it must be in same row, col, or diagonal
+    col_distance = calculate_distance(:col, to_space)
+    row_distance = calculate_distance(:row, to_space)
+
+    # We don't have to check if both are 0 because we already reject this case at the start of the method
+    if col_distance.abs == 0 || row_distance.abs == 0
+      return false unless intervening_spaces = check_orthogonal_direction(:col_distance => col_distance, 
+                                                                          :row_distance => row_distance, 
+                                                                          :to_space => to_space)
+    elsif col_dir = calculate_col_dir && row_dir = calculate_row_dir && diagonal_move?(col_distance, row_distance, col_dir, row_dir)
+      return false unless self.compass_has_dir?(calculate_dir_sym(col_distance, row_distance))
+      intervening_spaces = calculate_intervening_spaces(to_space)
+    else
+      # TODO: put in stuff to handle Ghora, Han, and leaping pieces
+      return false
+    end
+
+    intervening_spaces
   end
 
   def dir_params_hash(normal, leap, gt, lt)
