@@ -136,11 +136,7 @@ class Piece < ActiveRecord::Base
       elsif col_dir = calculate_col_dir && row_dir = calculate_row_dir && diagonal_move?(col_distance, row_distance, col_dir, row_dir)
         dir_sym = calculate_dir_sum(col_distance, row_distance)
         return false unless self.compass_has_dir?(dir_sym)
-        intervening_spaces = self.game.board.spaces.select do |s|
-          s.col * col_dir > my_col && s.col * col_dir < to_space.col &&    # spaces in intervening cols...
-          s.row * row_dir > my_row && s.row * row_dir < to_space.row &&    # and intervening rows...
-          (s.row - my_row).abs == (s.col - my_col).abs                     # that are an equal number of row and cols away
-        end
+        intervening_spaces = calculate_intervening_spaces(to_space)
       else
         # TODO: put in stuff to handle Ghora, Han, and leaping pieces
         return false
@@ -359,6 +355,22 @@ class Piece < ActiveRecord::Base
 
   def my_row
     self.space.row
+  end
+
+  def game_board
+    self.game_board
+  end
+
+  def game_board_spaces
+    game_board.spaces
+  end
+
+  def calculate_intervening_spaces(to_space, leap = false)
+    board_spaces.each do |s|
+      s.col * col_dir > my_col && s.col * col_dir < to_space.col &&    # spaces in intervening cols...
+      s.row * row_dir > my_row && s.row * row_dir < to_space.row &&    # and intervening rows...
+      (s.row - my_row).abs == (s.col - my_col).abs                     # that are an equal number of row and cols away
+    end
   end
 
   def calculate_col_distance(to_space, reverse = false)
