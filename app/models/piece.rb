@@ -177,7 +177,9 @@ class Piece < ActiveRecord::Base
   end
 
   def flip(pass = true)
-    return false unless this_player_active? && is_active_piece?
+    # The piece's player must be active, and if there is an active piece, 
+    # it has to be this one (can't move one piece and flip another)
+    return false unless this_player_active? && (is_active_piece? || no_piece_active?)
 
     flip_cost = self.val
     flip_cost = (flip_cost / 2.0).ceil if in_half_crystal_zone?
@@ -345,6 +347,10 @@ class Piece < ActiveRecord::Base
   def any_piece_active?
     # the current active piece should probably be moved or at least accessible from the game model
     self.player.active_piece
+  end
+
+  def no_piece_active?
+    !any_piece_active?
   end
   
   def this_player_active?
