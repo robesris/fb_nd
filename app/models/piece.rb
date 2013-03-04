@@ -1,6 +1,10 @@
 class Piece < ActiveRecord::Base
+  extend ActiveModel::Callbacks
+
   attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name, :in_graveyard
   
+  define_callbacks :is_my_turn, :only => [:move, :flip]
+
   belongs_to :player
   has_one :board, :through => :space
   has_one :game, :through => :player
@@ -135,7 +139,7 @@ class Piece < ActiveRecord::Base
   end
 
   def summon(args = {})
-    return false if self.game.active_player != self.player || self.player.active_piece  # moving can never be done after another action, so you can only move when there is no active piece
+    #return false if self.game.active_player != self.player || self.player.active_piece  # moving can never be done after another action, so you can only move when there is no active piece
 
     space = if args[:space].kind_of?(Space)
                      args[:space]
@@ -164,7 +168,8 @@ class Piece < ActiveRecord::Base
   def move(args = {})
     #game = self.game
     
-    return false if game.active_player != self.player || self.player.active_piece  # moving can never be done after another action, so you can only move when there is no active piece
+    #return false unless is_my_turn?
+    # moving can never be done after another action, so you can only move when there is no active piece
 
     target_space = if args[:space].kind_of?(Space)
                      args[:space]
@@ -252,8 +257,16 @@ class Piece < ActiveRecord::Base
 
   
   
+
+
+
+
   
   private
+
+  def is_my_turn
+    this_player_active? && is_active_piece?
+  end
 
   def calculate_col_dir(col_distance, row_distance)
     # +1 or -1
@@ -361,6 +374,10 @@ class Piece < ActiveRecord::Base
   
   def this_player_active?
     active_player == self.player
+  end
+
+  def award_crystals(num, player = self.player)
+
   end
 
   def in_half_crystal_zone?
