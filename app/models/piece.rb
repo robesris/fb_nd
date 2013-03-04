@@ -3,8 +3,6 @@ class Piece < ActiveRecord::Base
 
   attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name, :in_graveyard
   
-  define_callbacks :is_my_turn_and_no_active_piece, :only => [:move, :flip]
-
   belongs_to :player
   has_one :board, :through => :space
   has_one :game, :through => :player
@@ -76,8 +74,6 @@ class Piece < ActiveRecord::Base
   
   def initialize(params = nil, options = {})
     super(params)
-    #raise params.inspect
-    #game = 
     self.name = self.class.to_s
 
     # realistically, pieces should never be created so fast that these ids would ever be the same
@@ -155,6 +151,7 @@ class Piece < ActiveRecord::Base
   end
 
   def move(args = {})
+    return false unless this_player_active? && !any_piece_active?
     # moving can never be done after another action, so you can only move when there is no active piece
 
     my_target_space = target_space(args)
@@ -181,6 +178,7 @@ class Piece < ActiveRecord::Base
 
   def flip(pass = true)
     return false unless this_player_active? && is_active_piece?
+
     flip_cost = self.val
     flip_cost = (flip_cost / 2.0).ceil if in_half_crystal_zone?
     return false if self.flipped? || my_player_crystals < flip_cost
@@ -228,18 +226,11 @@ class Piece < ActiveRecord::Base
     true
   end
 
-  
-  
 
 
 
-
-  
   private
 
-  def is_my_turn_and_no_active_piece
-    this_player_active? && is_active_piece?
-  end
 
   def calculate_col_dir(col_distance, row_distance)
     # +1 or -1
@@ -251,20 +242,20 @@ class Piece < ActiveRecord::Base
     row_distance / col_distance
   end
 
-  def calculate_dir_sym(col_distance, row_distance, col_dir, row_dir)
+  def calculate_dir_sym(col_dir, row_dir)
     col_dir_sym = col_dir > 0 ? 'r' : 'l'
     row_dir_sym = row_dir > 0 ? 'u' : 'd'
     dir_sym = "#{row_dir_sym}#{col_dir_sym}".to_sym
     leap_dir_sym = "leap_#{row_dir_sym}#{col_dir_sym}".to_sym
-    dir_sym = leap_dir_sym if self.can_leap?(leap_dir_sym)
+    dir_sym = leap_dir_sym if can_leap?(leap_dir_sym)
   end
 
   def compass_has_dir?(dir_sym)
-    self.my_adjusted_grid.include?(dir_sym)
+    my_adjusted_grid.include?(dir_sym)
   end
 
   def can_leap?(leap_dir_sym)
-    self.my_adjusted_grid.include? leap_dir_sym
+    my_adjusted_grid.include? leap_dir_sym
   end
 
   def calculate_leap_spaces_remaining(dir_sym)
@@ -273,9 +264,9 @@ class Piece < ActiveRecord::Base
   end
 
   def enough_leaps?(intervening_spaces)
-    leaps_remaining = calculate_leap_spaces_remaining
+    leaps_remaining = calculate_leap_spaces_remaining(intervening_spaces[:dir_sym])
 
-    intervening_spaces.each do |space|
+    intervening_spaces[:spaces].each do |space|
       if space.occupied?
         if leaps_remaining <= 0
           return false
@@ -299,18 +290,24 @@ class Piece < ActiveRecord::Base
 
     # We don't have to check if both are 0 because we already reject this case at the start of the method
     if col_distance.abs == 0 || row_distance.abs == 0
-      return false unless intervening_spaces = check_orthogonal_direction(:col_distance => col_distance, 
-                                                                          :row_distance => row_distance, 
-                                                                          :to_space => to_space)
-    elsif col_dir = calculate_col_dir && row_dir = calculate_row_dir && diagonal_move?(col_distance, row_distance, col_dir, row_dir)
-      return false unless self.compass_has_dir?(calculate_dir_sym(col_distance, row_distance))
+      return false unless result = check_orthogonal_direction(:col_distance => col_distance, 
+                                                              :row_distance => row_distance,  
+                                                              :to_space => to_space)
+      dir_sym = result[:dir_sym]
+      intervening_spaces = result[:spaces]
+    elsif (col_dir = calculate_col_dir(col_distance, row_distance)) &&
+          (row_dir = calculate_row_dir(row_distance, col_distance)) && 
+          diagonal_move?(col_distance, row_distance)
+      dir_sym = calculate_dir_sym(col_dir, row_dir)
+      return false unless compass_has_dir?(dir_sym)
       intervening_spaces = calculate_diagonal_intervening_spaces(col_dir, to_space)
     else
       # TODO: put in stuff to handle Ghora, Han, and leaping pieces
       return false
     end
 
-    intervening_spaces
+    {:spaces => intervening_spaces,
+     :dir_sym => dir_sym}
   end
 
   def dir_params_hash(normal, leap, gt, lt)
@@ -342,7 +339,12 @@ class Piece < ActiveRecord::Base
   end
 
   def is_active_piece?
-    self.player.active_piece && self.player.active_piece != self
+    self.player.active_piece && self.player.active_piece == self
+  end
+
+  def any_piece_active?
+    # the current active piece should probably be moved or at least accessible from the game model
+    self.player.active_piece
   end
   
   def this_player_active?
@@ -494,7 +496,7 @@ class Piece < ActiveRecord::Base
     return false unless self.grid.include?(normal) || self.grid.include?(leap)
     dir_sym = self.grid.include?(leap) ? leap : normal
 
-    self.board.spaces.select do |s| 
+    spaces = self.board.spaces.select do |s| 
       board_same_row_or_col = (same == :col ? s.col : s.row)
       board_different_row_or_col = (same == :col ? s.row : s.col)
 
@@ -502,5 +504,7 @@ class Piece < ActiveRecord::Base
       board_different_row_or_col > lt_board_different_row_or_col && 
       board_different_row_or_col < gt_board_different_row_or_col
     end
+
+    { :spaces => spaces, :dir_sym => dir_sym }
   end
 end
