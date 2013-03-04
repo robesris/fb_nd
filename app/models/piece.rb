@@ -139,22 +139,11 @@ class Piece < ActiveRecord::Base
   end
 
   def summon(args = {})
-    #return false if self.game.active_player != self.player || self.player.active_piece  # moving can never be done after another action, so you can only move when there is no active piece
-
-    space = if args[:space].kind_of?(Space)
-                     args[:space]
-                   else
-                     self.game.board.space(args[:col], args[:row])
-                   end
+    space = args[:space].kind_of?(Space) ? args[:space] : game_board_space(args[:col], args[:row])
     pass = args[:pass].present? ? args[:pass] : true
     
     if self.guard?
-      if self.in_keep? && space.adjacent_to_nav?(self.player) && !space.occupied?
-        self.update_attribute(:space, space)
-        self.game.pass_turn if pass
-      else
-        return false
-      end
+      guard_summon!(space)
     else
       if self.in_keep? && space.summon_space == self.player.num && !space.occupied?
         self.update_attribute(:space, space)
@@ -364,6 +353,23 @@ class Piece < ActiveRecord::Base
     player.add_crystals(num)
   end
 
+  def change_space_to(space)
+    self.update_attribute(:space, space)
+  end
+
+  def pass_turn
+    self.player.pass_turn
+  end
+
+  def guard_summon!(space)
+    if self.in_keep? && space.adjacent_to_nav?(self.player) && !space.occupied?
+      change_space_to(space)
+      pass_turn if pass
+    else
+      return false
+    end
+  end
+
   def in_half_crystal_zone?
      self.space.half_crystal?
   end
@@ -405,6 +411,10 @@ class Piece < ActiveRecord::Base
 
   def game_board
     self.game_board
+  end
+
+  def game_board_space(col, row)
+    self.game.board.space(col, row)
   end
 
   def game_board_spaces
