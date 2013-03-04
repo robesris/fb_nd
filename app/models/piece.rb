@@ -171,11 +171,11 @@ class Piece < ActiveRecord::Base
     my_target_space = target_space(args)
     result = { :kill => [] }
 
-    if self.can_reach?(target_space)
+    if self.can_reach?(my_target_space)
       # capture the occupying piece, if present
-      try_to_capture(target_space) if target_space.occupied?
+      try_to_capture(my_target_space, result) if my_target_space.occupied?
 
-      self.space = target_space
+      self.space = my_target_space
       self.player.update_attribute(:active_piece, self)
       if self.save
         # pass turn after a successful move
@@ -315,7 +315,7 @@ class Piece < ActiveRecord::Base
                                                                           :to_space => to_space)
     elsif col_dir = calculate_col_dir && row_dir = calculate_row_dir && diagonal_move?(col_distance, row_distance, col_dir, row_dir)
       return false unless self.compass_has_dir?(calculate_dir_sym(col_distance, row_distance))
-      intervening_spaces = calculate_intervening_spaces(to_space)
+      intervening_spaces = calculate_diagonal_intervening_spaces(col_dir, to_space)
     else
       # TODO: put in stuff to handle Ghora, Han, and leaping pieces
       return false
@@ -361,7 +361,7 @@ class Piece < ActiveRecord::Base
   end
 
   def award_crystals(num, player = self.player)
-
+    player.add_crystals(num)
   end
 
   def in_half_crystal_zone?
@@ -376,7 +376,7 @@ class Piece < ActiveRecord::Base
    end
   end
 
-  def try_to_capture(target_space)
+  def try_to_capture(target_space, result)
     # can't capture your own piece
     if target_space.piece.player == self.player
       return false
@@ -411,11 +411,19 @@ class Piece < ActiveRecord::Base
     game_board.spaces
   end
 
-  def calculate_intervening_spaces(to_space, leap = false)
-    board_spaces.each do |s|
-      s.col * col_dir > my_col && s.col * col_dir < to_space.col &&    # spaces in intervening cols...
-      s.row * row_dir > my_row && s.row * row_dir < to_space.row &&    # and intervening rows...
-      (s.row - my_row).abs == (s.col - my_col).abs                     # that are an equal number of row and cols away
+  def diagonal_space?(to_space, my_col, my_row)
+    (to_spaces.row - my_row).abs == (to_space.col - my_col).abs 
+  end
+
+  def calculate_intervening_row_or_col_spaces(row_or_col, to_space_col_or_row, row_or_col_dir)
+      to_space_col_or_row * row_or_col_dir > row_or_col_dir &&
+      row_or_col * row_or_col_dir < to_space_roll_or_col
+  end
+
+  def calculate_diagonal_intervening_spaces(col_dir, row_dir, to_space) board_spaces.each do |s|
+      calculate_intervening_col_or_row_spaces(s.row, to_space.col, col_dir) && 
+      calculate_intervening_col_or_row_spaces(s.row, to_space.row, row_dir) &&
+      diagonal_space?(to_space)   
     end
   end
 
