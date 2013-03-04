@@ -120,13 +120,8 @@ class Piece < ActiveRecord::Base
 		else #if the piece can't jump to the specified space, see if it can 'slide' there
 			# almost all pieces need a straight line to the target - it must be in same row, col, or diagonal
 
-      col_distance = calculate_col_distance(to_space)
-      row_distance = calculate_row_distance(to_space)
-
-      if second_players_piece?
-        col_distance *= -1
-        row_distance *= -1
-      end
+      col_distance = calculate_distance(:col, to_space)
+      row_distance = calculate_distance(:row, to_space)
 
       # We don't have to check if both are 0 because we already reject this case at the start of the method
       if col_distance.abs == 0 || row_distance.abs == 0
@@ -373,12 +368,16 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  def calculate_col_distance(to_space, reverse = false)
-    to_space.col - my_col
+  def calculate_col_distance(to_space)
+    (to_space.col - my_col) * (second_players_piece? ? -1 : 1)
   end
 
-  def calculate_row_distance(to_space, reverse = false)
-    to_space.row - my_row
+  def calculate_row_distance(to_space)
+    (to_space.row - my_row) * (second_players_piece? ? -1 : 1)
+  end
+
+  def calculate_distance(row_or_col, to_space)
+    row_or_col == :col ? calculate_col_distance(to_space) : calculate_row_distance(to_space)
   end
 
   def diagonal_move?(col_distance, row_distance)
