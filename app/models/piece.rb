@@ -162,7 +162,7 @@ class Piece < ActiveRecord::Base
   end
 
   def move(args = {})
-    game = self.game
+    #game = self.game
     
     return false if game.active_player != self.player || self.player.active_piece  # moving can never be done after another action, so you can only move when there is no active piece
 
@@ -202,10 +202,10 @@ class Piece < ActiveRecord::Base
   end
 
   def flip(pass = true)
-    return false if self.game.active_player != self.player || (self.player.active_piece && self.player.active_piece != self)
+    return false unless this_player_active? && is_active_piece?
     flip_cost = self.val
-    flip_cost = (flip_cost / 2.0).ceil if self.space.half_crystal?
-    return false if self.flipped? || self.player.crystals < flip_cost
+    flip_cost = (flip_cost / 2.0).ceil if in_half_crystal_zone?
+    return false if self.flipped? || my_player_crystals < flip_cost
 
     self.player.add_crystals(-flip_cost)
     self.update_attribute(:flipped, true)
@@ -335,8 +335,16 @@ class Piece < ActiveRecord::Base
     }
   end
 
+  def active_player
+    self.game.active_player
+  end
+
   def my_player_num
     self.player.num
+  end
+
+  def my_player_crystals
+    self.player.crystals
   end
 
   def first_players_piece?
@@ -345,6 +353,18 @@ class Piece < ActiveRecord::Base
 
   def second_players_piece?
     my_player_num == 2
+  end
+
+  def is_active_piece?
+    self.player.active_piece && self.player.active_piece != self
+  end
+  
+  def this_player_active?
+    active_player == self.player
+  end
+
+  def in_half_crystal_zone?
+     self.space.half_crystal?
   end
 
   def my_reverse_grid
@@ -392,7 +412,7 @@ class Piece < ActiveRecord::Base
   end
 
   def diagonal_move?(col_distance, row_distance)
-    col_distance.abs = row_distance.abs
+    col_distance.abs == row_distance.abs
   end
 
   def calculate_direction_params(move_params)
