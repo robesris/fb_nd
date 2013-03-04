@@ -3,7 +3,7 @@ class Piece < ActiveRecord::Base
 
   attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name, :in_graveyard
   
-  define_callbacks :is_my_turn, :only => [:move, :flip]
+  define_callbacks :is_my_turn_and_no_active_piece, :only => [:move, :flip]
 
   belongs_to :player
   has_one :board, :through => :space
@@ -166,31 +166,15 @@ class Piece < ActiveRecord::Base
   end
 
   def move(args = {})
-    #game = self.game
-    
-    #return false unless is_my_turn?
     # moving can never be done after another action, so you can only move when there is no active piece
 
-    target_space = if args[:space].kind_of?(Space)
-                     args[:space]
-                   else
-                     self.board.space(args[:col], args[:row])
-                   end
-    pass = args[:pass]
-
+    my_target_space = target_space(args)
     result = { :kill => [] }
+
     if self.can_reach?(target_space)
       # capture the occupying piece, if present
-      if target_space.occupied?
-        # can't capture your own piece
-        if target_space.piece.player == self.player
-          return false
-        else
-          self.player.add_crystals(target_space.piece.val)
-          result[:kill] << target_space.piece
-          target_space.piece.die
-        end
-      end
+      try_to_capture(target_space) if target_space.occupied?
+
       self.space = target_space
       self.player.update_attribute(:active_piece, self)
       if self.save
@@ -264,7 +248,7 @@ class Piece < ActiveRecord::Base
   
   private
 
-  def is_my_turn
+  def is_my_turn_and_no_active_piece
     this_player_active? && is_active_piece?
   end
 
@@ -382,6 +366,25 @@ class Piece < ActiveRecord::Base
 
   def in_half_crystal_zone?
      self.space.half_crystal?
+  end
+
+  def target_space(args)
+    if args[:space].kind_of?(Space)
+     args[:space]
+   else
+     self.board.space(args[:col], args[:row])
+   end
+  end
+
+  def try_to_capture(target_space)
+    # can't capture your own piece
+    if target_space.piece.player == self.player
+      return false
+    else
+      award_crystals(target_space.piece.val)
+      result[:kill] << target_space.piece
+      target_space.piece.die
+    end
   end
 
   def my_reverse_grid
