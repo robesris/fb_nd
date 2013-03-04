@@ -129,7 +129,7 @@ class Piece < ActiveRecord::Base
                                                                             :row_distance => row_distance, 
                                                                             :to_space => to_space)
       elsif col_dir = calculate_col_dir && row_dir = calculate_row_dir && diagonal_move?(col_distance, row_distance, col_dir, row_dir)
-        dir_sym = calculate_dir_sum(col_distance, row_distance)
+        dir_sym = calculate_dir_sym(col_distance, row_distance)
         return false unless self.compass_has_dir?(dir_sym)
         intervening_spaces = calculate_intervening_spaces(to_space)
       else
@@ -137,20 +137,8 @@ class Piece < ActiveRecord::Base
         return false
       end
 
-      leap_over = dir_sym.to_s.include?('leap') ? 1 : 0
-      # are all intervening spaces unoccupied?
-      intervening_spaces.each do |space|
-        if space.occupied?
-          if leap_over <= 0
-            return false
-          else
-            leap_over -= 1
-          end
-        end
-      end
-
-			# ok to move there!
-			return true
+      # check to see if we can or need to leap, and then decide if movement is possible or not
+      return enough_leaps?(intervening_space)
 		end
 	end
 
@@ -308,6 +296,25 @@ class Piece < ActiveRecord::Base
 
   def can_leap?(leap_dir_sym)
     self.my_adjusted_grid.include? leap_dir_sym
+  end
+
+  def calculate_leap_spaces_remaining(dir_sym)
+    # Why not just true or false?  We may want to at some point add pieces that can jump over more than 2.
+    dir_sym.to_s.include?('leap') ? 1 : 0
+  end
+
+  def enough_leaps?(intervening_spaces)
+    leaps_remaining = calculate_leap_spaces_remaining
+
+    intervening_spaces.each do |space|
+      if space.occupied?
+        if leaps_remaining <= 0
+          return false
+        else
+          leaps_remaining -= 1
+        end
+      end
+    end
   end
 
   def can_move_directly?(col_move, row_move)
