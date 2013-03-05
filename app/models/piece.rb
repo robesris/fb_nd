@@ -135,14 +135,13 @@ class Piece < ActiveRecord::Base
   end
 
   def summon(args = {})
-    space = args[:space].kind_of?(Space) ? args[:space] : game_board_space(args[:col], args[:row])
+    target_space = args[:space].kind_of?(Space) ? args[:space] : game_board_space(args[:col], args[:row])
     pass = args[:pass].present? ? args[:pass] : true
-    
     if self.guard?
-      guard_summon!(space)
+      guard_summon!(target_space, pass)
     else
-      if self.in_keep? && space.summon_space == self.player.num && !space.occupied?
-        self.update_attribute(:space, space)
+      if self.in_keep? && target_space.summon_space == self.player.num && !target_space.occupied?
+        self.update_attribute(:space, target_space)
         self.game.pass_turn if pass
       else
         return false
@@ -250,6 +249,8 @@ class Piece < ActiveRecord::Base
     dir_sym = "#{row_dir_sym}#{col_dir_sym}".to_sym
     leap_dir_sym = "leap_#{row_dir_sym}#{col_dir_sym}".to_sym
     dir_sym = leap_dir_sym if can_leap?(leap_dir_sym)
+
+    dir_sym
   end
 
   def compass_has_dir?(dir_sym)
@@ -290,7 +291,7 @@ class Piece < ActiveRecord::Base
     col_distance = calculate_distance(:col, to_space)
     row_distance = calculate_distance(:row, to_space)
 
-    # We don't have to check if both are 0 because we already reject this case at the start of the method
+    # We don't have to check if both are 0 because we already reject this case implicitly in can_reach 
     if col_distance.abs == 0 || row_distance.abs == 0
       return false unless result = check_orthogonal_direction(:col_distance => col_distance, 
                                                               :row_distance => row_distance,  
@@ -302,7 +303,7 @@ class Piece < ActiveRecord::Base
           diagonal_move?(col_distance, row_distance)
       dir_sym = calculate_dir_sym(col_dir, row_dir)
       return false unless compass_has_dir?(dir_sym)
-      intervening_spaces = calculate_diagonal_intervening_spaces(col_dir, to_space)
+      intervening_spaces = calculate_diagonal_intervening_spaces(col_dir, row_dir, to_space)
     else
       # TODO: put in stuff to handle Ghora, Han, and leaping pieces
       return false
@@ -361,17 +362,20 @@ class Piece < ActiveRecord::Base
     player.add_crystals(num)
   end
 
-  def change_space_to(space)
-    self.update_attribute(:space, space)
+  def change_space_to(target_space)
+    self.update_attribute(:space, target_space)
   end
 
+  # Might seem strange to have this in the Piece model
+  # Might want to have something less direct, just alert player or
+  # game that move is done.
   def pass_turn
-    self.player.pass_turn
+    self.game.pass_turn
   end
 
-  def guard_summon!(space)
-    if self.in_keep? && space.adjacent_to_nav?(self.player) && !space.occupied?
-      change_space_to(space)
+  def guard_summon!(target_space, pass)
+    if self.in_keep? && target_space.adjacent_to_nav?(self.player) && !target_space.occupied?
+      change_space_to(target_space)
       pass_turn if pass
     else
       return false
@@ -417,28 +421,29 @@ class Piece < ActiveRecord::Base
     self.space.row
   end
 
-  def game_board
-    self.game_board
-  end
-
   def game_board_space(col, row)
     self.game.board.space(col, row)
+  end
+
+  def game_board
+    self.game.board
   end
 
   def game_board_spaces
     game_board.spaces
   end
 
-  def diagonal_space?(to_space, my_col, my_row)
-    (to_spaces.row - my_row).abs == (to_space.col - my_col).abs 
+  def diagonal_space?(to_space)
+    (to_space.row - my_row).abs == (to_space.col - my_col).abs 
   end
 
-  def calculate_intervening_row_or_col_spaces(row_or_col, to_space_col_or_row, row_or_col_dir)
+  def calculate_intervening_col_or_row_spaces(row_or_col, to_space_col_or_row, row_or_col_dir)
       to_space_col_or_row * row_or_col_dir > row_or_col_dir &&
-      row_or_col * row_or_col_dir < to_space_roll_or_col
+      row_or_col * row_or_col_dir < to_space_col_or_row
   end
 
-  def calculate_diagonal_intervening_spaces(col_dir, row_dir, to_space) board_spaces.each do |s|
+  def calculate_diagonal_intervening_spaces(col_dir, row_dir, to_space) 
+    game_board_spaces.select do |s|
       calculate_intervening_col_or_row_spaces(s.row, to_space.col, col_dir) && 
       calculate_intervening_col_or_row_spaces(s.row, to_space.row, row_dir) &&
       diagonal_space?(to_space)   
@@ -452,7 +457,7 @@ class Piece < ActiveRecord::Base
   def calculate_row_distance(to_space)
     (to_space.row - my_row) * (second_players_piece? ? -1 : 1)
   end
-
+  
   def calculate_distance(row_or_col, to_space)
     row_or_col == :col ? calculate_col_distance(to_space) : calculate_row_distance(to_space)
   end
