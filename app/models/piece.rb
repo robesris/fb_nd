@@ -492,6 +492,29 @@ class Piece < ActiveRecord::Base
                                               dir_sym, 
                                               leap_sym))
   end
+
+  def calculate_horizontal_direction_params(col_distance, to_col)
+    if col_distance > 0
+      dir_sym = :rt
+      leap_sym = :leap_rt
+      col_1 = to_col
+      col_2 = my_col
+    else
+      dir_sym = :lt
+      leap_sym = :leap_lt
+      col_1 = my_col
+      col_2 = to_col
+    end
+
+    { :same => :row, 
+      :different => :col,
+      :my_same_row_or_col => my_row 
+    }.merge(calculate_v_or_h_direction_params(col_distance, 
+                                              col_1,
+                                              col_2, 
+                                              dir_sym, 
+                                              leap_sym))
+  end
   
   def calculate_direction_params(move_params)
     col_distance = move_params[:col_distance]
@@ -499,19 +522,10 @@ class Piece < ActiveRecord::Base
     to_space = move_params[:to_space]
 
     if col_distance.abs == 0    # same col: move in direction of row_distance's sign
-      direction_params = calculate_vertical_direction_params(row_distance, to_space.row)
+      calculate_vertical_direction_params(row_distance, to_space.row)
     elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
-      direction_params = { :same => :row, 
-                           :different => :col,
-                           :my_same_row_or_col => my_row }
-      if col_distance > 0  # moving right 
-        direction_params.merge!(dir_params_hash(:rt, :leap_rt, to_space.col, my_col))
-      else                 # moving left
-        direction_params.merge!(dir_params_hash(:lt, :leap_lt, my_col, to_space.col))
-      end
+      calculate_horizontal_direction_params(col_distance, to_space.col)
     end
-
-    direction_params
   end
 
   def check_orthogonal_direction(move_params)
