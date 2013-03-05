@@ -466,20 +466,40 @@ class Piece < ActiveRecord::Base
     col_distance.abs == row_distance.abs
   end
 
+  def calculate_v_or_h_direction_params(row_or_col_distance, row_1, row_2, dir_sym, leap_sym)
+    dir_params_hash(dir_sym, leap_sym, row_1, row_2)
+  end
+
+  def calculate_vertical_direction_params(row_distance, to_row)
+    if row_distance > 0
+      dir_sym = :up
+      leap_sym = :leap_up
+      row_1 = to_row
+      row_2 = my_row
+    else
+      dir_sym = :dn
+      leap_sym = :leap_dn
+      row_1 = my_row
+      row_2 = to_row
+    end
+
+    { :same => :col, 
+      :different => :row,
+      :my_same_row_or_col => my_col 
+    }.merge(calculate_v_or_h_direction_params(row_distance, 
+                                              row_1,
+                                              row_2, 
+                                              dir_sym, 
+                                              leap_sym))
+  end
+  
   def calculate_direction_params(move_params)
     col_distance = move_params[:col_distance]
     row_distance = move_params[:row_distance]
     to_space = move_params[:to_space]
 
     if col_distance.abs == 0    # same col: move in direction of row_distance's sign
-      direction_params = { :same => :col, 
-                           :different => :row,
-                           :my_same_row_or_col => my_col }
-      if row_distance > 0  # moving up
-        direction_params.merge!(dir_params_hash(:up, :leap_up, to_space.row, my_row))                                     
-      else                 # moving down
-        direction_params.merge!(dir_params_hash(:dn, :leap_dn, my_row, to_space.row))
-      end
+      direction_params = calculate_vertical_direction_params(row_distance, to_space.row)
     elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
       direction_params = { :same => :row, 
                            :different => :col,
