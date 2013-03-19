@@ -10,6 +10,8 @@ class Piece < ActiveRecord::Base
 
   #validates_uniqueness_of :unique_name, :scope => :game_id
 
+  before_create :set_names
+
   def self.all_piece_klasses
     klasses = []
     Dir[Rails.root.join('app/models/piece/*.rb').to_s].each do |filename|
@@ -22,65 +24,6 @@ class Piece < ActiveRecord::Base
       end
     end
     klasses
-  end
-
-  MOVEMENT_GRID_WIDTH = 5
-	MOVEMENT_GRID_HEIGHT = 5
-	MAX_COL_MOVE = (MOVEMENT_GRID_WIDTH - 1) / 2 # => 2
-	MAX_ROW_MOVE = (MOVEMENT_GRID_HEIGHT - 1) / 2 # => 2
-	MOVEMENT_GRID_CENTER = MOVEMENT_GRID_WIDTH * MAX_ROW_MOVE + MAX_COL_MOVE # => 12
-
-  BLACK							= [ 0, 0, 0, 0, 0,
-												0, 0, 1, 0, 0,
-												0, 0, 0, 0, 0,
-												0, 0, 0, 0, 0,
-												0, 0, 0, 0, 0 ]
-
-	RED								= [ 0, 0, 0, 0, 0,
-												0, 1, 1, 1, 0,
-												0, 0, 0, 0, 0,
-												0, 0, 0, 0, 0,
-												0, 0, 0, 0, 0 ]
-
-  GOLD							= [ 0, 0, 0, 0, 0,
-												0, 1, 1, 1, 0,
-												0, 1, 0, 1, 0,
-												0, 0, 1, 0, 0,
-												0, 0, 0, 0, 0 ]
-
-  KING							= [ 0, 0, 0, 0, 0,
-												0, 1, 1, 1, 0,
-												0, 1, 0, 1, 0,
-												0, 1, 1, 1, 0,
-												0, 0, 0, 0, 0 ]
-
-  QUEEN							= [ 0, 0, 0, 0, 0,
-												0, :ul, :up, :ur, 0,
-												0, :lt, 0, :rt, 0,
-												0, :dl, :dn, :dr, 0,
-												0, 0, 0, 0, 0 ]
-
-  ROOKLIKE					= [ 0, 0, 1, 0, 0,
-												0, 0, 1, 0, 0,
-												1, 1, 0, 1, 1,
-												0, 0, 1, 0, 0,
-												0, 0, 1, 0, 0 ]
-
-	BISHOPLIKE				= [ 1, 0, 0, 0, 1,
-												0, 1, 0, 1, 0,
-												0, 0, 0, 0, 0,
-												0, 1, 0, 1, 0,
-												1, 0, 0, 0, 1 ]
-  
-  def initialize(params = nil, options = {})
-    super(params)
-    self.name = self.class.to_s
-
-    # realistically, pieces should never be created so fast that these ids would ever be the same
-    # forget this for now.
-    #while self.unique_name.nil? || (game.pieces.present? && game.pieces.select{ |piece| piece.unique_name == self.unique_name }.present?)
-      self.unique_name = self.name.downcase + "_" + Time.now.to_f.to_s.sub('.', '')
-    #end
   end
 
   def grid
@@ -232,6 +175,16 @@ class Piece < ActiveRecord::Base
 
   private
 
+  def set_names(params = nil, options = {})
+    super(params)
+    self.name = self.class.to_s
+
+    # realistically, pieces should never be created so fast that these ids would ever be the same
+    # forget this for now.
+    #while self.unique_name.nil? || (game.pieces.present? && game.pieces.select{ |piece| piece.unique_name == self.unique_name }.present?)
+      self.unique_name = self.name.downcase + "_" + Time.now.to_f.to_s.sub('.', '')
+    #end
+  end
 
   def calculate_col_dir(col_distance, row_distance)
     # +1 or -1
