@@ -60,12 +60,9 @@ class Player < ActiveRecord::Base
     end
   end
 
-  def move(piece, space, pass = false)
-    if self.pieces.include?(piece)
-      return piece.move({:space => space, :pass => pass})
-    else
-      return false
-    end
+  def move_piece(piece, space, pass = false)
+    #self.owns_piece?(piece) && piece.move({:space => space, :pass => pass})
+    self.owns_piece?(piece) && move = Move.new(piece, space, pass) && move.save && move
   end
 
   def flip(piece)
@@ -122,4 +119,11 @@ class Player < ActiveRecord::Base
   def win_game
     self.game.update_attribute(:winner, self)
   end
+end
+
+
+private
+
+def owns_piece?(piece)
+  self.pieces.include?(piece)
 end

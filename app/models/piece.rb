@@ -32,7 +32,8 @@ class Piece < ActiveRecord::Base
 
   def move_to_keep
     space = self.player.keep.select{ |space| !space.occupied? }.first
-    self.update_attribute(:space, space)
+    #self.update_attribute(:space, space)
+    self.space == space && self.save
   end
 
   def guard?
@@ -93,8 +94,8 @@ class Piece < ActiveRecord::Base
   end
 
   def move(args = {})
-    return false unless this_player_active? && !any_piece_active?
     # moving can never be done after another action, so you can only move when there is no active piece
+    return false unless this_player_active? && !any_piece_active?
 
     my_target_space = target_space(args)
     result = { :kill => [] }
@@ -176,7 +177,6 @@ class Piece < ActiveRecord::Base
   private
 
   def set_names(params = nil, options = {})
-    super(params)
     self.name = self.class.to_s
 
     # realistically, pieces should never be created so fast that these ids would ever be the same

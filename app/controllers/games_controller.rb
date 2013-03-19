@@ -114,7 +114,7 @@ class GamesController < ApplicationController
       player = current_player(game)
       piece = player.pieces.where(:unique_name => params[:piece_unique_name]).first
       result = nil
-      move_result = player.move(piece, space)
+      move_result = player.move_piece(piece, space)
       if move_result
         result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }.merge(:kill => move_result[:kill].map { |piece| piece.unique_name })
         game.add_event(
