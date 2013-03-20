@@ -94,9 +94,10 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  def move_to(space)
+  def move_to(space, pass = true)
     self.space = space
     self.save
+    auto_pass if pass
   end
 
   # 'capture' is already taken
@@ -197,6 +198,10 @@ class Piece < ActiveRecord::Base
     #while self.unique_name.nil? || (game.pieces.present? && game.pieces.select{ |piece| piece.unique_name == self.unique_name }.present?)
       self.unique_name = self.name.downcase + "_" + Time.now.to_f.to_s.sub('.', '')
     #end
+  end
+
+  def auto_pass
+    self.player.pass_turn
   end
 
   def calculate_col_dir(col_distance, row_distance)

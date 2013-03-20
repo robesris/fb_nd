@@ -33,7 +33,7 @@ class Move < ActiveRecord::Base
 
   def apply_move
     target_piece && self.piece.kapture(target_piece)
-    self.piece.move_to(space)
+    self.piece.move_to(space, pass)
   end
 
 

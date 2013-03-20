@@ -6,8 +6,4 @@ class BlackStone < Piece::Stone
   def grid
     Constants::BLACK
   end
-
-  def move_to(args)
-    super(args)
-  end
 end

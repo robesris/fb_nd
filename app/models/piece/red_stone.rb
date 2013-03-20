@@ -4,10 +4,6 @@ class RedStone < Piece::Stone
   end
 
   def grid
-    RED
-  end
-
-  def move_to(args)
-    super(args)
+    Constants::RED
   end
 end
