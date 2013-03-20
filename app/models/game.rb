@@ -7,17 +7,9 @@ class Game < ActiveRecord::Base
   belongs_to :waiting_for, :class_name => Piece
   has_one :board
   has_many :events
-  
-  def initialize(params = nil, options = {})
-    super(params)
-    self.code = Game.generate_secret
-    self.players << Player.create(:num => 1, :crystals => 0)
-    self.players << Player.create(:num => 2, :crystals => 0)
-    
-    self.board = Board.create(nil)
-    self.phase = "setup"
-  end
 
+  before_create :build_game
+  
   def self.generate_secret
     rand(36**20).to_s(36)
   end
@@ -100,5 +92,17 @@ class Game < ActiveRecord::Base
 
   def add_event(params)
     self.events << Event.create(params)
+  end
+
+
+  private
+
+  def build_game
+    self.code = Game.generate_secret
+    self.players << Player.create(:num => 1)
+    self.players << Player.create(:num => 2)
+    
+    self.board = Board.create(nil)
+    self.phase = "setup"
   end
 end

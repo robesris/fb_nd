@@ -14,6 +14,7 @@ class Piece < ActiveRecord::Base
   before_create :set_names
 
   def self.all_piece_klasses
+    debugger
     klasses = []
     Dir[Rails.root.join('app/models/piece/*.rb').to_s].each do |filename|
       klass = File.basename(filename).sub(/.rb$/, '').camelize

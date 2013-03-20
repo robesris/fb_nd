@@ -4,22 +4,7 @@ class Board < ActiveRecord::Base
   has_many :spaces
   has_many :graveyard_pieces, :class_name => Piece
 
-  def initialize(params = nil, options = {})
-    super(params)
-    1.upto(7) do |row|
-      1.upto(7) do |col|
-        half_crystal = (row == 4 && (2..6).include?(col))
-        summon_space = if (row == 1 && col != 4) || (row == 2 && col == 1) || (row ==2 && col == 7)
-                         1
-                       elsif (row == 7 && col != 4) || (row == 6 && col == 1) || (row ==6 && col == 7)
-                         2
-                       else
-                         nil
-                       end
-        self.spaces << Space.create(:row => row, :col => col, :half_crystal => half_crystal, :summon_space => summon_space)
-      end
-    end
-  end
+  before_create :build_board
 
   def icol(col)
     if col.is_a?(String) && col =~ /[a-z]/
@@ -46,5 +31,24 @@ class Board < ActiveRecord::Base
 
   def nav_space(args)
     self.spaces.where(:col => 4, :row => args[:player].num == 1 ? 1 : 7).first
+  end
+
+
+  private
+
+  def build_board
+    1.upto(7) do |row|
+      1.upto(7) do |col|
+        half_crystal = (row == 4 && (2..6).include?(col))
+        summon_space = if (row == 1 && col != 4) || (row == 2 && col == 1) || (row ==2 && col == 7)
+                         1
+                       elsif (row == 7 && col != 4) || (row == 6 && col == 1) || (row ==6 && col == 7)
+                         2
+                       else
+                         nil
+                       end
+        self.spaces << Space.create(:row => row, :col => col, :half_crystal => half_crystal, :summon_space => summon_space)
+      end
+    end
   end
 end

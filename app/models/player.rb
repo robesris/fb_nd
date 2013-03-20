@@ -6,12 +6,7 @@ class Player < ActiveRecord::Base
   has_many :pieces
   has_many :keep, :class_name => Space
 
-  def initialize(args = nil, options = {})
-    super(args, options)
-    1.upto(7) do |col|
-      self.keep << Space.create(:row => args[:num] == 1 ? -2 : 9, :col => col)
-    end
-  end
+  before_create :build_player
 
   def room_in_keep?
     self.keep.select{ |space| !space.occupied? }.present?
@@ -132,6 +127,16 @@ class Player < ActiveRecord::Base
 
   def win_game
     self.game.update_attribute(:winner, self)
+  end
+
+
+  private
+
+  def build_player
+    self.crystals = 0
+    1.upto(7) do |col|
+      self.keep << Space.create(:row => self.num == 1 ? -2 : 9, :col => col)
+    end
   end
 end
 
