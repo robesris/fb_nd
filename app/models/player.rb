@@ -68,6 +68,11 @@ class Player < ActiveRecord::Base
     end
   end
 
+  def activate_piece(piece)
+    self.active_piece = piece
+    self.save
+  end
+
   def move_piece(piece, space, pass = false)
     #self.owns_piece?(piece) && piece.move({:space => space, :pass => pass})
     self.owns_piece?(piece) && move = Move.new(:player => piece.player, :piece => piece, :space => space, :pass => pass)
