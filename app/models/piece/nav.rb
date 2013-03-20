@@ -4,7 +4,7 @@ class Piece::Nav < Piece
   end
 
   def side1
-    KING
+    Constants::KING
   end
   
   def move_to(args = {})
