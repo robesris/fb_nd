@@ -4,7 +4,7 @@ class Gar < Piece
   end
 
   def side1
-    GOLD
+    Constants::GOLD
   end
 
   def side2

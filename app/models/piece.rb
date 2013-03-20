@@ -201,7 +201,7 @@ class Piece < ActiveRecord::Base
   end
 
   def auto_pass
-    self.player.pass_turn
+    self.game.pass_turn
   end
 
   def calculate_col_dir(col_distance, row_distance)

@@ -4,10 +4,10 @@ class Agu < Piece
   end
 
   def side1
-    KING
+    Constants::KING
   end
   
   def side2
-    QUEEN 
+    Constants::QUEEN 
   end
 end
