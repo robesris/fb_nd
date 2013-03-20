@@ -7,9 +7,9 @@ class Piece::Nav < Piece
     Constants::KING
   end
   
-  def move_to(args = {})
+  def move_to(space, pass)
     self.player.update_attribute(:in_check_this_turn, self.in_check?)
-    super(args)
+    super(space, pass)
   end
 
   def in_check?
