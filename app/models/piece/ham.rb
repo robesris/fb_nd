@@ -1,5 +1,5 @@
 class Ham < Piece
   def grid
-    BISHOPLIKE
+    Constants::BISHOPLIKE
   end
 end

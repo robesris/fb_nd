@@ -7,7 +7,7 @@ class Piece::Nav < Piece
     KING
   end
   
-  def move(args = {})
+  def move_to(args = {})
     self.player.update_attribute(:in_check_this_turn, self.in_check?)
     super(args)
   end

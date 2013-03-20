@@ -7,6 +7,7 @@ class Piece < ActiveRecord::Base
   has_one :board, :through => :space
   has_one :game, :through => :player
   has_one :space
+  has_many :moves
 
   #validates_uniqueness_of :unique_name, :scope => :game_id
 
@@ -93,7 +94,19 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  def move(args = {})
+  def move_to(space)
+    self.space = space
+    self.save
+  end
+
+  # 'capture' is already taken
+  def kapture(target_piece)
+    award_crystals(target_piece.val)
+    target_piece.die
+  end
+
+  # this is just here as I refactor its functionality out
+  def oldmove(args = {})
     # moving can never be done after another action, so you can only move when there is no active piece
     return false unless this_player_active? && !any_piece_active?
 
@@ -234,9 +247,9 @@ class Piece < ActiveRecord::Base
   end
 
   def can_move_directly?(col_move, row_move)
-    col_move.abs <= MAX_COL_MOVE &&
-		row_move.abs <= MAX_ROW_MOVE &&
-		my_adjusted_grid[MOVEMENT_GRID_CENTER - (MOVEMENT_GRID_WIDTH * row_move) + col_move] != 0
+    col_move.abs <= Constants::MAX_COL_MOVE &&
+		row_move.abs <= Constants::MAX_ROW_MOVE &&
+		my_adjusted_grid[Constants::MOVEMENT_GRID_CENTER - (Constants::MOVEMENT_GRID_WIDTH * row_move) + col_move] != 0
   end
 
   def can_slide_to?(to_space)
@@ -347,14 +360,16 @@ class Piece < ActiveRecord::Base
    end
   end
 
+  # This 'result' seems unnecessary and is distinct from the other 'result'
+  # (which should be made into an object)
   def try_to_capture(target_space, result)
     # can't capture your own piece
     if target_space.piece.player == self.player
       return false
-    else
-      award_crystals(target_space.piece.val)
-      result[:kill] << target_space.piece
-      target_space.piece.die
+    #else
+     # award_crystals(target_space.piece.val)
+      #result[:kill] << target_space.piece
+      #target_space.piece.die
     end
   end
 

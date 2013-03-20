@@ -52,6 +52,14 @@ class Player < ActiveRecord::Base
     false
   end
 
+  def owns_piece?(piece)
+    self.pieces.include?(piece)
+  end
+
+  def is_active?
+    self.game.active_player == self
+  end
+
   def summon(piece, space)
     if self.pieces.include?(piece)
       return piece.summon({:space => space, :pass => true}) # summoning ends turn unless the result of an ability
@@ -62,7 +70,8 @@ class Player < ActiveRecord::Base
 
   def move_piece(piece, space, pass = false)
     #self.owns_piece?(piece) && piece.move({:space => space, :pass => pass})
-    self.owns_piece?(piece) && move = Move.new(piece, space, pass) && move.save && move
+    self.owns_piece?(piece) && move = Move.new(:player => piece.player, :piece => piece, :space => space, :pass => pass)
+    move && move.save
   end
 
   def flip(piece)
@@ -76,7 +85,7 @@ class Player < ActiveRecord::Base
   def pass_turn
     # don't forget you have to do SOMETHING on your turn before passing!
     #debugger
-    self.game.pass_turn if self.game.active_player == self && self.active_piece && !self.game.waiting_for
+    self.game.pass_turn if self.is_active? && self.active_piece && !self.game.waiting_for
   end
 
   def get_ready
@@ -122,8 +131,3 @@ class Player < ActiveRecord::Base
 end
 
 
-private
-
-def owns_piece?(piece)
-  self.pieces.include?(piece)
-end

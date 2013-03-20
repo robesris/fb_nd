@@ -7,7 +7,7 @@ class RedStone < Piece::Stone
     RED
   end
 
-  def move(args)
+  def move_to(args)
     super(args)
   end
 end

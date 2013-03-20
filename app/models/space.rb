@@ -7,6 +7,10 @@ class Space < ActiveRecord::Base
 
   GRAVEYARD = -4
 
+  def humanize
+    "#{col_letter}-#{row}"
+  end
+
   def occupied?
     self.piece.present?
   end
@@ -16,4 +20,10 @@ class Space < ActiveRecord::Base
     (nav_space.col - self.col).abs <= 1 && (nav_space.row - self.row).abs <= 1
   end
 
+
+  private
+
+  def col_letter
+    ['A', 'B', 'C', 'D', 'E', 'F', 'G'][self.col - 1]
+  end
 end

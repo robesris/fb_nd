@@ -1,6 +1,6 @@
 class Mses < Piece
   def grid
-    ROOKLIKE
+    Constants::ROOKLIKE
   end
 
   def val

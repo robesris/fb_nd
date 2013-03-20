@@ -59,10 +59,16 @@ end
 When /^player (\d+) moves from '([a-g])(\d+)' to '([a-g])(\d+)'(| and does not pass the turn)$/ do |pnum, col1, row1, col2, row2, pass|
   col1 = icol(col1)
   col2 = icol(col2)
-  @game.move({ :col1 => col1, :row1 => row1, :col2 => col2, :row2 => row2, :pass => pass.blank? ? true : false })
+  #@game.move({ :col1 => col1, :row1 => row1, :col2 => col2, :row2 => row2, :pass => pass.blank? ? true : false })
+  player = @game.playernum(pnum)
+  piece = @game.board.space(col1, row1).piece
+  space = @game.board.space(col2, row2)
+  pass = pass.blank?
+
+  player.move_piece(piece, space, pass)
 
   # pass the turn unless we specify otherwise
-  @game.playernum(pnum).pass_turn if pass.blank?
+  #@game.playernum(pnum).pass_turn if pass.blank?
 end
 
 When /^player (\d+) tries to move from '([a-g])(\d+)' to '([a-g])(\d+)'(| and does not pass the turn)$/ do |pnum, col1, row1, col2, row2, pass|

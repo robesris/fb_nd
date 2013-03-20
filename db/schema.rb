@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120620192503) do
+ActiveRecord::Schema.define(:version => 20130319221000) do
 
   create_table "boards", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -42,6 +42,17 @@ ActiveRecord::Schema.define(:version => 20120620192503) do
     t.integer  "waiting_for_id"
     t.string   "phase"
     t.string   "code"
+  end
+
+  create_table "moves", :force => true do |t|
+    t.integer  "player_id"
+    t.integer  "piece_id"
+    t.integer  "space_id"
+    t.boolean  "earn_crystals",   :default => true
+    t.boolean  "capture_allowed", :default => true
+    t.boolean  "pass"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
   end
 
   create_table "pieces", :force => true do |t|
