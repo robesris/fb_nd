@@ -124,11 +124,11 @@ Then /^(I|my opponent) (should|should not) see that piece at "(.*?)"$/ do |who, 
   browser(who)
   if should == 'should'
     puts "#{who} should..."
-    if piece_at(coords).nil? || piece_at(coords)[:id] != @piece[:id]
-      steps %Q{
-        And I allow user input
-      }
-    end
+    #if piece_at(coords).nil? || piece_at(coords)[:id] != @piece[:id]
+    #  steps %Q{
+    #    And I allow user input
+    #  }
+    #end
 
     piece_at(coords).should_not be_nil
     piece_at(coords)[:id].should == @piece[:id]

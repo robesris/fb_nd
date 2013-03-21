@@ -19,7 +19,7 @@
         <%= (@game.active_player.num == @me.num ? "Your Turn" : "Opponent's Turn") if @me && @game.active_player %>
       </div>
 
-      <% if Rails.env == 'test' || Rails.env == 'cucumber' %>
+      <% if false && Rails.env == 'test' || Rails.env == 'cucumber' %>
         <a href='#' onclick="javascript:$('#debug').val('go')" style="font-size: medium">End Pause</a>
         <input id='debug' value='stop' />
       <%- end %>
@@ -76,7 +76,7 @@
                 <%= col + '_' + row.to_s %>
                 <% if piece = @game.board.space(col, row).piece %>
                   <% klass = piece.class %>
-                  <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %><%= klass == Piece::RedStone || klass == Piece::BlackStone ? ' stone' : '' %>'>
+                  <div id='<%= piece.unique_name %>' name='<%= piece.name %>' data-owner='<%= piece.player.num %>' class='player<%= piece.player.num %> piece<%= klass < Piece::Nav ? ' nav' : '' %><%= klass.is_stone? ? ' stone' : '' %>'>
                     <div class='piece_player_num'>P<%= piece.player.num %></div>
                     <img src='/assets/<%= klass.to_s.downcase %>_<%= piece.player.num %>.gif' class='portrait' />
                     <% unless piece.kind_of?(Piece::Stone) %><img src='/assets/tro_compass_1.jpg' class='compass' /><% end %>
@@ -406,7 +406,7 @@ console.log(active_player_num);
       }
     };
 
-    <% if @game_code && @player_secret %>
+    <% if @game_code.present? && @player_secret.present? %>
       // We've just loaded the page, so clear events since we're already displaying the board state
       $.ajax({
         url: '/game/<%= @game_code %>/<%= @player_secret %>/init',

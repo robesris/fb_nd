@@ -27,6 +27,10 @@ class Piece < ActiveRecord::Base
     klasses
   end
 
+  def self.is_stone?
+    false
+  end
+
   def grid
     self.flipped? ? self.side2 : self.side1
   end

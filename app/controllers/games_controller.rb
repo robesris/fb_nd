@@ -253,8 +253,8 @@ class GamesController < ApplicationController
     game_code = params[:game_code]
     game = Game.where(:code => game_code).first
     player_secret = params[:player_secret]
+    
     player = game.players.where(:secret => player_secret).first
-
     events = []
     unless player.checking_for_events? || game.phase == 'setup'
       ActiveRecord::Base.transaction do

@@ -71,7 +71,6 @@ def current_game
 end
 
 Given /^I am on the app homepage$/ do
-  debugger
   @me = :player1
   @my_num = 1
   @opponent = :player2

@@ -2,6 +2,10 @@
 # You earn crystals for moving even when doing a Line Over
 
 class Piece::Stone < Piece
+  def self.is_stone?
+    true
+  end
+
   def move_to(space, pass = true)
     player = self.player
     player.add_crystals(val)

@@ -187,7 +187,6 @@ Feature: User interface
     # my turn
     When I move my "Tro" from "d2" to "e3"
     Then it should still be my turn
-    #And I allow user input
     When I try to flip the "Tro" at "e3"
     Then both players should see that piece unflipped
 
@@ -228,7 +227,6 @@ Feature: User interface
     And my opponent joins the game in progress
     Then it should be my opponents turn
     And both players should not see the draft list
-    #And I allow user input
 
     When my opponent moves his "GilTwo" from "g7" to "f6"
     And my opponent flips the "GilTwo" at "f6"
@@ -263,7 +261,6 @@ Feature: User interface
     Then both players should see 2 crystals in my opponents pool
     And it should be my turn
 
-    #And I allow user input
     When I move my "Est" from "d1" to "d2"
     And I pass the turn
     And I wait 1 second
@@ -322,7 +319,6 @@ Feature: User interface
 
     When my opponent moves his "BlackStone" from "b6" to "b5"
     Then both players should see 4 crystals in my opponents pool
-And I allow user input
     When I save the database as "game_part_1"...
 
   Scenario: Continue the game
