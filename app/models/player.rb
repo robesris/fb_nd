@@ -72,6 +72,7 @@ class Player < ActiveRecord::Base
     #self.owns_piece?(piece) && piece.move({:space => space, :pass => pass})
     self.owns_piece?(piece) && move = Move.new(:player => piece.player, :piece => piece, :space => space, :pass => pass)
     move && move.save
+    move
   end
 
   def flip(piece)

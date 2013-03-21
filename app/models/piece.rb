@@ -1,4 +1,5 @@
 class Piece < ActiveRecord::Base
+  require File.dirname(__FILE__) + "/piece/lib/constants.rb"
   extend ActiveModel::Callbacks
 
   attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name, :in_graveyard

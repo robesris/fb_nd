@@ -109,15 +109,16 @@ class GamesController < ApplicationController
     begin
       game = current_game
 
+      # This needs to render, not return
       return false unless game.phase == 'play'
-
+#debugger
       space = get_space(game)
       player = current_player(game)
       piece = player.pieces.where(:unique_name => params[:piece_unique_name]).first
       result = nil
       move_result = player.move_piece(piece, space)
       if move_result
-        result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }.merge(:kill => move_result[:kill].map { |piece| piece.unique_name })
+        result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }.merge(:kill => []) #.merge(:kill => move_result[:kill].map { |piece| piece.unique_name })
         game.add_event(
           :player_num => player.opponent.num,
           :action => 'move',
@@ -131,6 +132,7 @@ class GamesController < ApplicationController
 
       render :json => result
     rescue Exception => e
+      puts e.inspect
       render :nothing => true
     end
   end
@@ -253,7 +255,7 @@ class GamesController < ApplicationController
     game_code = params[:game_code]
     game = Game.where(:code => game_code).first
     player_secret = params[:player_secret]
-    
+   #debugger unless game 
     player = game.players.where(:secret => player_secret).first
     events = []
     unless player.checking_for_events? || game.phase == 'setup'
