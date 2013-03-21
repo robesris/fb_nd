@@ -12,9 +12,13 @@ require 'capybara-webkit'
 # prefer to use XPath just remove this line and adjust any selectors in your
 # steps to use the XPath syntax.
 #Capybara.javascript_driver = :webkit
-Capybara.register_driver :selenium do |app|
+Capybara.register_driver :my_browser do |app|
   Capybara::Selenium::Driver.new(app, :browser => :chrome)
 end
+Capybara.register_driver :opponent_browser do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+end
+
 Capybara.default_selector = :css
 Capybara.default_wait_time = 20
 

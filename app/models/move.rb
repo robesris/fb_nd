@@ -8,7 +8,6 @@ class Move < ActiveRecord::Base
   after_create :apply_move
 
   validate do |move|
-    #debugger if piece.name == "Agu"
     move.player_must_be_active
     move.player_must_not_have_active_pieces
     move.must_be_able_to_reach_destination_space

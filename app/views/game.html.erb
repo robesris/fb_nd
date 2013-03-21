@@ -406,12 +406,14 @@ console.log(active_player_num);
       }
     };
 
-    // We've just loaded the page, so clear events since we're already displaying the board state
-    $.ajax({
-      url: '/game/<%= @game_code %>/<%= @player_secret %>/init',
-      complete: function() {
-        checkForEvents();
-      }
-    });
+    <% if @game_code && @player_secret %>
+      // We've just loaded the page, so clear events since we're already displaying the board state
+      $.ajax({
+        url: '/game/<%= @game_code %>/<%= @player_secret %>/init',
+        complete: function() {
+          checkForEvents();
+        }
+      });
+    <% end %>
   });
 </script>

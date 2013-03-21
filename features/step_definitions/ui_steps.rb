@@ -2,11 +2,11 @@ P1KROW = 0
 P2KROW = 8
 
 def my_browser
-  Capybara.session_name = :my_browser
+  Capybara.current_driver = :my_browser
 end
 
 def opponent_browser
-  Capybara.session_name = :opponent_browser
+  Capybara.current_driver = :opponent_browser
 end
 
 def browser(who)
@@ -71,6 +71,7 @@ def current_game
 end
 
 Given /^I am on the app homepage$/ do
+  debugger
   @me = :player1
   @my_num = 1
   @opponent = :player2
@@ -344,3 +345,24 @@ Then /^there should be exactly one piece on each keep space in both browsers$/ d
     end
   end
 end
+
+=begin
+Before('@javascript') do
+  #page.driver.quit 
+  Capybara.register_driver :my_browser do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+end
+    Capybara.register_driver :opponent_browser do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+end
+
+Capybara.default_selector = :css
+Capybara.default_wait_time = 20
+
+end
+
+After('@javascript') do
+
+
+end
+=end
