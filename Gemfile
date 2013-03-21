@@ -6,7 +6,6 @@ gem 'rails', '3.2.11'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 group :test do
-  #gem 'ruby-debug-base19x'
   gem 'debugger'
   gem 'rspec'
   gem 'rspec-rails'
