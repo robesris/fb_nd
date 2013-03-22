@@ -24,7 +24,8 @@ class Move < ActiveRecord::Base
   end
 
   def must_be_able_to_reach_destination_space
-    errors.add(:piece, "cannot reach #{self.space.humanize}") unless self.piece.can_reach?(space)
+    movement_details = MovementDetails.new(piece, space)
+    movement_details.valid? || errors.add(:piece, "cannot reach #{self.space.humanize}")
   end
 
   def must_be_able_to_capture

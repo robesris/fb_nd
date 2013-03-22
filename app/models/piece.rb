@@ -56,13 +56,11 @@ class Piece < ActiveRecord::Base
 
   def can_reach?(to_space)
     # can't move to a space we're already on
-    return false if !self.on_board? || to_space == self.space
+    #return false if !self.on_board? || to_space == self.space
   
     #Flip the movement grid around for player 2 (i.e. second player)
-
-		#calculate the number of columns and rows the space is from current position
-		col_move = to_space.col - self.space.col # Left: <0  Right: >0
-		row_move = to_space.row - self.space.row # Up: >0  Down: <0
+    
+    #direction_vector = DirectionVector.new(self, to_space)
 
     #check if the piece's movement grid allows it to move DIRECTLY (i.e. 'jump') to the specified space 
 		if can_move_directly? col_move, row_move
@@ -256,38 +254,14 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  def can_move_directly?(col_move, row_move)
-    col_move.abs <= Constants::MAX_COL_MOVE &&
-		row_move.abs <= Constants::MAX_ROW_MOVE &&
-		my_adjusted_grid[Constants::MOVEMENT_GRID_CENTER - (Constants::MOVEMENT_GRID_WIDTH * row_move) + col_move] != 0
-  end
+  #def can_move_directly?(col_move, row_move)
 
-  def can_slide_to?(to_space)
-    # almost all pieces need a straight line to the target - it must be in same row, col, or diagonal
-    col_distance = calculate_distance(:col, to_space)
-    row_distance = calculate_distance(:row, to_space)
+#  def can_slide_to?(to_space)
+ #   end
 
-    # We don't have to check if both are 0 because we already reject this case implicitly in can_reach 
-    if col_distance.abs == 0 || row_distance.abs == 0
-      return false unless result = check_orthogonal_direction(:col_distance => col_distance, 
-                                                              :row_distance => row_distance,  
-                                                              :to_space => to_space)
-      dir_sym = result[:dir_sym]
-      intervening_spaces = result[:spaces]
-    elsif (col_dir = calculate_col_dir(col_distance, row_distance)) &&
-          (row_dir = calculate_row_dir(row_distance, col_distance)) && 
-          diagonal_move?(col_distance, row_distance)
-      dir_sym = calculate_dir_sym(col_dir, row_dir)
-      return false unless compass_has_dir?(dir_sym)
-      intervening_spaces = calculate_diagonal_intervening_spaces(col_dir, row_dir, to_space)
-    else
-      # TODO: put in stuff to handle Ghora, Han, and leaping pieces
-      return false
-    end
-
-    {:spaces => intervening_spaces,
-     :dir_sym => dir_sym}
-  end
+#    {:spaces => intervening_spaces,
+#     :dir_sym => dir_sym}
+#  end
 
   def dir_params_hash(normal, leap, gt, lt)
     { :normal => normal, 
@@ -383,13 +357,13 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  def my_reverse_grid
-    self.grid.reverse
-  end
+  #def my_reverse_grid
+  #  self.grid.reverse
+  #end
 
-  def my_adjusted_grid
-    first_players_piece? ? self.grid : my_reverse_grid
-  end
+  #def my_adjusted_grid
+   # first_players_piece? ? self.grid : my_reverse_grid
+  #end
 
   def my_col
     self.space.col
