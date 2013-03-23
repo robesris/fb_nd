@@ -34,7 +34,7 @@ class MovementDetails
     self.piece.player.num == 1 ? self.piece.grid : self.piece.grid.reverse
   end
 
-  #def direct_space_on_grid?
+  # def direct_space_on_grid?
   def direct_move_ok?
     grid[
       Piece::Constants::MOVEMENT_GRID_CENTER - 
@@ -50,14 +50,47 @@ class MovementDetails
     #direct_space_on_grid?
   #end
 
+  def dir_sym
+    if grid.include?(self.direction_vector.direction.leap)
+      self.direction_vector.direction.leap
+    elsif grid.include?(self.direction_vector.direction.normal)
+      self.direction_vector.direction.normal
+    else
+      nil
+    end
+  end
+
+  def direction_ok?
+    dir_sym
+  end
+
+  def can_leap?
+    dir_sym.to_s.index("leap")
+  end
+
+  def num_occupied_spaces
+    direction_vector.spaces.inject(0) { |count, space| space.occupied? count && count + 1 }
+  end
+
+  def path_clear?
+    num_occupied_spaces <= (can_leap? ? 1 : 0)
+  end
+
   def slide_move_ok?
+    # do we have a straight line between the two?
+    self.start_space.has_line_to?(self.to_space) &&
+    direction_ok? &&
+    path_clear?
+    
+
     # We don't have to check if both are 0 because we already reject this case implicitly in can_reach 
+=begin
     if col_distance.abs == 0 || row_distance.abs == 0
       return false unless result = check_orthogonal_direction(:col_distance => col_distance, 
                                                               :row_distance => row_distance,  
                                                               :to_space => to_space)
       dir_sym = result[:dir_sym]
-      intervening_spaces = result[:spaces]
+      intervening_spaces = direction_vector.spaces
     elsif (col_dir = calculate_col_dir(col_distance, row_distance)) &&
           (row_dir = calculate_row_dir(row_distance, col_distance)) && 
           diagonal_move?(col_distance, row_distance)
@@ -68,5 +101,6 @@ class MovementDetails
       # TODO: put in stuff to handle Ghora, Han, and leaping pieces
       return false
     end
+=end
   end
 end

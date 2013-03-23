@@ -20,6 +20,21 @@ class Space < ActiveRecord::Base
     (nav_space.col - self.col).abs <= 1 && (nav_space.row - self.row).abs <= 1
   end
 
+  def same_col_as?(space)
+    self.col == space.col
+  end
+
+  def same_row_as?(space)
+    self.row == space.row
+  end
+
+  def diagonal_to?(space)
+    (self.col - space.col).abs == (self.row - space.row).abs
+  end
+
+  def has_line_to?(space)
+    self.same_col_as?(space) || self.same_row_as?(space) || self.diagonal_to?(space)
+  end
 
   private
 
