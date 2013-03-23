@@ -40,7 +40,7 @@ body {
 }
 
 .shaded {
-  background-color: pink;
+  //background-color: pink;
 }
 
 .piece.stone {
@@ -64,16 +64,16 @@ div.stone img.portrait {
 }
 
 .keep_space {
-  width: 60px;
-  height: 75px;
+  width: 50px;
+  height: 65px;
   border: 1px solid #CCCCCC;
   margin-bottom: 10px;
   font-size: 5pt;
 }
 
 .board_space {
-  width: 60px;
-  height: 75px;
+  width: 70px;
+  height: 84px;
   border: 1px solid;
   border-color: #000000;
   font-size: 5pt;
@@ -116,7 +116,9 @@ body {
 
 #board {
   margin-bottom: 100px;
-  width: 500px;
+  width: 503px;
+  background: url('/assets/nvboard.jpg');
+  background-size: 100%;
 }
 
 #keep_1 {
@@ -128,6 +130,6 @@ body {
 }
 
 .keep {
-  width: 434px;
+  width: 380px;
   height: 50px;
 }
