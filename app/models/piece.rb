@@ -38,7 +38,6 @@ class Piece < ActiveRecord::Base
 
   def move_to_keep
     space = self.player.keep.select{ |space| !space.occupied? }.first
-    #self.update_attribute(:space, space)
     self.space == space && self.save
   end
 
@@ -53,25 +52,6 @@ class Piece < ActiveRecord::Base
   def col
     self.space && self.space.col
   end
-
-  def can_reach?(to_space)
-    # can't move to a space we're already on
-    #return false if !self.on_board? || to_space == self.space
-  
-    #Flip the movement grid around for player 2 (i.e. second player)
-    
-    #direction_vector = DirectionVector.new(self, to_space)
-
-    #check if the piece's movement grid allows it to move DIRECTLY (i.e. 'jump') to the specified space 
-		if can_move_directly? col_move, row_move
-		  return true
-		else #if the piece can't jump to the specified space, see if it can 'slide' there
-      intervening_spaces = can_slide_to?(to_space)
-
-      # check to see if we can or need to leap, and then decide if movement is possible or not
-      return intervening_spaces && enough_leaps?(intervening_spaces)
-		end
-	end
 
   def in_keep?
     self.player.keep.include?(self.space)
@@ -107,33 +87,6 @@ class Piece < ActiveRecord::Base
   def kapture(target_piece)
     award_crystals(target_piece.val)
     target_piece.die
-  end
-
-  # this is just here as I refactor its functionality out
-  def oldmove(args = {})
-    # moving can never be done after another action, so you can only move when there is no active piece
-    return false unless this_player_active? && !any_piece_active?
-
-    my_target_space = target_space(args)
-    result = { :kill => [] }
-
-    if self.can_reach?(my_target_space)
-      # capture the occupying piece, if present
-      try_to_capture(my_target_space, result) if my_target_space.occupied?
-
-      self.space = my_target_space
-      self.player.update_attribute(:active_piece, self)
-      if self.save
-        # pass turn after a successful move
-        # actually, maybe better to leave auto-passing up to the stone pieces and flipped pieces with no invoke ability
-        self.game.pass_turn if self.flipped? && !self.respond_to?(:invoke) 
-        return result
-      else
-        return false
-      end
-    else
-      return false
-    end
   end
 
   def flip(pass = true)
@@ -189,8 +142,6 @@ class Piece < ActiveRecord::Base
   end
 
 
-
-
   private
 
   def set_names(params = nil, options = {})
@@ -205,70 +156,6 @@ class Piece < ActiveRecord::Base
 
   def auto_pass
     self.game.pass_turn
-  end
-
-  def calculate_col_dir(col_distance, row_distance)
-    # +1 or -1
-    col_distance / row_distance
-  end
-
-  def calculate_row_dir(row_distance, col_distance)
-    # +1 or -1
-    row_distance / col_distance
-  end
-
-  def calculate_dir_sym(col_dir, row_dir)
-    col_dir_sym = col_dir > 0 ? 'r' : 'l'
-    row_dir_sym = row_dir > 0 ? 'u' : 'd'
-    dir_sym = "#{row_dir_sym}#{col_dir_sym}".to_sym
-    leap_dir_sym = "leap_#{row_dir_sym}#{col_dir_sym}".to_sym
-    dir_sym = leap_dir_sym if can_leap?(leap_dir_sym)
-
-    dir_sym
-  end
-
-  def compass_has_dir?(dir_sym)
-    my_adjusted_grid.include?(dir_sym)
-  end
-
-  def can_leap?(leap_dir_sym)
-    my_adjusted_grid.include? leap_dir_sym
-  end
-
-  def calculate_leap_spaces_remaining(dir_sym)
-    # Why not just true or false?  We may want to at some point add pieces that can jump over more than 2.
-    dir_sym.to_s.include?('leap') ? 1 : 0
-  end
-
-  def enough_leaps?(intervening_spaces)
-    leaps_remaining = calculate_leap_spaces_remaining(intervening_spaces[:dir_sym])
-
-    intervening_spaces[:spaces].each do |space|
-      if space.occupied?
-        if leaps_remaining <= 0
-          return false
-        else
-          leaps_remaining -= 1
-        end
-      end
-    end
-  end
-
-  #def can_move_directly?(col_move, row_move)
-
-#  def can_slide_to?(to_space)
- #   end
-
-#    {:spaces => intervening_spaces,
-#     :dir_sym => dir_sym}
-#  end
-
-  def dir_params_hash(normal, leap, gt, lt)
-    { :normal => normal, 
-      :leap => leap, 
-      :gt_board_different_row_or_col => gt,
-      :lt_board_different_row_or_col => lt
-    }
   end
 
   def active_player
@@ -293,11 +180,6 @@ class Piece < ActiveRecord::Base
 
   def is_active_piece?
     self.player.active_piece && self.player.active_piece == self
-  end
-
-  def any_piece_active?
-    # the current active piece should probably be moved or at least accessible from the game model
-    self.player.active_piece
   end
 
   def no_piece_active?
@@ -357,14 +239,6 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  #def my_reverse_grid
-  #  self.grid.reverse
-  #end
-
-  #def my_adjusted_grid
-   # first_players_piece? ? self.grid : my_reverse_grid
-  #end
-
   def my_col
     self.space.col
   end
@@ -383,125 +257,5 @@ class Piece < ActiveRecord::Base
 
   def game_board_spaces
     game_board.spaces
-  end
-
-  def diagonal_space?(to_space)
-    (to_space.row - my_row).abs == (to_space.col - my_col).abs 
-  end
-
-  def calculate_intervening_col_or_row_spaces(row_or_col, to_space_col_or_row, row_or_col_dir)
-      to_space_col_or_row * row_or_col_dir > row_or_col_dir &&
-      row_or_col * row_or_col_dir < to_space_col_or_row
-  end
-
-  def calculate_diagonal_intervening_spaces(col_dir, row_dir, to_space) 
-    game_board_spaces.select do |s|
-      calculate_intervening_col_or_row_spaces(s.row, to_space.col, col_dir) && 
-      calculate_intervening_col_or_row_spaces(s.row, to_space.row, row_dir) &&
-      diagonal_space?(to_space)   
-    end
-  end
-
-  def calculate_col_distance(to_space)
-    (to_space.col - my_col) * (second_players_piece? ? -1 : 1)
-  end
-
-  def calculate_row_distance(to_space)
-    (to_space.row - my_row) * (second_players_piece? ? -1 : 1)
-  end
-  
-  def calculate_distance(row_or_col, to_space)
-    row_or_col == :col ? calculate_col_distance(to_space) : calculate_row_distance(to_space)
-  end
-
-  def diagonal_move?(col_distance, row_distance)
-    col_distance.abs == row_distance.abs
-  end
-
-  def calculate_v_or_h_direction_params(row_or_col_distance, row_1, row_2, dir_sym, leap_sym)
-    dir_params_hash(dir_sym, leap_sym, row_1, row_2)
-  end
-
-  def calculate_vertical_direction_params(row_distance, to_row)
-    if row_distance > 0
-      dir_sym = :up
-      leap_sym = :leap_up
-      row_1 = to_row
-      row_2 = my_row
-    else
-      dir_sym = :dn
-      leap_sym = :leap_dn
-      row_1 = my_row
-      row_2 = to_row
-    end
-
-    { :same => :col, 
-      :different => :row,
-      :my_same_row_or_col => my_col 
-    }.merge(calculate_v_or_h_direction_params(row_distance, 
-                                              row_1,
-                                              row_2, 
-                                              dir_sym, 
-                                              leap_sym))
-  end
-
-  def calculate_horizontal_direction_params(col_distance, to_col)
-    if col_distance > 0
-      dir_sym = :rt
-      leap_sym = :leap_rt
-      col_1 = to_col
-      col_2 = my_col
-    else
-      dir_sym = :lt
-      leap_sym = :leap_lt
-      col_1 = my_col
-      col_2 = to_col
-    end
-
-    { :same => :row, 
-      :different => :col,
-      :my_same_row_or_col => my_row 
-    }.merge(calculate_v_or_h_direction_params(col_distance, 
-                                              col_1,
-                                              col_2, 
-                                              dir_sym, 
-                                              leap_sym))
-  end
-  
-  def calculate_direction_params(move_params)
-    col_distance = move_params[:col_distance]
-    row_distance = move_params[:row_distance]
-    to_space = move_params[:to_space]
-
-    if col_distance.abs == 0    # same col: move in direction of row_distance's sign
-      calculate_vertical_direction_params(row_distance, to_space.row)
-    elsif row_distance.abs == 0 # same row: move in direction of col_distance's sign
-      calculate_horizontal_direction_params(col_distance, to_space.col)
-    end
-  end
-
-  def check_orthogonal_direction(move_params)
-    direction_params = calculate_direction_params(move_params)
-    
-    normal = direction_params[:normal]
-    leap = direction_params[:leap]
-    my_same_row_or_col = direction_params[:my_same_row_or_col]
-    gt_board_different_row_or_col = direction_params[:gt_board_different_row_or_col]
-    lt_board_different_row_or_col = direction_params[:lt_board_different_row_or_col]
-    same = direction_params[:same]
-  
-    return false unless self.grid.include?(normal) || self.grid.include?(leap)
-    dir_sym = self.grid.include?(leap) ? leap : normal
-
-    spaces = self.board.spaces.select do |s| 
-      board_same_row_or_col = (same == :col ? s.col : s.row)
-      board_different_row_or_col = (same == :col ? s.row : s.col)
-
-      board_same_row_or_col == my_same_row_or_col && 
-      board_different_row_or_col > lt_board_different_row_or_col && 
-      board_different_row_or_col < gt_board_different_row_or_col
-    end
-
-    { :spaces => spaces, :dir_sym => dir_sym }
   end
 end
