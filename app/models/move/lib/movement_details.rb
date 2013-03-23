@@ -81,26 +81,5 @@ class MovementDetails
     self.start_space.has_line_to?(self.to_space) &&
     direction_ok? &&
     path_clear?
-    
-
-    # We don't have to check if both are 0 because we already reject this case implicitly in can_reach 
-=begin
-    if col_distance.abs == 0 || row_distance.abs == 0
-      return false unless result = check_orthogonal_direction(:col_distance => col_distance, 
-                                                              :row_distance => row_distance,  
-                                                              :to_space => to_space)
-      dir_sym = result[:dir_sym]
-      intervening_spaces = direction_vector.spaces
-    elsif (col_dir = calculate_col_dir(col_distance, row_distance)) &&
-          (row_dir = calculate_row_dir(row_distance, col_distance)) && 
-          diagonal_move?(col_distance, row_distance)
-      dir_sym = calculate_dir_sym(col_dir, row_dir)
-      return false unless compass_has_dir?(dir_sym)
-      intervening_spaces = calculate_diagonal_intervening_spaces(col_dir, row_dir, to_space)
-    else
-      # TODO: put in stuff to handle Ghora, Han, and leaping pieces
-      return false
-    end
-=end
   end
 end
