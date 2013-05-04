@@ -40,9 +40,9 @@ class Player < ActiveRecord::Base
        self.pieces.where(:name => piece_name).size < 2 &&
        piece = piece_class.create(:space => space)
       self.pieces << piece
-      #piece.move_to_keep 
+      #piece.move_to_keep
       return piece
-    end  
+    end
 
     false
   end
@@ -130,6 +130,25 @@ class Player < ActiveRecord::Base
     self.game.update_attribute(:winner, self)
   end
 
+  def check_events
+    events = []
+    unless self.checking_for_events? || self.game.phase == 'setup'
+      ActiveRecord::Base.transaction do
+        begin
+          self.update_attribute(:checking_for_events, true)
+          events = self.game.events.where(:player_num => self.num) #.reject{ |e| e.action == 'move' }
+          events.each { |e| e.destroy }
+          self.update_attribute(:checking_for_events, false)
+        rescue ActiveRecord::Rollback
+          render :json => []  # return nothing if the transaction is rolled back
+        end
+      end
+    end
+
+    events = events.map{ |event| { :action => event.action, :piece_unique_name => event.piece && event.piece.unique_name, :to => event.to, :options => event.options } }
+    events << { :action => 'active_player', :options => { :active_player_num => self.game.active_player.num } } if self.game.active_player && self.game.active_player.num
+    events
+  end
 
   private
 

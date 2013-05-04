@@ -5,7 +5,7 @@ class GamesController < ApplicationController
 
   def create(params = {})
     @game = nil
-    
+
     if params.empty?
       @game = Game.create
       @game.default_setup
@@ -22,7 +22,7 @@ class GamesController < ApplicationController
       @player_secret = @me.secret
     end
 
-    render '/game' 
+    render '/game'
   end
 
   def join
@@ -57,7 +57,7 @@ class GamesController < ApplicationController
 
     if new_piece = player.draft(piece_name, space)
       game.add_event(
-        :player_num => player.opponent.num, 
+        :player_num => player.opponent.num,
         :action => 'draft',
         :to => params[:space],
         :options => { :piece_name => piece_name },
@@ -176,11 +176,11 @@ class GamesController < ApplicationController
   def send_prompts
     game = current_game
     player = current_player(game)
-    
+
     return false unless player = game.active_player
 
     results = game.waiting_for.player_input(:player => player, :prompts => params[:prompts])
-    
+
     if results
       # Handle as events for both players
       results.each do |result|
@@ -252,27 +252,11 @@ class GamesController < ApplicationController
   end
 
   def check_for_events
-    game_code = params[:game_code]
-    game = Game.where(:code => game_code).first
-    player_secret = params[:player_secret]
-   #debugger unless game 
-    player = game.players.where(:secret => player_secret).first
-    events = []
-    unless player.checking_for_events? || game.phase == 'setup'
-      ActiveRecord::Base.transaction do
-        begin
-          player.update_attribute(:checking_for_events, true)
-          events = game.events.where(:player_num => player.num) #.reject{ |e| e.action == 'move' }
-          events.each { |e| e.destroy }
-          player.update_attribute(:checking_for_events, false)
-        rescue ActiveRecord::Rollback
-          render :json => []  # return nothing if the transaction is rolled back
-        end
-      end
-    end
+    game = Game.where(:code => params[:game_code]).first
+    player = game.players.where(:secret => params[:player_secret]).first
 
-    events = events.map{ |event| { :action => event.action, :piece_unique_name => event.piece && event.piece.unique_name, :to => event.to, :options => event.options } }
-    events << { :action => 'active_player', :options => { :active_player_num => game.active_player.num } } if game.active_player && game.active_player.num
+    events = player.check_events
+
     render :json => events.to_json
   end
 
