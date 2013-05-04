@@ -136,20 +136,17 @@ class Player < ActiveRecord::Base
       ActiveRecord::Base.transaction do
         begin
           self.update_attribute(:checking_for_events, true)
-
           # should make this an association
           my_events = events
-          my_events.each { |e| e.destroy }
+          my_events.each { |e| e.destroy }  # destroyed but still in memory.  This is maybe hacky.
           self.update_attribute(:checking_for_events, false)
         rescue ActiveRecord::Rollback
-          render :json => []  # return nothing if the transaction is rolled back
+          return []
         end
       end
     end
 
-    my_events = my_events.map{ |event| { :action => event.action, :piece_unique_name => event.piece && event.piece.unique_name, :to => event.to, :options => event.options } }
-    my_events << { :action => 'active_player', :options => { :active_player_num => self.game.active_player.num } } if self.game.active_player && self.game.active_player.num
-    my_events
+    serialize_events(my_events)
   end
 
   private
@@ -163,6 +160,12 @@ class Player < ActiveRecord::Base
 
   def events
     self.game.events.where(:player_num => self.num)
+  end
+
+  def serialize_events(my_events)
+    my_events = my_events.map{ |event| { :action => event.action, :piece_unique_name => event.piece && event.piece.unique_name, :to => event.to, :options => event.options } }
+    my_events << { :action => 'active_player', :options => { :active_player_num => self.game.active_player.num } } if self.game.active_player && self.game.active_player.num
+    my_events
   end
 end
 
