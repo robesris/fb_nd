@@ -141,32 +141,10 @@ class GamesController < ApplicationController
     begin
       game = current_game
       player = current_player(game)
-
       return false unless game.phase == 'play'
 
       piece = player.pieces.where(:unique_name => params[:piece_unique_name]).first
-
-      result = nil
-
-      if player.flip(piece)
-        prompts = if piece.waiting_state.present?
-          piece.prompts
-        else
-          nil
-        end
-        result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals }
-        result.merge!(:prompts => prompts) if prompts
-        game.add_event(
-          :player_num => player.opponent.num,
-          :action => 'flip',
-          :piece => piece,
-          :options => result
-        )
-      else
-        result = { :status => 'failure', :message => "Can't flip that piece!" }
-      end
-
-      render :json => result
+      render :json => player.flip(piece)
     rescue Exception => exception
       puts e.inspect
       render :nothing => true

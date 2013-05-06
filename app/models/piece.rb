@@ -3,7 +3,7 @@ class Piece < ActiveRecord::Base
   extend ActiveModel::Callbacks
 
   attr_accessible :col, :flipped, :name, :player_id, :row, :type, :player, :space, :unique_name, :in_graveyard
-  
+
   belongs_to :player
   has_one :board, :through => :space
   has_one :game, :through => :player
@@ -90,21 +90,28 @@ class Piece < ActiveRecord::Base
   end
 
   def flip(pass = true)
-    # The piece's player must be active, and if there is an active piece, 
+    # The piece's player must be active, and if there is an active piece,
     # it has to be this one (can't move one piece and flip another)
     return false unless this_player_active? && (is_active_piece? || no_piece_active?)
 
     flip_cost = self.val
     flip_cost = (flip_cost / 2.0).ceil if in_half_crystal_zone?
-    return false if self.flipped? || my_player_crystals < flip_cost
+    return { :status => 'failure', :message => "Can't flip that piece!" } if self.flipped? || my_player_crystals < flip_cost
 
     self.player.add_crystals(-flip_cost)
     self.update_attribute(:flipped, true)
-    
+
     # in general, flipping will be the end of the turn
     self.game.pass_turn if pass
 
-    true
+    result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals, :prompts => piece.current_prompts }
+
+    game.add_event(
+      :player_num => player.opponent.num,
+      :action => 'flip',
+      :piece => piece,
+      :options => result
+    )
   end
 
   def unflip(reimburse = true)  # used when cancelling
@@ -141,6 +148,17 @@ class Piece < ActiveRecord::Base
     true
   end
 
+  def prompts
+    nil
+  end
+
+  def waiting?
+    self.waiting_state.present?
+  end
+
+  def current_prompts
+    self.waiting? && self.prompts
+  end
 
   private
 
@@ -185,7 +203,7 @@ class Piece < ActiveRecord::Base
   def no_piece_active?
     !any_piece_active?
   end
-  
+
   def this_player_active?
     active_player == self.player
   end
