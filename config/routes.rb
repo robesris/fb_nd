@@ -11,16 +11,16 @@ FbNd::Application.routes.draw do
   # Sample of named route:
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
   # This route can be invoked with purchase_url(:id => product.id)
-  post 'create_game' => 'games#create', :as => :create_game
-  post 'game/:game_code/:player_secret' => 'games#join', :as => :join_game
-  post 'game/:game_code/:player_secret/draft/:piece_name/:space' => 'games#draft', :as => :draft
-  post 'game/:game_code/:player_secret/move/:piece_unique_name/:space' => 'games#move', :as => :move
-  post 'game/:game_code/:player_secret/summon/:piece_unique_name/:space' => 'games#summon', :as => :summon
-  post 'game/:game_code/:player_secret/pass_turn' => 'games#pass_turn', :as => :pass_turn
-  post 'game/:game_code/:player_secret/flip/:piece_unique_name' => 'games#flip', :as => :flip
-  post 'game/:game_code/:player_secret/send_prompts' => 'games#send_prompts', :as => :send_prompts
-  post 'game/:game_code/:player_secret/events' => 'games#check_for_events', :as => :check_for_events
-  post 'game/:game_code/:player_secret/init' => 'games#init', :as => :init
+  get 'create_game' => 'games#create', :as => :create_game
+  get 'game/:game_code/:player_secret' => 'games#join', :as => :join_game
+  get 'game/:game_code/:player_secret/draft/:piece_name/:space' => 'games#draft', :as => :draft
+  get 'game/:game_code/:player_secret/move/:piece_unique_name/:space' => 'games#move', :as => :move
+  get 'game/:game_code/:player_secret/summon/:piece_unique_name/:space' => 'games#summon', :as => :summon
+  get 'game/:game_code/:player_secret/pass_turn' => 'games#pass_turn', :as => :pass_turn
+  get 'game/:game_code/:player_secret/flip/:piece_unique_name' => 'games#flip', :as => :flip
+  get 'game/:game_code/:player_secret/send_prompts' => 'games#send_prompts', :as => :send_prompts
+  get 'game/:game_code/:player_secret/events' => 'games#check_for_events', :as => :check_for_events
+  get 'game/:game_code/:player_secret/init' => 'games#init', :as => :init
   post 'game/:game_code/:player_secret/ready' => 'games#ready', :as => :ready
 
     # Sample resource route (maps HTTP verbs to controller actions automatically):
