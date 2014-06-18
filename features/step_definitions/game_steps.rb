@@ -42,11 +42,11 @@ When /^player (\d+) indicates he is ready$/ do |pnum|
 end
 
 Then /^player (\d+) should not be ready$/ do |pnum|
-  get_player(pnum).ready?.should be_false
+  expect(get_player(pnum).ready?).to be false
 end
 
 Then /^player (\d+) should be ready$/ do |pnum|
-  get_player(pnum).ready?.should be_true
+  get_player(pnum).ready?.should be true
 end
 
 When /^player (\d+) is chosen to go first$/ do |pnum|
@@ -77,7 +77,7 @@ end
 
 Then /^player (\d+)s keep should be full$/ do |pnum|
   player = get_player(pnum)
-  player.keep_full?.should be_true
+  player.keep_full?.should be true
 end
 
 Then /^player (\d+)s graveyard should be empty$/ do |pnum|

@@ -82,12 +82,12 @@ Then /^player (\d+)s '(.*)' should be in the graveyard$/ do |pnum, piece_name|
   piece.space.should be_nil
   piece.row.should == nil
   piece.col.should == nil
-  piece.in_graveyard?.should be_true
+  piece.in_graveyard?.should be true
 end
 
 Then /^player (\d+)s '(.*)' should not be in the graveyard$/ do |pnum, piece_name|
   piece = @game.playernum(pnum).pieces.where(:name => piece_name).first
-  piece.in_graveyard?.should be_false
+  piece.in_graveyard?.should be false
 end
 
 Then /^player (\d+)s '(.*)' should be at '([a-g])(\d+)'$/ do |pnum, piece_name, col, row|
@@ -127,13 +127,13 @@ end
 Then /^player (\d+)s '(.*)' should be flipped$/ do |pnum, piece_name|
   player = @game.playernum(pnum)
   piece = player.pieces.where(:name => piece_name).first
-  piece.flipped?.should be_true
+  piece.flipped?.should be true
 end
 
 Then /^player (\d+)s '(.*)' should not be flipped$/ do |pnum, piece_name|
   player = @game.playernum(pnum)
   piece = player.pieces.where(:name => piece_name).first
-  piece.flipped?.should be_false
+  piece.flipped?.should be false
 end
 
 Then /^player (\d+) should win the game$/ do |pnum|
@@ -170,13 +170,13 @@ end
 Then /^player (\d+)s '(.*)' should be in his keep$/ do |pnum, piece_name|
   player = @game.playernum(pnum)
   piece = player.pieces.where(:name => piece_name).first
-  piece.in_keep?.should be_true
+  piece.in_keep?.should be true
 end
 
 Then /^player (\d+)s '(.*)' should not be in his keep$/ do |pnum, piece_name|
   player = @game.playernum(pnum)
   piece = player.pieces.where(:name => piece_name).first
-  piece.in_keep?.should be_false
+  piece.in_keep?.should be false
 end
 
 Then /^the game should be in progress$/ do
@@ -200,11 +200,11 @@ When /^player (\d+) Goals Over$/ do |pnum|
 end
 
 Then /^player (\d+) should be in check$/ do |pnum|
-  @game.playernum(pnum).in_check?.should be_true
+  @game.playernum(pnum).in_check?.should be true
 end
 
 Then /^player (\d+) should not be in check$/ do |pnum|
-  @game.playernum(pnum).in_check?.should be_false
+  @game.playernum(pnum).in_check?.should be false
 end
 
 When /^player (\d+) passes the turn$/ do |pnum|

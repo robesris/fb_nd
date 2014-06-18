@@ -104,12 +104,12 @@ class Piece < ActiveRecord::Base
     # in general, flipping will be the end of the turn
     self.game.pass_turn if pass
 
-    result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals, :prompts => piece.current_prompts }
+    result = { :status => 'success', :p1_crystals => game.player1.crystals, :p2_crystals => game.player2.crystals, :prompts => self.current_prompts }
 
     game.add_event(
       :player_num => player.opponent.num,
       :action => 'flip',
-      :piece => piece,
+      :piece => self,
       :options => result
     )
   end

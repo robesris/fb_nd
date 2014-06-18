@@ -1,3 +1,5 @@
+#require 'move/lib/movement_details'
+
 class Move < ActiveRecord::Base
   attr_accessible :capture_allowed, :earn_crystals, :pass, :piece, :player, :space
 
